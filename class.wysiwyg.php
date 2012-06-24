@@ -64,10 +64,146 @@ if (!is_object($parser)) {
 
 class extendedWYSIWYG {
 
+  private static $error = '';
+  private static $message = '';
+
+  protected static $template_path = '';
+
   protected $lang = null;
 
+  /**
+   * Constructor for class extendedWYSIWYG
+   */
   public function __construct() {
     global $I18n;
     $this->lang = $I18n;
+    self::$template_path = LEPTON_PATH.'/modules/'.basename(dirname(__FILE__)).'/templates/backend/';
   } // __construct()
+
+  /**
+   * Set self::$error to $error
+   *
+   * @param string $error
+   */
+  public function setError($error) {
+    self::$error = $error;
+  } // setError()
+
+  /**
+   * Get Error from self::$error;
+   *
+   * @return string $this->error
+   */
+  public function getError() {
+    return self::$error;
+  } // getError()
+
+
+  /**
+   * Check if self::$error is empty
+   *
+   * @return boolean
+   */
+  public function isError() {
+    return (bool) !empty(self::$error);
+  } // isError
+
+
+  /**
+   * Set self::$message to $message
+   *
+   * @param string $message
+   */
+  public function setMessage($message) {
+    self::$message = $message;
+  } // setMessage()
+
+
+  /**
+   * Get Message from self::$message;
+   *
+   * @return string self::$message
+   */
+  public function getMessage() {
+    return self::$message;
+  } // getMessage()
+
+
+  /**
+   * Check if self::$message is empty
+   *
+   * @return boolean
+   */
+  public function isMessage() {
+    return (bool) !empty(self::$message);
+  } // isMessage
+
+
+  /**
+   * Return the version of the module
+   *
+   * @return float
+   */
+  public function getVersion() {
+    // read info.php into array
+    $info_text = file(LEPTON_PATH.'/modules/'.basename(dirname(__FILE__)).'/info.php');
+    if ($info_text == false) {
+      return -1;
+    }
+    // walk through array
+    foreach ($info_text as $item) {
+      if (strpos($item, '$module_version') !== false) {
+        // split string $module_version
+        $value = explode('=', $item);
+        // return floatval
+        return floatval(preg_replace('([\'";,\(\)[:space:][:alpha:]])', '', $value[1]));
+      }
+    }
+    return -1;
+  } // getVersion()
+
+  /**
+   * Get the template, set the data and return the compiled result
+   *
+   * @param string $template the name of the template
+   * @param array $template_data
+   * @return boolean|Ambigous <string, mixed>
+   */
+  public function getTemplate($template, $template_data) {
+    global $parser;
+    // check if a custom template exists ...
+    $load_template = (file_exists(self::$template_path.'custom.'.$template)) ? self::$template_path.'custom.'.$template : self::$template_path.$template;
+    try {
+      $result = $parser->get($load_template, $template_data);
+    }
+    catch (Exception $e) {
+      $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__,
+          $this->lang->translate('Error executing the template <b>{{ template }}</b>: {{ error }}',
+              array(
+                  'template' => basename($load_template),
+                  'error' => $e->getMessage())
+              )
+          ));
+      return false;
+    }
+    return $result;
+  } // getTemplate()
+
+
+  /**
+   * Prevent XSS Cross Site Scripting
+   *
+   * @param reference array $request
+   * @return $request
+   */
+  public function xssPrevent(&$request) {
+    if (is_string($request)) {
+      $request = html_entity_decode($request);
+      $request = strip_tags($request);
+      $request = trim($request);
+      $request = stripslashes($request);
+    }
+    return $request;
+  } // xssPrevent()
+
 } // class extendedWYSIWYG
