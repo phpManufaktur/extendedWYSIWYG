@@ -37,5 +37,7 @@ if ('á' != "\xc3\xa1") {
 }
 
 $LANG = array(
+    'Error executing the template <b>{{ template }}</b>: {{ error }}'
+      => 'Fehler bei der Ausführung des Template <b>{{ template }}</b>: {{ error }}'
 
 );
