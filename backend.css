@@ -1,0 +1,73 @@
+/** 
+ * extendedWYSIWYG
+ *
+ * @author Ralf Hertsch <ralf.hertsch@phpmanufaktur.de>
+ * @link https://addons.phpmanufaktur.de/extendedWYSIWYG
+ * @copyright 2012 phpManufaktur by Ralf Hertsch
+ * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
+ *
+ * Please consult the Dwoo Documentation & WIKI to get further informations 
+ * and hints for the usage of the Dwoo template engine.
+ *
+ * @link http://wiki.dwoo.org/
+ *
+ * Use {dump()} to get a list of all in this template available variables!
+ */
+
+@import url(../manufaktur_config/backend.css);
+
+.wysiwyg_body {
+  margin: 0;
+  padding: 0;
+}
+.wysiwyg_error {
+  color: #fff;
+  background-color: #992826;
+  margin: 20px 0 20px 0;
+  padding: 10px 120px 10px 10px;
+  font-size: 10px;
+  min-height: 90px;
+  background-image: url(images/bug_110x110.png);
+  background-position: top right;
+  background-repeat: no-repeat;
+}
+.wysiwyg_error a:link,
+.wysiwyg_error a:visited {
+  text-decoration: none;
+  color: #ffff00; 
+  background-color: transparent;
+}
+.wysiwyg_error a:hover,
+.wysiwyg_error a:active {
+  text-decoration: underline;
+  color: #ffff00;
+  background-color: transparent;
+}
+.wysiwyg_error_support {
+  margin: 20px 0 0 0;
+}
+.wysiwyg_editor {
+  margin: 0;
+  padding: 0;
+}
+.wysiwyg_editor_buttons {
+  clear: both;
+  padding: 10px 0 20px 0;
+  margin: 0;
+  text-align: left;
+}
+.wysiwyg_editor_buttons input[type=submit],
+.wysiwyg_editor_buttons input[type=button] {
+  width: 150px;
+  margin: 0 10px 0 0;
+  padding: 2px;
+}
+.wysiwyg_control {
+  padding: 10px 0 0 0;
+  margin: 0;
+  text-align: left;
+}
+.wysiwyg_control_publish {
+  float: left;
+  width: 150px;
+}
