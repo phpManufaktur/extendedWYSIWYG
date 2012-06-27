@@ -35,7 +35,8 @@ else {
 
 $PRECHECK['PHP_VERSION'] = array('VERSION' => '5.2.0', 'OPERATOR' => '>=');
 $PRECHECK['WB_ADDONS'] = array(
-	'dwoo' => array('VERSION' => '0.13', 'OPERATOR' => '>='),
+    'dwoo' => array('VERSION' => '0.13', 'OPERATOR' => '>='),
+    'manufaktur_config' => array('VERSION' => '0.11', 'OPERATOR' => '>=')
 );
 
 global $database;
