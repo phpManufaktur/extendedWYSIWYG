@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmcfg version="0.10">
+  <module name="extendedWYSIWYG" directory="wysiwyg" group="" date="2012-06-25 19:06:03">
+    <setting name="cfgShowInfoBanner" usage="HIDDEN" update="INSERT">
+      <value type="BOOLEAN">0</value>
+    </setting>
+    <setting name="cfgUpdateModifiedPage" usage="REGULAR" update="INSERT">
+      <value type="BOOLEAN">1</value>
+      <dialog set="" page="Settings">
+        <label>Update modified page</label>
+        <hint>A change of a WYSIWYG section will update the last modified field of the page</hint>
+      </dialog>
+    </setting>
+  </module>
+</xmcfg>
