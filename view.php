@@ -29,13 +29,7 @@ if (defined('WB_PATH')) {
 }
 // end include class.secure.php
 
-global $database;
+require_once WB_PATH.'/modules/wysiwyg/class.wysiwyg.php';
 
-if (defined('LEPTON_VERSION'))
-  $database->prompt_on_error(false);
-
-$SQL = "SELECT `content` FROM `".TABLE_PREFIX."mod_wysiwyg` WHERE `section_id`='$section_id'";
-if (null === ($content = $database->get_one($SQL, MYSQL_ASSOC)))
-  trigger_error(sprintf('[%s - %s] %s', __FILE__, __LINE__, $database->get_error()), E_USER_ERROR);
-
-echo $content;
+// prompt the content of the WYSIWYG section
+echo extendedWYSIWYG::viewSection($section_id);

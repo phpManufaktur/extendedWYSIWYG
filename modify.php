@@ -29,4 +29,10 @@ if (defined('WB_PATH')) {
 }
 // end include class.secure.php
 
-return 'ok';
+if (!defined('LEPTON_PATH'))
+  require_once WB_PATH.'/modules/'.basename(dirname(__FILE__)).'/wb2lepton.php';
+
+require_once LEPTON_PATH.'/modules/'.basename(dirname(__FILE__)).'/class.wysiwyg.php';
+
+$wysiwyg = new extendedWYSIWYG($section_id, $page_id);
+$wysiwyg->action(extendedWYSIWYG::ACTION_MODIFY);

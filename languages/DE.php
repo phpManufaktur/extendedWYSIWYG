@@ -38,6 +38,21 @@ if ('á' != "\xc3\xa1") {
 
 $LANG = array(
     'Error executing the template <b>{{ template }}</b>: {{ error }}'
-      => 'Fehler bei der Ausführung des Template <b>{{ template }}</b>: {{ error }}'
-
+      => 'Fehler bei der Ausführung des Template <b>{{ template }}</b>: {{ error }}',
+    'Error: Missing the ARCHIVE_ID for section <b>{{ section_id }}</b>!'
+      => 'Vermisse die ARCHIVE_ID für die Section <b>{{ section_id }}</b>!',
+    'Error: Missing the WYSIWYG content for section <b>{{ section_id }}</b>!'
+      => 'Vermisse den WYSIWYG Inhalt der Section <b>{{ section_id }}</b>!',
+    'Error: The ARCHIVE_ID <b>{{ archive_id }}</b> does not exists!'
+      => 'Die ARCHIVE_ID <b>{{ archive_id }}</b> existiert nicht!',
+    'Please help to improve Open Source Software and report this problem to the <a href="{{ url }}" target="_blank">phpManufaktur Addons Support</a> Group.'
+      => 'Bitte helfen Sie mit Open Source Software zu verbessern und melden Sie dieses Problem der <a href="{{ url }}" target="_blank">phpManufaktur Addons Support</a> Gruppe.',
+    'publish'
+      => 'veröffentlichen',
+    'Save'
+      => 'Speichern',
+    'The content of the section <b>{{ section_id }}</b> has not changed, so nothing was to save.'
+      => 'Der Inhalt der Section <b>{{ section_id }}</b> wurde nicht verändert und deshalb auch nicht gespeichert.',
+    'The section <b>{{ section_id }}</b> was successfull saved.'
+      => 'Die Section <b>{{ section_id }}</b> wurde erfolgreich gespeichert.',
 );

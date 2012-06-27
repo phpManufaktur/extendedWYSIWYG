@@ -32,19 +32,48 @@ if (defined('WB_PATH')) {
 global $database;
 global $admin;
 
+if (!defined('LEPTON_PATH'))
+  require_once WB_PATH.'/modules/'.basename(dirname(__FILE__)).'/wb2lepton.php';
+
 if (defined('LEPTON_VERSION'))
   $database->prompt_on_error(false);
 
-$SQL = "CREATE TABLE IF NOT EXISTS `'.TABLE_PREFIX.'mod_wysiwyg` ( ".
-  "`section_id` INT NOT NULL DEFAULT '0', ".
-  "`page_id` INT NOT NULL DEFAULT '0', ".
-  "`content` LONGTEXT NOT NULL , ".
-  "`text` LONGTEXT NOT NULL , ".
-  "`hash` VARCHAR(32) NOT NULL DEFAULT '', ".
-  "`timestamp` TIMESTAMP, ".
+// create the regular WYSIWYG table, add the fields 'hash' and 'timestamp'
+$SQL = "CREATE TABLE IF NOT EXISTS `".TABLE_PREFIX."mod_wysiwyg` ( ".
+  "`section_id` INT(11) NOT NULL DEFAULT '0', ".
+  "`page_id` INT(11) NOT NULL DEFAULT '0', ".
+  "`content` LONGTEXT NOT NULL, ".
+  "`text` LONGTEXT NOT NULL, ".
+  "`archive_id` INT(11) NOT NULL DEFAULT '-1', ".
   "PRIMARY KEY (`section_id`) ".
   ") ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
 
 if (!$database->query($SQL))
   $admin->print_error($database->get_error());
+
+// create the WYSIWYG archive table
+$SQL = "CREATE TABLE IF NOT EXISTS `".TABLE_PREFIX."mod_wysiwyg_archive` ( ".
+    "`archive_id` INT(11) NOT NULL AUTO_INCREMENT, ".
+    "`section_id` INT(11) NOT NULL DEFAULT '0', ".
+    "`page_id` INT(11) NOT NULL DEFAULT '0', ".
+    "`content` LONGTEXT NOT NULL, ".
+    "`hash` VARCHAR(32) NOT NULL DEFAULT '', ".
+    "`remark` VARCHAR(255) NOT NULL DEFAULT '', ".
+    "`author` VARCHAR(255) NOT NULL DEFAULT '', ".
+    "`status` ENUM('ACTIVE','UNPUBLISHED','BACKUP') NOT NULL DEFAULT 'ACTIVE', ".
+    "`timestamp` TIMESTAMP, ".
+    "PRIMARY KEY (`archive_id`), ".
+    "KEY (`section_id`, `page_id`, `status`) ".
+    ") ENGINE=MyIsam AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci";
+
+if (!$database->query($SQL))
+  $admin->print_error($database->get_error());
+
+require_once LEPTON_PATH.'/modules/manufaktur_config/library.php';
+
+// initialize the configuration
+$config = new manufakturConfig();
+if (!$config->readXMLfile(LEPTON_PATH.'/modules/wysiwyg/config/extendedWYSIWYG.xml', 'wysiwyg', true)) {
+  $admin->print_error($config->getError());
+}
 

@@ -29,6 +29,9 @@ if (defined('WB_PATH')) {
 }
 // end include class.secure.php
 
+if (!defined('LEPTON_PATH'))
+  require_once WB_PATH.'/modules/'.basename(dirname(__FILE__)).'/wb2lepton.php';
+
 global $database;
 global $admin;
 
@@ -72,31 +75,50 @@ function rrmdir($dir) {
   }
 } //rrmdir()
 
-// exists the field 'hash'?
-if (!fieldExists('hash')) {
+// exists the field 'archive_id' in the regular WYSIWYG table?
+if (!fieldExists('archive_id')) {
   // add the field 'hash' to the table
-  $SQL = "ALTER TABLE `".TABLE_PREFIX."mod_wysiwyg` ADD `hash` VARCHAR(32) NOT NULL DEFAULT '' AFTER `text`";
+  $SQL = "ALTER TABLE `".TABLE_PREFIX."mod_wysiwyg` ADD `archive_id` INT(11) NOT NULL DEFAULT '-1' AFTER `text`";
   if (!$database->query($SQL))
     $admin->print_error($database->get_error());
 }
 
-// exists the field 'timestamp'
-if (!fieldExists('timestamp')) {
-  // add the field 'timestamp' to the table
-  $SQL = "ALTER TABLE `".TABLE_PREFIX."mod_wysiwyg` ADD `timestamp` TIMESTAMP AFTER `hash`";
-  if (!$database->query($SQL))
-    $admin->print_error($database->get_error());
-}
-
-// update the module name
+// update the module name = extendedWYSIWYG
 $SQL = "UPDATE `".TABLE_PREFIX."addons` SET `name`='extendedWYSIWYG' WHERE `directory`='wysiwyg'";
 if (!$database->query($SQL))
   $admin->print_error($database->get_error());
 
-// we have to delete some files and directories
+// we have to delete some files and directories from the origin installation
 $language_files = array('DA.php','FR.php','NL.php','NO.php','RU.php');
 foreach ($language_files as $file)
-  @unlink(WB_PATH.'/modules/wysiwyg/languages/'.$file);
+  @unlink(LEPTON_PATH.'/modules/wysiwyg/languages/'.$file);
 
-// WYSIWYG of LEPTON have a directory '/classes' which is not needed
-rrmdir(WB_PATH.'/modules/wysiwyg/classes');
+// WYSIWYG of LEPTON have a directory '/classes' which is no longer needed
+rrmdir(LEPTON_PATH.'/modules/wysiwyg/classes');
+
+// now create the WYSIWYG archive table
+$SQL = "CREATE TABLE IF NOT EXISTS `".TABLE_PREFIX."mod_wysiwyg_archive` ( ".
+    "`archive_id` INT(11) NOT NULL AUTO_INCREMENT, ".
+    "`section_id` INT(11) NOT NULL DEFAULT '0', ".
+    "`page_id` INT(11) NOT NULL DEFAULT '0', ".
+    "`content` LONGTEXT NOT NULL, ".
+    "`hash` VARCHAR(32) NOT NULL DEFAULT '', ".
+    "`remark` VARCHAR(255) NOT NULL DEFAULT '', ".
+    "`author` VARCHAR(255) NOT NULL DEFAULT '', ".
+    "`status` ENUM('ACTIVE','UNPUBLISHED','BACKUP') NOT NULL DEFAULT 'ACTIVE', ".
+    "`timestamp` TIMESTAMP, ".
+    "PRIMARY KEY (`archive_id`), ".
+    "KEY (`section_id`, `page_id`, `status`) ".
+    ") ENGINE=MyIsam AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci";
+
+if (!$database->query($SQL))
+  $admin->print_error($database->get_error());
+
+require_once LEPTON_PATH.'/modules/manufaktur_config/library.php';
+
+// initialize the configuration
+$config = new manufakturConfig();
+if (!$config->readXMLfile(LEPTON_PATH.'/modules/wysiwyg/config/extendedWYSIWYG.xml', 'wysiwyg', true)) {
+  $admin->print_error($config->getError());
+}
+

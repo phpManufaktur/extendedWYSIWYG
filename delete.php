@@ -29,13 +29,10 @@ if (defined('WB_PATH')) {
 }
 // end include class.secure.php
 
-global $database;
-global $section_id;
+if (!defined('LEPTON_PATH'))
+  require_once WB_PATH.'/modules/'.basename(dirname(__FILE__)).'/wb2lepton.php';
 
-if (defined('LEPTON_VERSION'))
-  $database->prompt_on_error(false);
+require_once LEPTON_PATH.'/modules/'.basename(dirname(__FILE__)).'/class.wysiwyg.php';
 
-// Delete record from the database
-$SQL = "DELETE FROM `".TABLE_PREFIX."mod_wysiwyg` WHERE `section_id`='$section_id'";
-if (null === ($database->query($SQL)))
-  trigger_error(sprintf('[%s - %s] %s', __FILE__, __LINE__, $database->get_error()), E_USER_ERROR);
+$wysiwyg = new extendedWYSIWYG($section_id, $page_id);
+$wysiwyg->action(extendedWYSIWYG::ACTION_DELETE);
