@@ -19,6 +19,11 @@
 .wysiwyg_body {
   margin: 0;
   padding: 0;
+  font-family: Verdana, Arial, sans-serif;
+  font-size: 10px;
+  font-weight: normal;
+  color: #363636;
+  background-color: transparent;
 }
 .wysiwyg_error {
   color: #fff;
@@ -69,5 +74,31 @@
 }
 .wysiwyg_control_publish {
   float: left;
-  width: 150px;
+  width: 164px;
+}
+.wysiwyg_control_publish input,
+.wysiwyg_control_publish label {
+  float:left;
+}
+.wysiwyg_control_archiv_id {
+  float: left;
+  width: 250px;
+}
+.wysiwyg_system {
+  margin: 0;
+  padding: 0 0 5px 0;
+  text-align: right;
+  font-size: 9px;
+}
+.wysiwyg_system a:link,
+.wysiwyg_system a:visited {
+  text-decoration: none;
+  color: #363636;
+  background-color: transparent;
+}
+.wysiwyg_system a:hover,
+.wysiwyg_system a:active {
+  text-decoration: none;
+  color: #da251d;
+  background-color: transparent;
 }

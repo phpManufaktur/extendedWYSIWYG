@@ -89,6 +89,7 @@ class extendedWYSIWYG {
   private static $message = '';
 
   protected static $cfg_updateModifiedPage = true;
+  protected static $cfg_archiveIdSelectLimit = 10;
   protected static $template_path = '';
   protected static $page_id = null;
   protected static $section_id = null;
@@ -117,6 +118,7 @@ class extendedWYSIWYG {
     // get settings
     $config = new manufakturConfig();
     self::$cfg_updateModifiedPage = $config->getValue('cfgUpdateModifiedPage', 'wysiwyg');
+    self::$cfg_archiveIdSelectLimit = $config->getValue('cfgArchiveIdSelectLimit', 'wysiwyg');
   } // __construct()
 
   /**
@@ -297,7 +299,6 @@ class extendedWYSIWYG {
    */
   protected function show($action, $content) {
     $data = array(
-        'config' => ADMIN_URL.'/pages/modify.php?act=cfg&page_id='.self::$page_id.'&sec='.self::$section_id.'#'.self::$section_anchor,
         'anchor' => self::$section_anchor,
         'navigation' => '',
         'is_error' => $this->isError() ? 1 : 0,
@@ -318,9 +319,27 @@ class extendedWYSIWYG {
     global $content;
     global $admin;
 
-    // get the last edit section
-    $SQL = sprintf("SELECT * FROM `%smod_wysiwyg_archive` WHERE `section_id`='%d' ORDER BY `archive_id` DESC LIMIT 1",
-        TABLE_PREFIX, self::$section_id);
+    if (isset($preview) && $preview == true) {
+      // this is a very special solution to keep the WYSIWYG-Admin alive...
+      $SQL = sprintf("SELECT `content` FROM `%smod_wysiwyg` WHERE `section_id`='%d'",
+          TABLE_PREFIX, self::$section_id);
+      if (false === ($content = $database->get_one($SQL))) {
+        trigger_error(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $database->get_error()), E_USER_ERROR);
+      }
+      require_once(LEPTON_PATH.'/modules/'.WYSIWYG_EDITOR.'/include.php');
+      return false;
+    }
+
+    if (isset($_REQUEST[self::REQUEST_ARCHIVE_ID.self::$section_id])) {
+      // get the choosen ARCHIVE_ID
+      $SQL = sprintf("SELECT * FROM `%smod_wysiwyg_archive` WHERE `archive_id`='%d'",
+          TABLE_PREFIX, $_REQUEST[self::REQUEST_ARCHIVE_ID.self::$section_id]);
+    }
+    else {
+      // get the last edit section
+      $SQL = sprintf("SELECT * FROM `%smod_wysiwyg_archive` WHERE `section_id`='%d' ORDER BY `archive_id` DESC LIMIT 1",
+          TABLE_PREFIX, self::$section_id);
+    }
     if (false === ($query = $database->query($SQL))) {
       $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $database->get_error()));
       return false;
@@ -354,22 +373,21 @@ class extendedWYSIWYG {
       $publish = (int) true;
     }
 
-    // the $id_list is needed by other admin scripts...
-    $id_list = array();
-    $SQL = "SELECT `section_id` FROM `".TABLE_PREFIX."sections` WHERE `page_id`='".self::$page_id."' AND `module`='wysiwyg'";
+    $SQL = sprintf("SELECT `timestamp`, `status`, `archive_id` FROM `%smod_wysiwyg_archive` WHERE `section_id`='%d' ORDER BY `archive_id` DESC LIMIT %d",
+        TABLE_PREFIX, self::$section_id, self::$cfg_archiveIdSelectLimit);
     if (false === ($query = $database->query($SQL))) {
       $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $database->get_error()));
       return false;
     }
-    while (false !== ($wysiwyg_section = $query->fetchRow()))
-      $id_list[] = 'content'. intval($wysiwyg_section['section_id']);
-
-    if (isset($preview) && $preview == true) {
-      // this is a very special solution to keep the WYSIWYG-Admin alive...
-      require_once(LEPTON_PATH.'/modules/'.WYSIWYG_EDITOR.'/include.php');
-      return false;
+    $archive = array();
+    while (false !== ($entry = $query->fetchRow(MYSQL_ASSOC))) {
+      $archive[$entry['archive_id']] = array(
+          'text' => sprintf('%s | %s', $entry['timestamp'], $entry['status']),
+          'value' => $entry['archive_id']
+          );
     }
 
+    $leptoken = (defined('LEPTON_VERSION') && isset($_GET['leptoken'])) ? sprintf('&leptoken=%s', $_GET['leptoken']) : '';
     $data = array(
         'section_id' => self::$section_id,
         'page_id' => self::$page_id,
@@ -381,9 +399,30 @@ class extendedWYSIWYG {
             'content' => $content,
             'id' => 'content'.self::$section_id,
             ),
+        'archive' => array(
+            'id' => $archive_id,
+            'name' => self::REQUEST_ARCHIVE_ID.self::$section_id,
+            'items' => $archive,
+            'link' => sprintf('%s?%s%s&archive_id%d=',
+                self::$modify_url,
+                http_build_query(array(
+                    self::REQUEST_PAGE_ID => self::$page_id,
+                    )),
+                $leptoken,
+                self::$section_id),
+            'anchor' => self::$section_anchor),
         'publish' => $publish,
-        'archive_id' => $archive_id,
-        'author' => $author
+        'author' => $author,
+        'config' => array(
+            'link' => sprintf('%s?%s#%s',
+                self::$modify_url,
+                http_build_query(array(
+                    self::REQUEST_PAGE_ID => self::$page_id,
+                    self::REQUEST_ACTION => self::ACTION_CONFIG,
+                    self::REQUEST_CHANGE_SECTION => self::$section_id
+                    )),
+                self::$section_anchor)
+            )
         );
     return $this->getTemplate('modify.lte', $data);
   } // dlgModify()
@@ -503,12 +542,12 @@ class extendedWYSIWYG {
     $old_archive = $query->fetchRow(MYSQL_ASSOC);
 
     $publish = isset($_REQUEST[self::REQUEST_PUBLISH]) ? true : false;
-
     if (($new_hash != $old_archive['hash']) || ($publish && ($old_archive['status'] != 'ACTIVE'))) {
       // the content has changed!
       if ($publish) {
         // set the ACTIVE content from ARCHIVE to BACKUP
-        $SQL = sprintf("UPDATE `%smod_wysiwyg_archive` SET `status`='BACKUP' WHERE `status`='ACTIVE'", TABLE_PREFIX);
+        $SQL = sprintf("UPDATE `%smod_wysiwyg_archive` SET `status`='BACKUP' WHERE `status`='ACTIVE' AND `section_id`='%d'",
+            TABLE_PREFIX, self::$section_id);
         if (!$database->query($SQL)) {
           $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $database->get_error()));
           return $this->adminPrintError(self::$modify_url);
