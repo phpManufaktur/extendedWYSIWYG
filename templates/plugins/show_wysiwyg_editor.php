@@ -34,6 +34,22 @@ if (!defined('LEPTON_PATH'))
 
 function Dwoo_Plugin_show_wysiwyg_editor(Dwoo $dwoo, $name, $id, $content, $width='100%', $height='350px') {
   global $wysiwyg_editor_loaded;
+  global $id_list;
+  global $database;
+
+  if (isset($_GET['page_id'])) {
+    // special case: the $id_list is needed for multiple calls at page edit in the backend
+    $id_list= array();
+    $SQL = sprintf("SELECT `section_id` FROM `%ssections` WHERE `page_id`='%d' AND `module`='wysiwyg' ORDER BY `position`",
+        TABLE_PREFIX, $_GET['page_id']);
+    if (false === ($query = $database->query($SQL))) {
+      trigger_error(sprintf('[%s - %s] %s', __FUNCTION__, __LINE__, $database->get_error()), E_USER_ERROR);
+    }
+    while (false !== ($wysiwyg_section = $query->fetchRow(MYSQL_ASSOC))) {
+      $temp_id = (int) $wysiwyg_section['section_id'];
+      $id_list[] = 'content'.$temp_id;
+    }
+  }
 
   if (!function_exists('show_wysiwyg_editor')) {
     if (!defined('WYSIWYG_EDITOR') || (WYSIWYG_EDITOR == 'none') ||
@@ -55,6 +71,7 @@ function Dwoo_Plugin_show_wysiwyg_editor(Dwoo $dwoo, $name, $id, $content, $widt
     ob_start();
     show_wysiwyg_editor($name, $id, $content, $width, $height);
     $content = ob_get_clean();
+    $wysiwyg_editor_loaded = true;
   }
   echo $content;
 } // Dwoo_Plugin_show_wysiwyg_editor()
