@@ -102,3 +102,51 @@
   color: #da251d;
   background-color: transparent;
 }
+#wysiwyg_about {
+  margin: 0;
+  padding: 0;
+  width: 700px;
+  height: auto;
+}
+.wysiwyg_about_top {
+  clear: both;
+  margin: 20px 0 20px 0;
+  padding: 0;
+}
+.wysiwyg_about_logo {
+  float: left;
+  width: 300px;
+  height: auto;
+  text-align: left;
+}
+.wysiwyg_about_phpmanufaktur {
+  float: left;
+  width: 300px;
+  height: auto;
+  text-align: left;
+}
+.wysiwyg_about_button {
+  clear: both;
+  margin: 0;
+  padding: 20px 0 20px 300px;
+  text-align: left;
+}
+.wysiwyg_about_button input[type=button] {
+  width: 150px;
+  margin: 0 10px 0 0;
+  padding: 2px;
+}
+.wysiwyg_about_version {
+  clear: both;
+  margin: 0;
+  padding: 20px 0 10px 300px;
+  text-align: left;
+}
+.wysiwyg_about_notes {
+  margin: 0;
+  width: 600px;
+  height-max: 200px;
+  padding: 0 0 0 300px;
+  text-align: left;
+  overflow-y: scroll;
+}
