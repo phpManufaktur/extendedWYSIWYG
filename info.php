@@ -33,7 +33,7 @@ else {
 $module_directory = 'wysiwyg';
 $module_name = 'extendedWYSIWYG';
 $module_function = 'page';
-$module_version = '10.0.0';
+$module_version = '10.10';
 $module_platform = '2.8';
 $module_author = 'Ralf Hertsch, Berlin (Germany)';
 $module_license = 'MIT License (MIT)';
