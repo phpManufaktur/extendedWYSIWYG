@@ -30,7 +30,11 @@
     </div>
   </div>
   <div class="wysiwyg_about_notes">
-    {$release.notes}
+    {if $release.use_markdown}
+      {$release.notes}
+    {else}
+      <pre>{$release.notes}</pre>
+    {/if}
   </div>
   <div class="wysiwyg_about_button">
     <input type="button" value="{translate('OK')}" onclick="javascript:window.location='{$abort_location}';" />

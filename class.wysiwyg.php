@@ -619,6 +619,13 @@ class extendedWYSIWYG {
     }
   } // saveSection()
 
+  /**
+   * Create a archive file in a protected /MEDIA directory and copy the embedded
+   * files in this directory
+   *
+   * @param integer $archive_id
+   * @return boolean
+   */
   protected function createArchiveFile($archive_id) {
     global $database;
     // check directory
@@ -814,15 +821,18 @@ class extendedWYSIWYG {
 
   protected function dlgAbout() {
     $notes = file_get_contents(LEPTON_PATH . '/modules/' . basename(dirname(__FILE__)) . '/CHANGELOG');
+    $use_markdown = 0;
     if (file_exists(LEPTON_PATH.'/modules/lib_markdown/standard/markdown.php')) {
       require_once LEPTON_PATH.'/modules/lib_markdown/standard/markdown.php';
       $notes = Markdown($notes);
+      $use_markdown = 1;
     }
     $data = array(
         'logo_src' => LEPTON_URL.'/modules/wysiwyg/images/extendedwysiwyg_250x167.jpg',
         'release' => array(
             'number' => $this->getVersion(),
-            'notes' => $notes
+            'notes' => $notes,
+            'use_markdown' => $use_markdown
             ),
         'abort_location' => sprintf('%s?%s#%s',
             self::$modify_url,
