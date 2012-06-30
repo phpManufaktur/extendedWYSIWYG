@@ -39,6 +39,12 @@ if ('á' != "\xc3\xa1") {
 $LANG = array(
     'Error executing the template <b>{{ template }}</b>: {{ error }}'
       => 'Fehler bei der Ausführung des Template <b>{{ template }}</b>: {{ error }}',
+    "Error: Can't create the directory <b>{{ directory }}</b>!"
+      => 'Konnte das Verzeichnis <b>{{ directory }}</b> nicht anlegen!',
+    "Error: Can't create the <b>{{ file }}</b> file for the protected WYSIWYG folder!"
+      => 'Konnte die <b>{{ file }}</b> Datei für das geschützte WYSIWYG Verzeichnis nicht erstellen!',
+    "Error: Can't write the file <b>{{ file }}</b>!"
+      => 'Konnte die Datei <b>{{ file }}</b> nicht schreiben!',
     'Error: Missing the ARCHIVE_ID for section <b>{{ section_id }}</b>!'
       => 'Vermisse die ARCHIVE_ID für die Section <b>{{ section_id }}</b>!',
     'Error: Missing the WYSIWYG content for section <b>{{ section_id }}</b>!'
