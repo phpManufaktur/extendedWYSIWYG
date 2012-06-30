@@ -13,31 +13,26 @@
  *
  * Use {dump()} to get a list of all in this template available variables!
  *}
-<form name="wysiwyg{$section_id}" action="{$action.link}#{$action['anchor']}" method="post">
-  <input type="hidden" name="page_id" value="{$page_id}" />
-  <input type="hidden" name="section_id" value="{$section_id}" />
-  <input type="hidden" name="archive_id" value="{$archive['id']}" /> 
-  <div class="wysiwyg_system">
-    [<a href="{$about.link}">extendedWYSIWYG</a>] [<a href="{$config.link}">{translate('Settings')}</a>]
-  </div>
-  <div class="wysiwyg_editor">
-    {show_wysiwyg_editor($content['id'], $content['id'], $content['content'],'100%','250px')}
-  </div>
-  <div class="wysiwyg_control">
-    <div class="wysiwyg_control_publish">
-      <input type="checkbox" name="publish" value="1"{if $publish == 1} checked="checked"{/if} /><label for="publish">{translate('publish')}</label>
+<div id="wysiwyg_about">
+  <div class="wysiwyg_about_top">
+    <div class="wysiwyg_about_logo">
+      <img src="{$logo_src}" width="250" height="167" alt="extendedWYSIWYG" />
     </div>
-    <div class="wysiwyg_control_archiv_id">
-      <select id="{$archive.name}" name="{$archive.name}" onchange="javascript:execOnChange('{$archive.link}','{$archive.name}','{$archive.anchor}');">
-        {foreach $archive.items item}
-        <option value="{$item.value}"{if $item.value == $archive.id} selected="selected"{/if}>{$item.text}</option>
-        {/foreach}
-      </select>
+    <div class="wysiwyg_about_phpmanufaktur">
+      <p><strong>phpManufaktur</strong><br />
+      Ralf Hertsch<br />
+      Stockholmer Str. 31<br />
+      13359 Berlin</p>
+      <p><a href="https://phpManufaktur.de" target="_blank">https://phpManufaktur.de</a><br />
+        <a href="mailto:ralf.hertsch@phpManufaktur.de">ralf.hertsch@phpManufaktur.de</a><br />
+        phone +49 (0)30 68813647</p>
+      <p><strong>Support:</strong> <a href="https://phpmanufaktur.de/support" target="_blank">phpManufaktur Addons Support Group</a></p>
     </div>
-    <div class="wysiwyg_Control_author">{$author}</div>
   </div>
-  <div class="wysiwyg_editor_buttons">
-    <input type="submit" value="{translate('Save')}" />
-    <input type="button" value="{translate('Abort')}" onclick="javascript:window.location='index.php';" />
+  <div class="wysiwyg_about_notes">
+    {$release.notes}
   </div>
-</form>
+  <div class="wysiwyg_about_button">
+    <input type="button" value="{translate('OK')}" onclick="javascript:window.location='{$abort_location}';" />
+  </div> 
+</div>
