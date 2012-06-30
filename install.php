@@ -44,7 +44,6 @@ $SQL = "CREATE TABLE IF NOT EXISTS `".TABLE_PREFIX."mod_wysiwyg` ( ".
   "`page_id` INT(11) NOT NULL DEFAULT '0', ".
   "`content` LONGTEXT NOT NULL, ".
   "`text` LONGTEXT NOT NULL, ".
-  "`archive_id` INT(11) NOT NULL DEFAULT '-1', ".
   "PRIMARY KEY (`section_id`) ".
   ") ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
 

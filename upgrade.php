@@ -75,14 +75,6 @@ function rrmdir($dir) {
   }
 } //rrmdir()
 
-// exists the field 'archive_id' in the regular WYSIWYG table?
-if (!fieldExists('archive_id')) {
-  // add the field 'hash' to the table
-  $SQL = "ALTER TABLE `".TABLE_PREFIX."mod_wysiwyg` ADD `archive_id` INT(11) NOT NULL DEFAULT '-1' AFTER `text`";
-  if (!$database->query($SQL))
-    $admin->print_error($database->get_error());
-}
-
 // update the module name = extendedWYSIWYG
 $SQL = "UPDATE `".TABLE_PREFIX."addons` SET `name`='extendedWYSIWYG' WHERE `directory`='wysiwyg'";
 if (!$database->query($SQL))
