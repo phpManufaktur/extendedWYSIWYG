@@ -84,12 +84,14 @@ class extendedWYSIWYG {
   const ACTION_DELETE = 'del';
 
   const ANCHOR = 'wysiwyg_';
+  const PROTECTION_FOLDER = 'wysiwyg_archive';
 
   private static $error = '';
   private static $message = '';
 
   protected static $cfg_updateModifiedPage = true;
   protected static $cfg_archiveIdSelectLimit = 10;
+  protected static $cfg_createArchiveFiles = false;
   protected static $template_path = '';
   protected static $page_id = null;
   protected static $section_id = null;
@@ -98,6 +100,8 @@ class extendedWYSIWYG {
   protected static $save_url = '';
   protected static $page_tree_url = '';
   protected static $sections_url = '';
+  protected static $protection_path = '';
+  protected static $protection_url = '';
 
   protected $lang = null;
 
@@ -115,10 +119,13 @@ class extendedWYSIWYG {
     self::$save_url = ADMIN_URL.'/pages/save.php';
     self::$page_tree_url = ADMIN_URL.'/pages/index.php';
     self::$sections_url = ADMIN_URL.'/pages/sections.php';
+    self::$protection_path = LEPTON_PATH.MEDIA_DIRECTORY.'/'.self::PROTECTION_FOLDER;
+    self::$protection_url = LEPTON_URL.MEDIA_DIRECTORY.'/'.self::PROTECTION_FOLDER;
     // get settings
     $config = new manufakturConfig();
     self::$cfg_updateModifiedPage = $config->getValue('cfgUpdateModifiedPage', 'wysiwyg');
     self::$cfg_archiveIdSelectLimit = $config->getValue('cfgArchiveIdSelectLimit', 'wysiwyg');
+    self::$cfg_createArchiveFiles = $config->getValue('cfgCreateArchiveFiles', 'wysiwyg');
   } // __construct()
 
   /**
@@ -283,6 +290,9 @@ class extendedWYSIWYG {
       case self::ACTION_CONFIG:
         $result = $this->show(self::ACTION_CONFIG, $this->dlgConfig());
         break;
+      case self::ACTION_ABOUT:
+        $result = $this->show(self::ACTION_ABOUT, $this->dlgAbout());
+        break;
       default:
         $result = $this->show(self::ACTION_MODIFY, $this->dlgModify());
         break;
@@ -422,7 +432,17 @@ class extendedWYSIWYG {
                     self::REQUEST_CHANGE_SECTION => self::$section_id
                     )),
                 self::$section_anchor)
-            )
+            ),
+        'about' => array(
+            'link' => sprintf('%s?%s#%s',
+                self::$modify_url,
+                http_build_query(array(
+                    self::REQUEST_PAGE_ID => self::$page_id,
+                    self::REQUEST_ACTION => self::ACTION_ABOUT,
+                    self::REQUEST_CHANGE_SECTION => self::$section_id
+                )),
+                self::$section_anchor)
+        )
         );
     return $this->getTemplate('modify.lte', $data);
   } // dlgModify()
@@ -566,8 +586,8 @@ class extendedWYSIWYG {
       if ($publish) {
         // update the content of the WYSIWYG record
         $archive_id = mysql_insert_id();
-        $SQL = sprintf("UPDATE `%smod_wysiwyg` SET `content`='%s', `text`='%s', `archive_id`='%d' WHERE `section_id`='%d'",
-            TABLE_PREFIX, $content, strip_tags($content), $archive_id, self::$section_id);
+        $SQL = sprintf("UPDATE `%smod_wysiwyg` SET `content`='%s', `text`='%s' WHERE `section_id`='%d'",
+            TABLE_PREFIX, $content, strip_tags($content), self::$section_id);
         if (!$database->query($SQL)) {
           $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $database->get_error()));
           return $this->adminPrintError(self::$modify_url);
@@ -582,6 +602,10 @@ class extendedWYSIWYG {
           }
         }
       }
+      // create an extra archive file?
+      if (self::$cfg_createArchiveFiles && !$this->createArchiveFile($_REQUEST[self::REQUEST_ARCHIVE_ID])) {
+        return $this->adminPrintError(self::$modify_url);
+      }
       // all done, prompt success message
       $this->setMessage($this->lang->translate('The section <b>{{ section_id }}</b> was successfull saved.',
           array('section_id' => self::$section_id)));
@@ -593,47 +617,134 @@ class extendedWYSIWYG {
           array('section_id' => self::$section_id)));
       return $this->adminPrintSuccess(self::$modify_url);
     }
-
-// OLD FUNCTION
-
-    // get the old md5 hash
-    $old_hash = $database->get_one("SELECT `hash` FROM `".TABLE_PREFIX."mod_wysiwyg` WHERE `section_id`='".self::$section_id."'", MYSQL_ASSOC);
-
-    if ($new_hash != $old_hash) {
-      // save only if the hash has changed!
-      $text = strip_tags($_REQUEST['content'.self::$section_id]);
-      $SQL = sprintf("UPDATE `".TABLE_PREFIX."mod_wysiwyg` SET `content`='%s', `text`='%s', `hash`='%s' WHERE `section_id`='%d'",
-          $content, $text, $new_hash, self::$section_id);
-      if (!$database->query($SQL)) {
-        $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $database->get_error()));
-        return $this->adminPrintError(self::$modify_url);
-      }
-      if (self::$cfg_updateModifiedPage) {
-        // tell the PAGE record that it was updated
-        $SQL = sprintf("UPDATE `%spages` SET `modified_when`='%d', `modified_by`='%d' WHERE `page_id`='%d'",
-            TABLE_PREFIX, time(), $admin->get_user_id(), self::$page_id);
-        if (!$database->query($SQL)) {
-          $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $database->get_error()));
-          return $this->adminPrintError(self::$modify_url);
-        }
-      }
-      // all done, prompt success message
-      $this->setMessage($this->lang->translate('The section <b>{{ section_id }}</b> was successfull saved.',
-          array('section_id' => self::$section_id)));
-      return $this->adminPrintSuccess(self::$modify_url);
-    }
-    else {
-      // nothing to do...
-      $this->setMessage($this->lang->translate('The content of the section <b>{{ section_id }}</b> has not changed, so nothing was to save.',
-          array('section_id' => self::$section_id)));
-      return $this->adminPrintSuccess(self::$modify_url);
-    }
   } // saveSection()
 
-  protected function saveVersion() {
+  protected function createArchiveFile($archive_id) {
     global $database;
+    // check directory
+    if (!file_exists(self::$protection_path)) {
+      if (!mkdir(self::$protection_path, 0755)) {
+        $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__,
+            $this->lang->translate("Error: Can't create the directory <b>{{ directory }}</b>!",
+                array('directory', self::$protection_path))));
+        return false;
+      }
+    }
+    // check protection
+    if (!file_exists(self::$protection_path.'.htaccess')) {
+      if (!$this->createProtection()) return false;
+    }
+    // get the record for $archive_id
+    $SQL = sprintf("SELECT * FROM `%smod_wysiwyg_archive` WHERE `archive_id`='%d'",
+        TABLE_PREFIX, $archive_id);
+    if (false === ($query = $database->query($SQL))) {
+      $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $database->get_error()));
+      return false;
+    }
+    $archive = $query->fetchRow(MYSQL_ASSOC);
 
-  } // saveVersion()
+    // get the page link
+    $SQL = sprintf("SELECT `link` FROM `%spages` WHERE `page_id`='%d'", TABLE_PREFIX, $archive['page_id']);
+    $page_link = $database->get_one($SQL, MYSQL_ASSOC);
+
+    $time = strtotime($archive['timestamp']);
+    $directory_path = sprintf('%s%s/%s', self::$protection_path, $page_link, date('ymd-His'));
+    $directory_url = sprintf('%s%s/%s', self::$protection_url, $page_link, date('ymd-His'));
+    if (!file_exists($directory_path)) {
+      if (!mkdir($directory_path, 0755, true)) {
+        $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__,
+            $this->lang->translate("Error: Can't create the directory <b>{{ directory }}</b>!",
+                array('directory', $directory_path))));
+        return false;
+      }
+    }
+    $content = self::unsanitizeText($archive['content']);
+    preg_match_all('/src="[^"]+"/', $content, $matches);
+    foreach ($matches as $match) {
+      foreach ($match as $img) {
+        $old_url = substr($img, strlen('src="'), strlen($img)-(strlen('src="')+1));
+        if (strpos($old_url, LEPTON_URL.MEDIA_DIRECTORY) !== false) {
+          $dir = substr($old_url, strlen(LEPTON_URL.MEDIA_DIRECTORY));
+          $old_path = LEPTON_PATH.MEDIA_DIRECTORY.$dir;
+          $new_path = $directory_path.$dir;
+          $new_url = $directory_url.$dir;
+          if (!file_exists(dirname($new_path))) {
+            // create subdirectory
+            if (!mkdir(dirname($new_path), 0755, true)) {
+              $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__,
+                  $this->lang->translate("Error: Can't create the directory <b>{{ directory }}</b>!",
+                      array('directory', dirname($new_path)))));
+              return false;
+            }
+          }
+          // copy file from old source to the archive directory
+          if (!copy($old_path, $new_path)) {
+            $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__,
+                $this->lang->translate("Error: Can't copy the file <b>{{ source }}</b> to <b>{{ destination }}</b>!",
+                    array('source' => $old_path, 'destination' => $new_path))));
+            return false;
+          }
+          // update the content
+          $content = str_replace($old_url, $new_url, $content);
+        } // matches /MEDIA directory
+      }
+      // create the archive file
+      $data = array(
+          'title' => sprintf('extendedWYSIWYG Archive File - %s', date('Y-m-d H:i:s', $time)),
+          'content' => $content
+      );
+      $html = $this->getTemplate('archive_file.lte', $data);
+      if (!file_put_contents($directory_path.'/index.html', $html)) {
+        $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__,
+            $this->lang->translate("Error: Can't write the file <b>{{ file }}</b>!",
+                array('file' => $directory_path.'/index.html'))));
+        return false;
+      }
+      return true;
+    }
+  } // createArchiveFile()
+
+  /**
+   * Generate a random password of $length
+   *
+   * @param integer $length
+   * @return string password
+   */
+  protected static function generatePassword($length=12) {
+    $new_pass = '';
+    $salt = 'abcdefghjkmnpqrstuvwxyz123456789';
+    srand((double) microtime() * 1000000);
+    for ($i=0; $i < $length; $i++) {
+      $num = rand() % 33;
+      $tmp = substr($salt, $num, 1);
+      $new_pass = $new_pass . $tmp;
+    }
+    return $new_pass;
+  } // generatePassword()
+
+  /**
+   * Create a .htacces and a .htpasswd file for the protected directory of
+   * extendedWYSIWYG for archived files
+   *
+   * @return boolean
+   */
+  protected function createProtection() {
+    $data = sprintf("# .htaccess generated by extendedWYSIWYG\nAuthUserFile %s\nAuthGroupFile /dev/null"."\nAuthName \"extendedWYSIWYG - Protected Media Directory\"\nAuthType Basic\n<Limit GET>\n"."require valid-user\n</Limit>",
+        self::$protection_path.'.htpasswd');
+    if (false === file_put_contents(self::$protection_path.'.htaccess', $data)) {
+      $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__,
+          $this->lang->translate("Error: Can't create the <b>{{ file }}</b> file for the protected WYSIWYG folder!", array('file' => '.htaccess'))));
+      return false;
+    }
+    $data = sprintf("# .htpasswd generated by extendedWYSIWYG\nwysiwyg_protector:%s", crypt(self::generatePassword()));
+    if (false === file_put_contents(self::$protection_path.'.htpasswd', $data)) {
+      $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__,
+          $this->lang->translate("Error: Can't create the <b>{{ file }}</b> file for the protected WYSIWYG folder!", array('file' => '.htpasswd'))));
+      return false;
+    }
+    return true;
+  } // createProtection()
+
 
   /**
    * Select the HTML content for the SECTION_ID and return it
@@ -700,5 +811,26 @@ class extendedWYSIWYG {
     $dialog = new manufakturConfigDialog('wysiwyg', 'extendedWYSIWYG', $link, $abort);
     return $dialog->action();
   } // dlgConfig()
+
+  protected function dlgAbout() {
+    $notes = file_get_contents(LEPTON_PATH . '/modules/' . basename(dirname(__FILE__)) . '/CHANGELOG');
+    if (file_exists(LEPTON_PATH.'/modules/lib_markdown/standard/markdown.php')) {
+      require_once LEPTON_PATH.'/modules/lib_markdown/standard/markdown.php';
+      $notes = Markdown($notes);
+    }
+    $data = array(
+        'logo_src' => LEPTON_URL.'/modules/wysiwyg/images/extendedwysiwyg_250x167.jpg',
+        'release' => array(
+            'number' => $this->getVersion(),
+            'notes' => $notes
+            ),
+        'abort_location' => sprintf('%s?%s#%s',
+            self::$modify_url,
+            http_build_query(array(
+                self::REQUEST_PAGE_ID => self::$page_id)),
+            self::$section_anchor)
+        );
+    return $this->getTemplate('about.lte', $data);
+  } // dlgAbout()
 
 } // class extendedWYSIWYG
