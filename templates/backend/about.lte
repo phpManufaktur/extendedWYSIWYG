@@ -1,0 +1,43 @@
+{* 
+ * extendedWYSIWYG
+ *
+ * @author Ralf Hertsch <ralf.hertsch@phpmanufaktur.de>
+ * @link https://addons.phpmanufaktur.de/extendedWYSIWYG
+ * @copyright 2012 phpManufaktur by Ralf Hertsch
+ * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
+ *
+ * Please consult the Dwoo Documentation & WIKI to get further informations 
+ * and hints for the usage of the Dwoo template engine.
+ *
+ * @link http://wiki.dwoo.org/
+ *
+ * Use {dump()} to get a list of all in this template available variables!
+ *}
+<form name="wysiwyg{$section_id}" action="{$action.link}#{$action['anchor']}" method="post">
+  <input type="hidden" name="page_id" value="{$page_id}" />
+  <input type="hidden" name="section_id" value="{$section_id}" />
+  <input type="hidden" name="archive_id" value="{$archive['id']}" /> 
+  <div class="wysiwyg_system">
+    [<a href="{$about.link}">extendedWYSIWYG</a>] [<a href="{$config.link}">{translate('Settings')}</a>]
+  </div>
+  <div class="wysiwyg_editor">
+    {show_wysiwyg_editor($content['id'], $content['id'], $content['content'],'100%','250px')}
+  </div>
+  <div class="wysiwyg_control">
+    <div class="wysiwyg_control_publish">
+      <input type="checkbox" name="publish" value="1"{if $publish == 1} checked="checked"{/if} /><label for="publish">{translate('publish')}</label>
+    </div>
+    <div class="wysiwyg_control_archiv_id">
+      <select id="{$archive.name}" name="{$archive.name}" onchange="javascript:execOnChange('{$archive.link}','{$archive.name}','{$archive.anchor}');">
+        {foreach $archive.items item}
+        <option value="{$item.value}"{if $item.value == $archive.id} selected="selected"{/if}>{$item.text}</option>
+        {/foreach}
+      </select>
+    </div>
+    <div class="wysiwyg_Control_author">{$author}</div>
+  </div>
+  <div class="wysiwyg_editor_buttons">
+    <input type="submit" value="{translate('Save')}" />
+    <input type="button" value="{translate('Abort')}" onclick="javascript:window.location='index.php';" />
+  </div>
+</form>
