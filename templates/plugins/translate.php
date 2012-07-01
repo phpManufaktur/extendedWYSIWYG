@@ -34,7 +34,7 @@ if (!defined('LEPTON_PATH'))
 
 // use LEPTON 2.x I18n for access to language files
 if (!class_exists('LEPTON_Helper_I18n'))
-  require_once LEPTON_PATH.'/modules/wysiwyg/framework/LEPTON/Helper/I18n.php';
+  require_once LEPTON_PATH.'/modules/manufaktur_config/framework/LEPTON/Helper/I18n.php';
 
 global $I18n;
 if (!is_object($I18n)) {

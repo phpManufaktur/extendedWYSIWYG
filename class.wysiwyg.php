@@ -42,8 +42,10 @@ if (!class_exists('LEPTON_Helper_I18n'))
 global $I18n;
 if (!is_object($I18n))
   $I18n = new LEPTON_Helper_I18n();
-else
-  $I18n->addFile('DE.php', LEPTON_PATH.'/modules/'.basename(dirname(__FILE__)).'/languages/');
+
+if (file_exists(LEPTON_PATH.'/modules/'.basename(dirname(__FILE__)).'/languages/'.LANGUAGE.'.php')) {
+  $I18n->addFile(LANGUAGE.'.php', LEPTON_PATH.'/modules/'.basename(dirname(__FILE__)).'/languages/');
+}
 
 if (!class_exists('Dwoo'))
   require_once LEPTON_PATH.'/modules/dwoo/include.php';
