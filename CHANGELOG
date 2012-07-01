@@ -1,5 +1,15 @@
 ### extendedWYSIWYG
 
+2012 phpManufaktur by Ralf Hertsch
+MIT License (MIT) http://www.opensource.org/licenses/MIT
+https://addons.phpmanufaktur.de/extendedWYSIWYG
+
+
+Release 10.11 - 2012-07-01
+
+* changed the embedding of I18n support
+* completed README.md
+* added wb_2.8.1_wysiwyg.zip for restore
 
 Release 10.10 - 2012-06-30
 
