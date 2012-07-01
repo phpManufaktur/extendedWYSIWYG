@@ -24,7 +24,6 @@
         <label>Create Archive Files</label>
         <hint>If activated extendedWYSIWYG will create a protected directory in the /MEDIA path and create a HTML page of each content that get the status BACKUP. The embedded images will be also saved.</hint>
       </dialog>
-    </setting>
-    
+    </setting>    
   </module>
 </xmcfg>
