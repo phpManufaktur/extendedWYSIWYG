@@ -17,6 +17,9 @@
   <input type="hidden" name="page_id" value="{$page_id}" />
   <input type="hidden" name="section_id" value="{$section_id}" />
   <input type="hidden" name="archive_id" value="{$archive['id']}" /> 
+  {if $ftan.active == 1}
+  <input type="hidden" name="{$ftan.name}" value="{$ftan.value}" />
+  {/if}
   <div class="wysiwyg_system">
     [<a href="{$about.link}">extendedWYSIWYG</a>] [<a href="{$config.link}">{translate('Settings')}</a>]
   </div>

@@ -5,6 +5,10 @@ MIT License (MIT) http://www.opensource.org/licenses/MIT
 https://addons.phpmanufaktur.de/extendedWYSIWYG
 
 
+Release 10.12 - 2012-07-02
+
+* WB 2.8.1 needs an additional preprocess to replace [wblinks] to real links
+
 Release 10.11 - 2012-07-01
 
 * changed the embedding of I18n support

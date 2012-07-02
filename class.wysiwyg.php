@@ -400,12 +400,25 @@ class extendedWYSIWYG {
     }
 
     $leptoken = (defined('LEPTON_VERSION') && isset($_GET['leptoken'])) ? sprintf('&leptoken=%s', $_GET['leptoken']) : '';
+    if (method_exists($admin, 'getFTAN')) {
+      $ftan = $admin->getFTAN(false);
+      list($ftan_name, $ftan_value) = explode('=', $ftan);
+    }
+    else {
+      $ftan_name = 'ftan_name';
+      $ftan_value = 'ftan_value';
+    }
     $data = array(
         'section_id' => self::$section_id,
         'page_id' => self::$page_id,
         'action' => array(
             'link' => self::$save_url,
             'anchor' => self::$section_anchor
+            ),
+        'ftan' => array(
+            'active' => method_exists($admin, 'getFTAN') ? 1 : 0,
+            'name' => $ftan_name,
+            'value' => $ftan_value
             ),
         'content' => array(
             'content' => $content,
@@ -527,12 +540,16 @@ class extendedWYSIWYG {
     global $database;
     global $admin;
 
+    $modify_url = sprintf('%s?page_id=%d%s',
+        self::$modify_url,
+        self::$page_id,
+        (defined('LEPTON_VERSION') && isset($_GET['leptoken'])) ? sprintf('&leptoken=%s', $_GET['leptoken']) : '');
     if (!isset($_REQUEST['content'.self::$section_id])) {
       // upps, missing content!
       $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__,
           $this->lang->translate('Error: Missing the WYSIWYG content for section <b>{{ section_id }}</b>!',
               array('section_id' => self::$section_id))));
-      return $this->adminPrintError(self::$modify_url);
+      return $this->adminPrintError($modify_url);
     }
 
     if (!isset($_REQUEST[self::REQUEST_ARCHIVE_ID])) {
@@ -540,7 +557,7 @@ class extendedWYSIWYG {
       $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__,
           $this->lang->translate('Error: Missing the ARCHIVE_ID for section <b>{{ section_id }}</b>!',
               array('section_id' => self::$section_id))));
-      return $this->adminPrintError(self::$modify_url);
+      return $this->adminPrintError($modify_url);
     }
 
     // get the content and sanitize it
@@ -553,13 +570,13 @@ class extendedWYSIWYG {
         TABLE_PREFIX, $_REQUEST[self::REQUEST_ARCHIVE_ID]);
     if (false === ($query = $database->query($SQL))) {
       $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $database->get_error()));
-      return $this->adminPrintError(self::$modify_url);
+      return $this->adminPrintError($modify_url);
     }
     if ($query->numRows() < 1) {
       $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__,
           $this->lang->translate('Error: The ARCHIVE_ID <b>{{ archive_id }}</b> does not exists!',
               array('archive_id' => $_REQUEST[self::REQUEST_ARCHIVE_ID]))));
-      return $this->adminPrintError(self::$modify_url);
+      return $this->adminPrintError($modify_url);
     }
     $old_archive = $query->fetchRow(MYSQL_ASSOC);
 
@@ -572,7 +589,7 @@ class extendedWYSIWYG {
             TABLE_PREFIX, self::$section_id);
         if (!$database->query($SQL)) {
           $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $database->get_error()));
-          return $this->adminPrintError(self::$modify_url);
+          return $this->adminPrintError($modify_url);
         }
       }
       // insert a new record to ARCHIVE
@@ -583,7 +600,7 @@ class extendedWYSIWYG {
           $admin->get_display_name(), ($publish) ? 'ACTIVE' : 'UNPUBLISHED');
       if (!$database->query($SQL)) {
         $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $database->get_error()));
-        return $this->adminPrintError(self::$modify_url);
+        return $this->adminPrintError($modify_url);
       }
       if ($publish) {
         // update the content of the WYSIWYG record
@@ -592,7 +609,7 @@ class extendedWYSIWYG {
             TABLE_PREFIX, $content, strip_tags($content), self::$section_id);
         if (!$database->query($SQL)) {
           $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $database->get_error()));
-          return $this->adminPrintError(self::$modify_url);
+          return $this->adminPrintError($modify_url);
         }
         if (self::$cfg_updateModifiedPage) {
           // tell the PAGE record that it was updated
@@ -600,24 +617,24 @@ class extendedWYSIWYG {
               TABLE_PREFIX, time(), $admin->get_user_id(), self::$page_id);
           if (!$database->query($SQL)) {
             $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $database->get_error()));
-            return $this->adminPrintError(self::$modify_url);
+            return $this->adminPrintError($modify_url);
           }
         }
       }
       // create an extra archive file?
       if (self::$cfg_createArchiveFiles && !$this->createArchiveFile($_REQUEST[self::REQUEST_ARCHIVE_ID])) {
-        return $this->adminPrintError(self::$modify_url);
+        return $this->adminPrintError($modify_url);
       }
       // all done, prompt success message
       $this->setMessage($this->lang->translate('The section <b>{{ section_id }}</b> was successfull saved.',
           array('section_id' => self::$section_id)));
-      return $this->adminPrintSuccess(self::$modify_url);
+      return $this->adminPrintSuccess($modify_url);
     }
     else {
       // nothing to do !!!
       $this->setMessage($this->lang->translate('The content of the section <b>{{ section_id }}</b> has not changed, so nothing was to save.',
           array('section_id' => self::$section_id)));
-      return $this->adminPrintSuccess(self::$modify_url);
+      return $this->adminPrintSuccess($modify_url);
     }
   } // saveSection()
 
@@ -768,6 +785,13 @@ class extendedWYSIWYG {
         TABLE_PREFIX, $section_id);
     if (null === ($content = $database->get_one($SQL, MYSQL_ASSOC))) {
       return sprintf('[%s - %s] %s', __FILE__, __LINE__, $database->get_error());
+    }
+    if (!defined('LEPTON_VERSION') && (WB_VERSION == '2.8.1')) {
+      global $wb;
+      $content = self::unsanitizeText($content);
+      // WB 2.8.1 needs an additional preprocess to replace the [wblinks] with real links
+      $wb->preprocess($content);
+      return $content;
     }
     // important: unsanitize!
     return self::unsanitizeText($content);
