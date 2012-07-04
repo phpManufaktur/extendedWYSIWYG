@@ -1,9 +1,12 @@
 ### extendedWYSIWYG
 
-2012 phpManufaktur by Ralf Hertsch
-MIT License (MIT) http://www.opensource.org/licenses/MIT
+2012 phpManufaktur by Ralf Hertsch  
+MIT License (MIT) http://www.opensource.org/licenses/MIT  
 https://addons.phpmanufaktur.de/extendedWYSIWYG
 
+Release 10.13 - 2012-07-04
+
+* fixed a problem with LepTokens (LEPTON 1.x)
 
 Release 10.12 - 2012-07-02
 
