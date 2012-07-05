@@ -7,11 +7,13 @@ _extendedWYSIWYG_ is an replacement for the standard WYSIWYG module of the Conte
 * minimum PHP 5.2.x
 * using [WebsiteBaker] [1] 2.8.x _or_ using [LEPTON CMS] [2] 1.x
 * [Dwoo Template Engine] [6] installed
+* [manufakturConfig] [10]
 * [libMarkdown] [7] (_optional_)
 
 #### Downloads
 
 * [Dwoo Template Engine] [8]
+* [manufakturConfig] [11]
 * [libMarkdown] [9]
 * [extendedWYSIWYG] [3]
 
@@ -58,6 +60,8 @@ Please visit the [phpManufaktur] [5] to get more informations about **extendedWY
 [7]: https://addons.phpmanufaktur.de/libMarkdown "Read more about libMarkdown"
 [8]: https://addons.phpmanufaktur.de/download.php?file=Dwoo "Download Dwoo"
 [9]: https://addons.phpmanufaktur.de/download.php?file=libMarkdown "Download libMarkdown"
+[10]: https://addons.phpmanufaktur.de/manufakturConfig "Read more about manufakturConfig"
+[11]: https://addons.phpmanufaktur.de/download.php?file=manufakturConfig "Download manufakturConfig"
 
 [20]: https://media.phpmanufaktur.de/content/addons/readme/extendedwysiwyg/add-page.png
 [21]: https://media.phpmanufaktur.de/content/addons/readme/extendedwysiwyg/action-bar.png

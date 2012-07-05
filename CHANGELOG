@@ -4,6 +4,10 @@
 MIT License (MIT) http://www.opensource.org/licenses/MIT  
 https://addons.phpmanufaktur.de/extendedWYSIWYG
 
+Release 10.14
+
+* completed README.md
+
 Release 10.13 - 2012-07-04
 
 * fixed a problem with LepTokens (LEPTON 1.x)
