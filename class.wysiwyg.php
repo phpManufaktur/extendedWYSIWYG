@@ -375,7 +375,7 @@ class extendedWYSIWYG {
       $author = $admin->get_display_name();
       $SQL = sprintf("INSERT INTO `%smod_wysiwyg_archive` (`section_id`,`page_id`,`content`,`hash`,`remark`,`author`,`status`)".
           " VALUES ('%d','%d','%s','%s','SYSTEM','%s','ACTIVE')",
-          TABLE_PREFIX, self::$section_id, self::$page_id, $content, md5($content), $author);
+          TABLE_PREFIX, self::$section_id, self::$page_id, self::sanitizeVariable($content), md5($content), $author);
       if (!$database->query($SQL)) {
         $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $database->get_error()));
         return false;
