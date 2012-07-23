@@ -59,9 +59,6 @@ if (!is_object($parser)) {
   if (!file_exists($compiled_path)) mkdir($compiled_path, 0755, true);
   $parser = new Dwoo($compiled_path, $cache_path);
 }
-// load extensions for the template engine
-$loader = $parser->getLoader();
-$loader->addDirectory(LEPTON_PATH.'/modules/'.basename(dirname(__FILE__)).'/templates/plugins/');
 
 
 global $id_list;
