@@ -4,6 +4,10 @@
 MIT License (MIT) http://www.opensource.org/licenses/MIT  
 https://addons.phpmanufaktur.de/extendedWYSIWYG
 
+Release 10.15 - NOT PUBLISHED
+
+* extended search function (plain text, support for dbGlossary)
+
 Release 10.14 -2012-07-20
 
 * completed README.md

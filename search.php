@@ -47,6 +47,11 @@ function wysiwyg_search($search) {
       TABLE_PREFIX, $search['section_id']);
   $content = $database->get_one($SQL, MYSQL_ASSOC);
   if (!empty($content)) {
+    $content = extendedWYSIWYG::unsanitizeText($content);
+    // remove HTML
+    $content = strip_tags($content);
+    // remove dbGlossary tags
+    $content = str_replace('||', '', $content);
     $result = array(
         'page_link' => $search['page_link'],
         'page_link_target' => SEC_ANCHOR.$search['section_id'],
@@ -54,7 +59,7 @@ function wysiwyg_search($search) {
         'page_description' => $search['page_description'],
         'page_modified_when' => $search['page_modified_when'],
         'page_modified_by' => $search['page_modified_by'],
-        'text' => extendedWYSIWYG::unsanitizeText($content).'.',
+        'text' => $content.'.',
         'max_exerpt_num' => $search['default_max_excerpt']
         );
     if (print_excerpt2($result, $search))
