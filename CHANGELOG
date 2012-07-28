@@ -4,9 +4,12 @@
 MIT License (MIT) http://www.opensource.org/licenses/MIT  
 https://addons.phpmanufaktur.de/extendedWYSIWYG
 
-Release 10.15 - NOT PUBLISHED
+Release 10.15 - 2012-07-28
 
 * extended search function (plain text, support for dbGlossary)
+* fixed: extendedWYSIWYG does not insert proper plain text in the WYSIWYG table
+* added the command CMD:STRIPTAGS - placed at the start of the WYSIWYG text this
+  command will remove all HTML tags in the WYSIWYG field and return plain text
 
 Release 10.14 -2012-07-20
 

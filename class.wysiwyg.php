@@ -85,6 +85,8 @@ class extendedWYSIWYG {
   const ANCHOR = 'wysiwyg_';
   const PROTECTION_FOLDER = 'wysiwyg_archive';
 
+  const CMD_STRIPTAGS = 'CMD:STRIPTAGS';
+
   private static $error = '';
   private static $message = '';
 
@@ -558,7 +560,11 @@ class extendedWYSIWYG {
     }
 
     // get the content and sanitize it
-    $content = self::sanitizeVariable($_REQUEST['content'.self::$section_id]);
+    $content = $_REQUEST['content'.self::$section_id];
+    // create the text version of the content
+    $text = trim(strip_tags($content));
+    // now we can sanitize the HTML ...
+    $content = self::sanitizeVariable($content);
     // get the md5 hash of the content
     $new_hash = md5($content);
 
@@ -602,8 +608,16 @@ class extendedWYSIWYG {
       if ($publish) {
         // update the content of the WYSIWYG record
         $archive_id = mysql_insert_id();
+        // check if there is a command to process!
+        if (false !== stripos($text, self::CMD_STRIPTAGS)) {
+          // ok - we have to remove all tags from the WYSIWYG content!
+          // first we remove the command...
+          $text = str_ireplace(self::CMD_STRIPTAGS, '', $text);
+          // then change the $content to $text
+          $content = $text;
+        }
         $SQL = sprintf("UPDATE `%smod_wysiwyg` SET `content`='%s', `text`='%s' WHERE `section_id`='%d'",
-            TABLE_PREFIX, $content, strip_tags($content), self::$section_id);
+            TABLE_PREFIX, $content, $text, self::$section_id);
         if (!$database->query($SQL)) {
           $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $database->get_error()));
           return $this->adminPrintError(self::$modify_url);
