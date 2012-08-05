@@ -39,6 +39,8 @@ if ('á' != "\xc3\xa1") {
 $LANG = array(
     'A change of a WYSIWYG section will update the last modified field of the page (recommend!)'
       => 'Die Änderung eines WYSIWYG Abschnitt löst die Aktualisierung des "zuletzt geändert" Feldes der Seite aus (empfohlen!)',
+    'Chars'
+      => 'Zeichen',
     'Create Archive Files'
       => 'Archivdateien anlegen',
     'Error executing the template <b>{{ template }}</b>: {{ error }}'
@@ -72,5 +74,7 @@ $LANG = array(
     'The section <b>{{ section_id }}</b> was successfull saved.'
       => 'Die Section <b>{{ section_id }}</b> wurde erfolgreich gespeichert.',
     'Update page information'
-      => 'Seiten aktualisieren'
+      => 'Seiten aktualisieren',
+    'Words'
+      => 'Wörter'
 );

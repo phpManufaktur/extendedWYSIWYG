@@ -4,6 +4,10 @@
 MIT License (MIT) http://www.opensource.org/licenses/MIT  
 https://addons.phpmanufaktur.de/extendedWYSIWYG
 
+Release 10.16 - NOT PUBLISHED
+
+* added counting of characters and words
+
 Release 10.15 - 2012-07-28
 
 * extended search function (plain text, support for dbGlossary)

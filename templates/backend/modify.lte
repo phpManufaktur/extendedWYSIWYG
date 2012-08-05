@@ -37,7 +37,10 @@
         {/foreach}
       </select>
     </div>
-    <div class="wysiwyg_Control_author">{$author}</div>
+    <div class="wysiwyg_control_author">{$author}</div>
+    <div class="wysiwyg_control_counter">
+      {$count.chars} {translate('Chars')} - {$count.words} {translate('Words')}
+    </div>
   </div>
   <div class="wysiwyg_editor_buttons">
     <input type="submit" value="{translate('Save')}" />

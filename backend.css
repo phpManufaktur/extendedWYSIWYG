@@ -84,6 +84,17 @@
   float: left;
   width: 250px;
 }
+.wysiwyg_control_author {
+  float: left;
+  width: 200px;
+}
+.wysiwyg_control_counter {
+  float: right;
+  width: 200px;
+  text-align: right;
+  color: #333;
+  background-color: transparent;
+}
 .wysiwyg_system {
   margin: 0;
   padding: 0 0 5px 0;

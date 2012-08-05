@@ -319,6 +319,33 @@ class extendedWYSIWYG {
   } // show()
 
   /**
+   * Count words as proposed from stano110@azet.sk at
+   * http://de2.php.net/manual/de/function.str-word-count.php
+   * and works well with UTF-8
+   *
+   * @param string $string
+   * @return number
+   */
+  protected static function count_words($string)  {
+    $string = htmlspecialchars_decode(strip_tags($string));
+    if (strlen($string)==0)
+      return 0;
+    // separators
+    $t = array(' '=>1, '_'=>1, "\x20"=>1, "\xA0"=>1, "\x0A"=>1, "\x0D"=>1, "\x09"=>1,
+        "\x0B"=>1, "\x2E"=>1, "\t"=>1, '='=>1, '+'=>1, '-'=>1, '*'=>1, '/'=>1, '\\'=>1,
+        ','=>1, '.'=>1, ';'=>1, ':'=>1, '"'=>1, '\''=>1, '['=>1, ']'=>1, '{'=>1, '}'=>1,
+        '('=>1, ')'=>1, '<'=>1, '>'=>1, '&'=>1, '%'=>1, '$'=>1, '@'=>1, '#'=>1, '^'=>1,
+        '!'=>1, '?'=>1);
+    $count= isset($t[$string[0]]) ? 0:1;
+    if (strlen($string) == 1)
+      return $count;
+    for ($i=1; $i<strlen($string); $i++)
+      // if a new word start count
+      if (isset($t[$string[$i-1]]) && !isset($t[$string[$i]])) $count++;
+    return $count;
+  } // count_words()
+
+  /**
    * Return the complete WYSIWYG modify dialog
    *
    * @return boolean|Ambigous <boolean, Ambigous, string, mixed>
@@ -437,6 +464,10 @@ class extendedWYSIWYG {
             'anchor' => self::$section_anchor),
         'publish' => $publish,
         'author' => $author,
+        'count' => array(
+            'words' => self::count_words($content),
+            'chars' => strlen(strip_tags($content))
+            ),
         'config' => array(
             'link' => sprintf('%s?%s#%s',
                 self::$modify_url,
