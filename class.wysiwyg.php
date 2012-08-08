@@ -425,6 +425,35 @@ class extendedWYSIWYG {
           );
     }
 
+    // page settings - get the section position
+    $SQL = "SELECT `position` FROM `".TABLE_PREFIX."sections` WHERE `module`='wysiwyg' AND `page_id`='".self::$page_id."' AND `section_id`='".self::$section_id."'";
+    if (null == ($position = $database->get_one($SQL, MYSQL_ASSOC))) {
+      $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $database->get_error()));
+      return false;
+    }
+    $page = array(
+        'page_title' => '',
+        'description' => '',
+        'keywords' => ''
+        );
+    // show page settings ?
+    $SQL = "SELECT `page_settings` FROM `".TABLE_PREFIX."mod_wysiwyg_extension` WHERE `page_id`='".self::$page_id."' AND `section_id`='".self::$section_id."'";
+    $page_settings = $database->get_one($SQL, MYSQL_ASSOC);
+    if ($database->is_error()) {
+      $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $database->get_error()));
+      return false;
+    }
+    if ($page_settings == 'SHOW') {
+      // get the page settings
+      $SQL = "SELECT `page_title`, `description`, `keywords` FROM `".TABLE_PREFIX."pages` WHERE `page_id`='".self::$page_id."'";
+      $query = $database->query($SQL);
+      if ($database->is_error()) {
+        $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $database->get_error()));
+        return false;
+      }
+      $page = $query->fetchRow(MYSQL_ASSOC);
+    }
+
     $leptoken = (defined('LEPTON_VERSION') && isset($_GET['leptoken'])) ? sprintf('&leptoken=%s', $_GET['leptoken']) : '';
     if (method_exists($admin, 'getFTAN')) {
       $ftan = $admin->getFTAN(false);
@@ -467,6 +496,20 @@ class extendedWYSIWYG {
         'count' => array(
             'words' => self::count_words($content),
             'chars' => strlen(strip_tags($content))
+            ),
+        'options' => array(
+            'page_settings' => array(
+                'active' => ($position == 1) ? 1 : 0,
+                'checkbox' => array(
+                    'name' => 'page_settings',
+                    'value' => ($page_settings == 'SHOW') ? 1 : 0
+                    ),
+                'fields' => array(
+                    'title' => $page['page_title'],
+                    'description' => $page['description'],
+                    'keywords' => $page['keywords']
+                    )
+                )
             ),
         'config' => array(
             'link' => sprintf('%s?%s#%s',
@@ -588,6 +631,66 @@ class extendedWYSIWYG {
           $this->lang->translate('Error: Missing the ARCHIVE_ID for section <b>{{ section_id }}</b>!',
               array('section_id' => self::$section_id))));
       return $this->adminPrintError(self::$modify_url);
+    }
+
+    // check if an extension record exists for this page
+    $SQL = "SELECT * FROM `".TABLE_PREFIX."mod_wysiwyg_extension` WHERE `page_id`='".self::$page_id."' AND `section_id`='".self::$section_id."'";
+    $query = $database->query($SQL);
+    if ($database->is_error()) {
+      $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $database->get_error()));
+      return $this->adminPrintError(self::$modify_url);
+    }
+    if ($query->numRows() < 1) {
+      // insert an extension record
+      $SQL = "INSERT INTO `".TABLE_PREFIX."mod_wysiwyg_extension` (`section_id`, `page_id`) VALUES ('".self::$section_id."','".self::$page_id."')";
+      if (!$database->query($SQL)) {
+        $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $database->get_error()));
+        return $this->adminPrintError(self::$modify_url);
+      }
+    }
+    if (isset($_REQUEST['page_settings'])) {
+      // we have to process the page settings
+      $SQL = "UPDATE `".TABLE_PREFIX."mod_wysiwyg_extension` SET `page_settings`='SHOW' WHERE `section_id`='".self::$section_id."'";
+      if (!$database->query($SQL)) {
+        $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $database->get_error()));
+        return $this->adminPrintError(self::$modify_url);
+      }
+      // it's possible that the page settings are not shown yet...
+      if (isset($_REQUEST['page_title']) && isset($_REQUEST['page_description']) && isset($_REQUEST['page_keywords'])) {
+        $SQL = "SELECT `page_title`, `description`, `keywords` FROM `".TABLE_PREFIX."pages` WHERE `page_id`='".self::$page_id."'";
+        $query = $database->query($SQL);
+        if ($database->is_error()) {
+          $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $database->get_error()));
+          return $this->adminPrintError(self::$modify_url);
+        }
+        $page = $query->fetchRow(MYSQL_ASSOC);
+        $page_title = self::sanitizeVariable($_REQUEST['page_title']);
+        $page_description = self::sanitizeVariable($_REQUEST['page_description']);
+        $keywords = explode(',', $_REQUEST['page_keywords']);
+        $new_keywords = array();
+        foreach ($keywords as $keyword) {
+          $kw = trim($keyword);
+          $kw = str_replace('  ', ' ', $kw);
+          if (!empty($kw)) $new_keywords[] = $kw;
+        }
+        $page_keywords = implode(',', $new_keywords);
+        $page_keywords = self::sanitizeVariable($page_keywords);
+        if (($page['page_title'] != $page_title) || ($page['description'] != $page_description) || ($page['keywords'] != $page_keywords)) {
+          $SQL = "UPDATE `".TABLE_PREFIX."pages` SET `page_title`='$page_title', `description`='$page_description', `keywords`='$page_keywords' WHERE `page_id`='".self::$page_id."'";
+          if (!$database->query($SQL)) {
+            $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $database->get_error()));
+            return $this->adminPrintError(self::$modify_url);
+          }
+        }
+      }
+    }
+    else {
+      // dont process the page settings
+      $SQL = "UPDATE `".TABLE_PREFIX."mod_wysiwyg_extension` SET `page_settings`='HIDE' WHERE `section_id`='".self::$section_id."'";
+      if (!$database->query($SQL)) {
+        $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $database->get_error()));
+        return $this->adminPrintError(self::$modify_url);
+      }
     }
 
     // get the content and sanitize it

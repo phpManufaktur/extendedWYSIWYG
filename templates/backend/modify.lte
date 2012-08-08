@@ -21,8 +21,35 @@
   <input type="hidden" name="{$ftan.name}" value="{$ftan.value}" />
   {/if}
   <div class="wysiwyg_system">
+    <div class="wysiwyg_options">
+      {if $options.page_settings.active == 1}
+      <input type="checkbox" name="{$options.page_settings.checkbox.name}" value="1"{if $options.page_settings.checkbox.value == 1} checked="checked"{/if} /> {translate('Show Page Settings')}
+      {/if}
+    </div>
     [<a href="{$about.link}">extendedWYSIWYG</a>] [<a href="{$config.link}">{translate('Settings')}</a>]
   </div>
+  {if $options.page_settings.checkbox.value == 1}
+  <div class="wysiwyg_page_settings">
+    <div class="wysiwyg_page_settings_item">
+      <div class="wysiwyg_page_settings_label">{translate('Page Title')}</div>
+      <div class="wysiwyg_page_settings_value">
+        <input type="text" name="page_title" value="{$options.page_settings.fields.title}" />
+      </div>
+    </div>
+    <div class="wysiwyg_page_settings_item">
+      <div class="wysiwyg_page_settings_label">{translate('Page Description')}</div>
+      <div class="wysiwyg_page_settings_value">
+        <textarea name="page_description">{$options.page_settings.fields.description}</textarea>
+      </div>
+    </div>
+    <div class="wysiwyg_page_settings_item">
+      <div class="wysiwyg_page_settings_label">{translate('Page Keywords')}</div>
+      <div class="wysiwyg_page_settings_value">
+        <input type="text" name="page_keywords" value="{$options.page_settings.fields.keywords}" />
+      </div>
+    </div>
+  </div>
+  {/if}
   <div class="wysiwyg_editor">
     {show_wysiwyg_editor($content['id'], $content['id'], $content['content'],'100%','250px')}
   </div>
