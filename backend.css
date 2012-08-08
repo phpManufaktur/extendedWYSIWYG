@@ -52,6 +52,7 @@
   margin: 20px 0 0 0;
 }
 .wysiwyg_editor {
+  clear: both;
   margin: 0;
   padding: 0;
 }
@@ -75,6 +76,8 @@
 .wysiwyg_control_publish {
   float: left;
   width: 164px;
+  margin: 0;
+  padding: 0 0 5px 0;
 }
 .wysiwyg_control_publish input,
 .wysiwyg_control_publish label {
@@ -96,8 +99,9 @@
   background-color: transparent;
 }
 .wysiwyg_system {
-  margin: 0;
-  padding: 0 0 5px 0;
+  width: 100%;
+  margin: 0 0 5px 0;
+  padding: 0;
   text-align: right;
   font-size: 9px;
 }
@@ -112,6 +116,11 @@
   text-decoration: none;
   color: #da251d;
   background-color: transparent;
+}
+.wysiwyg_options {
+  float: left;
+  margin: 0;
+  padding: 0 0 5px 0;
 }
 #wysiwyg_about {
   margin: 0;
@@ -160,4 +169,24 @@
   padding: 0 0 0 300px;
   text-align: left;
   overflow-y: scroll;
+}
+.wysiwyg_page_settings {
+  clear: both;
+  margin: 0;
+  padding: 0 0 5px 0;
+}
+.wysiwyg_page_settings_item {
+  clear: both;
+}
+.wysiwyg_page_settings_label {
+  float: left;
+  width: 120px;
+}
+.wysiwyg_page_settings_value {
+  float: left;
+  width: 750px;
+  padding: 0 0 3px 0;
+}
+.wysiwyg_page_settings_value textarea {
+  height: 30px;
 }
