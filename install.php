@@ -38,7 +38,7 @@ if (!defined('LEPTON_PATH'))
 if (defined('LEPTON_VERSION'))
   $database->prompt_on_error(false);
 
-// create the regular WYSIWYG table, add the fields 'hash' and 'timestamp'
+// create the regular WYSIWYG table without any changes
 $SQL = "CREATE TABLE IF NOT EXISTS `".TABLE_PREFIX."mod_wysiwyg` ( ".
   "`section_id` INT(11) NOT NULL DEFAULT '0', ".
   "`page_id` INT(11) NOT NULL DEFAULT '0', ".
@@ -63,6 +63,20 @@ $SQL = "CREATE TABLE IF NOT EXISTS `".TABLE_PREFIX."mod_wysiwyg_archive` ( ".
     "`timestamp` TIMESTAMP, ".
     "PRIMARY KEY (`archive_id`), ".
     "KEY (`section_id`, `page_id`, `status`) ".
+    ") ENGINE=MyIsam AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci";
+
+if (!$database->query($SQL))
+  $admin->print_error($database->get_error());
+
+// create the WYSIWYG extension table
+$SQL = "CREATE TABLE IF NOT EXISTS `".TABLE_PREFIX."mod_wysiwyg_extension` ( ".
+    "`extension_id` INT (11) NOT NULL AUTO_INCREMENT, ".
+    "`section_id` INT(11) NOT NULL DEFAULT '0', ".
+    "`page_id` INT(11) NOT NULL DEFAULT '0', ".
+    "`page_settings` ENUM('SHOW','HIDE') NOT NULL DEFAULT 'HIDE', ".
+    "`timestamp` TIMESTAMP, ".
+    "PRIMARY KEY (`extension_id`), ".
+    "KEY (`section_id`, `page_id`) ".
     ") ENGINE=MyIsam AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci";
 
 if (!$database->query($SQL))
