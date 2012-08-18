@@ -111,7 +111,9 @@ $SQL = "CREATE TABLE IF NOT EXISTS `".TABLE_PREFIX."mod_wysiwyg_extension` ( ".
     "`extension_id` INT (11) NOT NULL AUTO_INCREMENT, ".
     "`section_id` INT(11) NOT NULL DEFAULT '0', ".
     "`page_id` INT(11) NOT NULL DEFAULT '0', ".
-    "`page_settings` ENUM('SHOW','HIDE') NOT NULL DEFAULT 'HIDE', ".
+    "`options` INT(11) NOT NULL DEFAULT '0', ".
+    "`teaser_text` TEXT NOT NULL, ".
+    "`teaser_image` TEXT NOT NULL, ".
     "`timestamp` TIMESTAMP, ".
     "PRIMARY KEY (`extension_id`), ".
     "KEY (`section_id`, `page_id`) ".
