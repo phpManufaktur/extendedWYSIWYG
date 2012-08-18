@@ -87,6 +87,10 @@ class extendedWYSIWYG {
 
   const CMD_STRIPTAGS = 'CMD:STRIPTAGS';
 
+  const OPTION_SHOW_PAGE_SETTINGS = 1;
+  const OPTION_HIDE_SECTION = 2;
+  const OPTION_USE_AS_BLOG = 4;
+
   private static $error = '';
   private static $message = '';
 
@@ -346,6 +350,17 @@ class extendedWYSIWYG {
   } // count_words()
 
   /**
+   * Check if the $options integer contains the $option and return true on success
+   *
+   * @param INT $options
+   * @param INT $option
+   * @return BOOL
+   */
+  protected static function checkOptions($options, $option) {
+    return ($options & $option) ? true: false;
+  } // checkOptions()
+
+  /**
    * Return the complete WYSIWYG modify dialog
    *
    * @return boolean|Ambigous <boolean, Ambigous, string, mixed>
@@ -437,13 +452,13 @@ class extendedWYSIWYG {
         'keywords' => ''
         );
     // show page settings ?
-    $SQL = "SELECT `page_settings` FROM `".TABLE_PREFIX."mod_wysiwyg_extension` WHERE `page_id`='".self::$page_id."' AND `section_id`='".self::$section_id."'";
-    $page_settings = $database->get_one($SQL, MYSQL_ASSOC);
+    $SQL = "SELECT `options` FROM `".TABLE_PREFIX."mod_wysiwyg_extension` WHERE `page_id`='".self::$page_id."' AND `section_id`='".self::$section_id."'";
+    $options = $database->get_one($SQL, MYSQL_ASSOC);
     if ($database->is_error()) {
       $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $database->get_error()));
       return false;
     }
-    if ($page_settings == 'SHOW') {
+    if (self::checkOptions($options, self::OPTION_SHOW_PAGE_SETTINGS)) {
       // get the page settings
       $SQL = "SELECT `page_title`, `description`, `keywords` FROM `".TABLE_PREFIX."pages` WHERE `page_id`='".self::$page_id."'";
       $query = $database->query($SQL);
@@ -498,16 +513,31 @@ class extendedWYSIWYG {
             'chars' => strlen(strip_tags($content))
             ),
         'options' => array(
+            'name' => 'options',
             'page_settings' => array(
                 'active' => ($position == 1) ? 1 : 0,
                 'checkbox' => array(
-                    'name' => 'page_settings',
-                    'value' => ($page_settings == 'SHOW') ? 1 : 0
+                    //'name' => 'page_settings',
+                    'value' => self::OPTION_SHOW_PAGE_SETTINGS,
+                    'checked' => self::checkOptions($options, self::OPTION_SHOW_PAGE_SETTINGS) ? 1 : 0
                     ),
                 'fields' => array(
                     'title' => $page['page_title'],
                     'description' => $page['description'],
                     'keywords' => $page['keywords']
+                    )
+                ),
+            'hide_section' => array(
+                'checkbox' => array(
+                    'value' => self::OPTION_HIDE_SECTION,
+                    'checked' => self::checkOptions($options, self::OPTION_HIDE_SECTION) ? 1 : 0
+                    )
+                ),
+            'use_as_blog' => array(
+                'active' => ($position == 1) ? 1 : 0,
+                'checkbox' => array(
+                    'value' => self::OPTION_USE_AS_BLOG,
+                    'checked' => self::checkOptions($options, self::OPTION_USE_AS_BLOG) ? 1 : 0
                     )
                 )
             ),
@@ -617,24 +647,8 @@ class extendedWYSIWYG {
     global $database;
     global $admin;
 
-    if (!isset($_REQUEST['content'.self::$section_id])) {
-      // upps, missing content!
-      $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__,
-          $this->lang->translate('Error: Missing the WYSIWYG content for section <b>{{ section_id }}</b>!',
-              array('section_id' => self::$section_id))));
-      return $this->adminPrintError(self::$modify_url);
-    }
-
-    if (!isset($_REQUEST[self::REQUEST_ARCHIVE_ID])) {
-      // missing the archive_id
-      $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__,
-          $this->lang->translate('Error: Missing the ARCHIVE_ID for section <b>{{ section_id }}</b>!',
-              array('section_id' => self::$section_id))));
-      return $this->adminPrintError(self::$modify_url);
-    }
-
     // check if an extension record exists for this page
-    $SQL = "SELECT * FROM `".TABLE_PREFIX."mod_wysiwyg_extension` WHERE `page_id`='".self::$page_id."' AND `section_id`='".self::$section_id."'";
+    $SQL = "SELECT `options` FROM `".TABLE_PREFIX."mod_wysiwyg_extension` WHERE `page_id`='".self::$page_id."' AND `section_id`='".self::$section_id."'";
     $query = $database->query($SQL);
     if ($database->is_error()) {
       $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $database->get_error()));
@@ -647,10 +661,20 @@ class extendedWYSIWYG {
         $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $database->get_error()));
         return $this->adminPrintError(self::$modify_url);
       }
+      $old_options = 0;
     }
-    if (isset($_REQUEST['page_settings'])) {
+    else {
+      $old = $query->fetchRow(MYSQL_ASSOC);
+      $old_options = $old['options'];
+    }
+    // first we process the options for the section
+    if (isset($_REQUEST['options'])) {
+      $opt = $_REQUEST['options'];
+      $options = 0;
+      foreach ($opt as $option)
+        $options += $option;
       // we have to process the page settings
-      $SQL = "UPDATE `".TABLE_PREFIX."mod_wysiwyg_extension` SET `page_settings`='SHOW' WHERE `section_id`='".self::$section_id."'";
+      $SQL = "UPDATE `".TABLE_PREFIX."mod_wysiwyg_extension` SET `options`='$options' WHERE `section_id`='".self::$section_id."'";
       if (!$database->query($SQL)) {
         $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $database->get_error()));
         return $this->adminPrintError(self::$modify_url);
@@ -686,12 +710,36 @@ class extendedWYSIWYG {
     }
     else {
       // dont process the page settings
-      $SQL = "UPDATE `".TABLE_PREFIX."mod_wysiwyg_extension` SET `page_settings`='HIDE' WHERE `section_id`='".self::$section_id."'";
+      $SQL = "UPDATE `".TABLE_PREFIX."mod_wysiwyg_extension` SET `options`='0' WHERE `section_id`='".self::$section_id."'";
       if (!$database->query($SQL)) {
         $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $database->get_error()));
         return $this->adminPrintError(self::$modify_url);
       }
     }
+
+    if (self::checkOptions($old_options, self::OPTION_HIDE_SECTION)) {
+      // this section was hidden, so we have nothing more to process
+      $this->setMessage($this->lang->translate('The content of the section <b>{{ section_id }}</b> is hidden, so nothing was to process.',
+          array('section_id' => self::$section_id)));
+      return $this->adminPrintSuccess(self::$modify_url);
+    }
+
+    if (!isset($_REQUEST['content'.self::$section_id])) {
+      // upps, missing content!
+      $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__,
+          $this->lang->translate('Error: Missing the WYSIWYG content for section <b>{{ section_id }}</b>!',
+              array('section_id' => self::$section_id))));
+      return $this->adminPrintError(self::$modify_url);
+    }
+
+    if (!isset($_REQUEST[self::REQUEST_ARCHIVE_ID])) {
+      // missing the archive_id
+      $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__,
+          $this->lang->translate('Error: Missing the ARCHIVE_ID for section <b>{{ section_id }}</b>!',
+              array('section_id' => self::$section_id))));
+      return $this->adminPrintError(self::$modify_url);
+    }
+
 
     // get the content and sanitize it
     $content = $_REQUEST['content'.self::$section_id];
