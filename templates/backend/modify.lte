@@ -23,12 +23,17 @@
   <div class="wysiwyg_system">
     <div class="wysiwyg_options">
       {if $options.page_settings.active == 1}
-      <input type="checkbox" name="{$options.page_settings.checkbox.name}" value="1"{if $options.page_settings.checkbox.value == 1} checked="checked"{/if} /> {translate('Show Page Settings')}
+      <input type="checkbox" name="{$options.name}[]" value="{$options.page_settings.checkbox.value}"{if $options.page_settings.checkbox.checked == 1} checked="checked"{/if} /> {translate('Show Page Settings')}
       {/if}
+      {if $options.use_as_blog.active == 1}
+      <input type="checkbox" name="{$options.name}[]" value="{$options.use_as_blog.checkbox.value}"{if $options.use_as_blog.checkbox.checked == 1} checked="checked"{/if} /> {translate('Use as Blog')}
+      {/if}
+      <input type="checkbox" name="{$options.name}[]" value="{$options.hide_section.checkbox.value}"{if $options.hide_section.checkbox.checked == 1} checked="checked"{/if} /> {translate('Hide Section')}
     </div>
     [<a href="{$about.link}">extendedWYSIWYG</a>] [<a href="{$config.link}">{translate('Settings')}</a>]
   </div>
-  {if $options.page_settings.checkbox.value == 1}
+  {if $options.hide_section.checkbox.checked == 0}
+  {if $options.page_settings.checkbox.checked == 1}
   <div class="wysiwyg_page_settings">
     <div class="wysiwyg_page_settings_item">
       <div class="wysiwyg_page_settings_label">{translate('Page Title')}</div>
@@ -69,6 +74,7 @@
       {$count.chars} {translate('Chars')} - {$count.words} {translate('Words')}
     </div>
   </div>
+  {/if}
   <div class="wysiwyg_editor_buttons">
     <input type="submit" value="{translate('Save')}" />
     <input type="button" value="{translate('Abort')}" onclick="javascript:window.location='index.php';" />
