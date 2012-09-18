@@ -800,7 +800,7 @@ class extendedWYSIWYG {
         }
         $SQL = sprintf("UPDATE `%smod_wysiwyg` SET `content`='%s', `text`='%s' WHERE `section_id`='%d'",
             TABLE_PREFIX, $content, $text, self::$section_id);
-        if (!$database->query($SQL)) {
+        if (null == $database->query($SQL)) {
           $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $database->get_error()));
           return $this->adminPrintError(self::$modify_url);
         }
