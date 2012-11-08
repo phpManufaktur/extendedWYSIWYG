@@ -73,7 +73,7 @@ $SQL = "CREATE TABLE IF NOT EXISTS `".TABLE_PREFIX."mod_wysiwyg_extension` ( ".
     "`extension_id` INT (11) NOT NULL AUTO_INCREMENT, ".
     "`section_id` INT(11) NOT NULL DEFAULT '0', ".
     "`page_id` INT(11) NOT NULL DEFAULT '0', ".
-    "`options` INT(11) NOT NULL DEFAULT '0', ".
+    "`options` VARCHAR(255) NOT NULL DEFAULT '0', ".
     "`teaser_text` TEXT NOT NULL, ".
     "`teaser_image` TEXT NOT NULL, ".
     "`timestamp` TIMESTAMP, ".

@@ -87,9 +87,11 @@ class extendedWYSIWYG {
 
   const CMD_STRIPTAGS = 'CMD:STRIPTAGS';
 
+/*
   const OPTION_SHOW_PAGE_SETTINGS = 1;
   const OPTION_HIDE_SECTION = 2;
   const OPTION_USE_AS_BLOG = 4;
+*/
 
   private static $error = '';
   private static $message = '';
@@ -356,9 +358,11 @@ class extendedWYSIWYG {
    * @param INT $option
    * @return BOOL
    */
+/*
   protected static function checkOptions($options, $option) {
     return ($options & $option) ? true: false;
   } // checkOptions()
+*/
 
   /**
    * Return the complete WYSIWYG modify dialog
@@ -453,12 +457,13 @@ class extendedWYSIWYG {
         );
     // show page settings ?
     $SQL = "SELECT `options` FROM `".TABLE_PREFIX."mod_wysiwyg_extension` WHERE `page_id`='".self::$page_id."' AND `section_id`='".self::$section_id."'";
-    $options = $database->get_one($SQL, MYSQL_ASSOC);
+    $options_str = $database->get_one($SQL, MYSQL_ASSOC);
+    $options = explode(',', $options_str);
     if ($database->is_error()) {
       $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $database->get_error()));
       return false;
     }
-    if (self::checkOptions($options, self::OPTION_SHOW_PAGE_SETTINGS)) {
+//    if (self::checkOptions($options, self::OPTION_SHOW_PAGE_SETTINGS)) {
       // get the page settings
       $SQL = "SELECT `page_title`, `description`, `keywords` FROM `".TABLE_PREFIX."pages` WHERE `page_id`='".self::$page_id."'";
       $query = $database->query($SQL);
@@ -467,7 +472,7 @@ class extendedWYSIWYG {
         return false;
       }
       $page = $query->fetchRow(MYSQL_ASSOC);
-    }
+//    }
 
     $leptoken = (defined('LEPTON_VERSION') && isset($_GET['leptoken'])) ? sprintf('&leptoken=%s', $_GET['leptoken']) : '';
     if (method_exists($admin, 'getFTAN')) {
@@ -478,6 +483,25 @@ class extendedWYSIWYG {
       $ftan_name = 'ftan_name';
       $ftan_value = 'ftan_value';
     }
+
+    // load LibraryAdmin for the jQuery presets
+    include_once WB_PATH.'/modules/libraryadmin/include.php';
+
+    // check if libraryAdmin exists
+    if (file_exists(WB_PATH.'/modules/libraryadmin/inc/class.LABackend.php')) {
+      require_once WB_PATH.'/modules/libraryadmin/inc/class.LABackend.php';
+      // create instance; if you're not using OOP, use a simple var, like $la
+      $libraryAdmin = new LABackend();
+      // load the preset
+      $libraryAdmin->loadPreset(array(
+          'module' => 'wysiwyg',
+          'lib'    => 'lib_jquery',
+          'preset' => 'extendedWYSIWYG'
+      ));
+      // print the preset
+      $libraryAdmin->printPreset();
+    }
+
     $data = array(
         'section_id' => self::$section_id,
         'page_id' => self::$page_id,
@@ -513,13 +537,14 @@ class extendedWYSIWYG {
             'chars' => strlen(strip_tags($content))
             ),
         'options' => array(
-            'name' => 'options',
+            //'name' => 'options',
             'page_settings' => array(
                 'active' => ($position == 1) ? 1 : 0,
                 'checkbox' => array(
-                    //'name' => 'page_settings',
-                    'value' => self::OPTION_SHOW_PAGE_SETTINGS,
-                    'checked' => self::checkOptions($options, self::OPTION_SHOW_PAGE_SETTINGS) ? 1 : 0
+                    'name' => 'page_settings',
+                    'value' => 1, //self::OPTION_SHOW_PAGE_SETTINGS,
+                    'checked' => in_array('page_settings', $options) ? 1 : 0
+                    //'checked' => self::checkOptions($options, self::OPTION_SHOW_PAGE_SETTINGS) ? 1 : 0
                     ),
                 'fields' => array(
                     'title' => $page['page_title'],
@@ -529,15 +554,19 @@ class extendedWYSIWYG {
                 ),
             'hide_section' => array(
                 'checkbox' => array(
-                    'value' => self::OPTION_HIDE_SECTION,
-                    'checked' => self::checkOptions($options, self::OPTION_HIDE_SECTION) ? 1 : 0
+                    'name' => 'hide_section',
+                    'value' => 1, //self::OPTION_HIDE_SECTION,
+                    'checked' => in_array('hide_section', $options) ? 1 : 0
+                    //'checked' => self::checkOptions($options, self::OPTION_HIDE_SECTION) ? 1 : 0
                     )
                 ),
             'use_as_blog' => array(
                 'active' => ($position == 1) ? 1 : 0,
                 'checkbox' => array(
-                    'value' => self::OPTION_USE_AS_BLOG,
-                    'checked' => self::checkOptions($options, self::OPTION_USE_AS_BLOG) ? 1 : 0
+                    'name' => 'use_as_blog',
+                    'value' => 1, //self::OPTION_USE_AS_BLOG,
+                    'checked' => in_array('use_as_blog', $options) ? 1 : 0
+                    //'checked' => self::checkOptions($options, self::OPTION_USE_AS_BLOG) ? 1 : 0
                     )
                 )
             ),
@@ -661,18 +690,26 @@ class extendedWYSIWYG {
         $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $database->get_error()));
         return $this->adminPrintError(self::$modify_url);
       }
-      $old_options = 0;
+      $old_options = array();
     }
+
     else {
       $old = $query->fetchRow(MYSQL_ASSOC);
-      $old_options = $old['options'];
+      $old_options = explode(',', $old['options']);
     }
+
     // first we process the options for the section
-    if (isset($_REQUEST['options'])) {
-      $opt = $_REQUEST['options'];
+//    if (isset($_REQUEST['options'])) {
+/*      $opt = $_REQUEST['options'];
       $options = 0;
       foreach ($opt as $option)
         $options += $option;
+*/
+      $option_array = array();
+      if (isset($_REQUEST['page_settings'])) $option_array[] = 'page_settings';
+      if (isset($_REQUEST['hide_section'])) $option_array[] = 'hide_section';
+      if (isset($_REQUEST['use_as_blog'])) $option_array[] = 'use_as_blog';
+      $options = implode(',', $option_array);
       // we have to process the page settings
       $SQL = "UPDATE `".TABLE_PREFIX."mod_wysiwyg_extension` SET `options`='$options' WHERE `section_id`='".self::$section_id."'";
       if (!$database->query($SQL)) {
@@ -707,7 +744,7 @@ class extendedWYSIWYG {
           }
         }
       }
-    }
+/*    }
     else {
       // dont process the page settings
       $SQL = "UPDATE `".TABLE_PREFIX."mod_wysiwyg_extension` SET `options`='0' WHERE `section_id`='".self::$section_id."'";
@@ -716,8 +753,10 @@ class extendedWYSIWYG {
         return $this->adminPrintError(self::$modify_url);
       }
     }
+*/
 
-    if (self::checkOptions($old_options, self::OPTION_HIDE_SECTION)) {
+//    if (self::checkOptions($old_options, self::OPTION_HIDE_SECTION)) {
+    if (in_array('hide_section', $old_options)) {
       // this section was hidden, so we have nothing more to process
       $this->setMessage($this->lang->translate('The content of the section <b>{{ section_id }}</b> is hidden, so nothing was to process.',
           array('section_id' => self::$section_id)));

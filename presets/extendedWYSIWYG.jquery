@@ -1,0 +1,22 @@
+<script type="text/javascript" charset="utf-8" src="{LIB_URL}/wysiwyg/presets/extendedWYSIWYG/dummy.js"></script>
+<script type="text/javascript" charset="utf-8">
+if (typeof 'jQuery' != 'undefined') {
+  $(document).ready(function() {
+    // we look which options are set to display or hide the containers
+    $('.wysiwyg_options :checked').each(function() {
+        if ($(this).val() == 2) {
+          $("#wysiwyg_container").css('display','none');
+        }
+      });
+    
+    // we check all actual and future checkboxes for clicks
+    $("input:checkbox").live("click", function(event) {
+      var allVals = [];
+      $('.wysiwyg_options :checked').each(function() {
+        allVals.push($(this).val());
+        alert(allVals);
+      });
+    });  
+  });
+}
+</script>
