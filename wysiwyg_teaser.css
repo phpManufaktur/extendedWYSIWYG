@@ -1,0 +1,46 @@
+/**
+ * extendedWYSIWYG
+ *
+ * @author Ralf Hertsch <ralf.hertsch@phpmanufaktur.de>
+ * @link https://addons.phpmanufaktur.de/extendedWYSIWYG
+ * @copyright 2012 phpManufaktur by Ralf Hertsch
+ * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
+ */
+
+#wysiwyg_teaser {
+  float: right;
+  width: 200px;
+  height: auto;
+  margin: 0 0 10px 10px;
+  padding: 10px;
+  font-family: Verdana, Arial, sans-serif;
+  font-size: 9px;
+  font-weight: normal;
+  color: #363636;
+  background-color: transparent;
+  border: 1px solid #363636;
+}
+#wysiwyg_teaser a {
+  color: #da256d;
+  background-color: transparent;
+}
+#wysiwyg_teaser a:link,
+#wysiwyg_teaser a:visited {
+  text-decoration: none;
+}
+#wysiwyg_teaser a:hover,
+#wysiwyg_teaser a:active {
+  text-decoration: underline;
+}
+
+.wysiwyg_teaser_title {
+  font-size: 13px;
+  font-weight: bold;
+  color: #363636;
+  background-color: transparent;
+  margin: 0;
+  padding: 0;
+}
+.wysiwyg_teaser_link {
+  text-align: right;
+}
