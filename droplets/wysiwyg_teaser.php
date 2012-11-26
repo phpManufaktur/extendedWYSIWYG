@@ -17,7 +17,7 @@ if (!is_object($I18n))
   $I18n = new LEPTON_Helper_I18n();
 
 if (file_exists(WB_PATH.'/modules/'.basename(dirname(__FILE__)).'/languages/'.LANGUAGE.'.php')) {
-  $I18n->addFile(LANGUAGE.'.php', WB_PATH.'/modules/'.basename(dirname(__FILE__)).'/languages/');
+  $I18n->addFile(LANGUAGE.'.php', WB_PATH.'/modules/wysiwyg/languages/');
 }
 
 global $database;
