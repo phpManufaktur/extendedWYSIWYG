@@ -32,8 +32,8 @@ else {
 // end include class.secure.php
 
 if ('á' != "\xc3\xa1") {
-	// important: language files must be saved as UTF-8 (without BOM)
-	trigger_error('The language file <b>'.basename(__FILE__).'</b> is damaged, it must be saved <b>UTF-8</b> encoded!', E_USER_ERROR);
+  // important: language files must be saved as UTF-8 (without BOM)
+  trigger_error('The language file <b>'.basename(__FILE__).'</b> is damaged, it must be saved <b>UTF-8</b> encoded!', E_USER_ERROR);
 }
 
 $LANG = array(
@@ -57,6 +57,8 @@ $LANG = array(
       => 'Vermisse den WYSIWYG Inhalt der Section <b>{{ section_id }}</b>!',
     'Error: The ARCHIVE_ID <b>{{ archive_id }}</b> does not exists!'
       => 'Die ARCHIVE_ID <b>{{ archive_id }}</b> existiert nicht!',
+    'Hide Section'
+      => 'Abschnitt einklappen',
     'If activated extendedWYSIWYG will create a protected directory in the /MEDIA path and create a HTML page of each content that get the status BACKUP. The embedded images will be also saved.'
       => 'Falls aktiviert, wird extendedWYSIWYG ein geschütztes Verzeichnis im /MEDIA Ordner anlegen und HTML Dateien für jeden Inhalt anlegen, der den Status BACKUP erhält. Die eingebundenen Bilder werden ebenfalls gesichert.',
     'max. Archives in Selection'
@@ -71,18 +73,26 @@ $LANG = array(
       => 'Bitte helfen Sie mit Open Source Software zu verbessern und melden Sie dieses Problem der <a href="{{ url }}" target="_blank">phpManufaktur Addons Support</a> Gruppe.',
     'publish'
       => 'veröffentlichen',
+    'read more ...'
+      => 'Weiterlesen ...',
     'Save'
       => 'Speichern',
     'Show Page Settings'
       => 'Seiteneinstellungen anzeigen',
-    'The content of the section <b>{{ section_id }}</b> has not changed, so nothing was to save.'
-      => 'Der Inhalt der Section <b>{{ section_id }}</b> wurde nicht verändert und deshalb auch nicht gespeichert.',
+    '<p>The content of the section <b>{{ section_id }}</b> has not changed, so nothing was to save.</p>'
+      => '<p>Der Inhalt der Section <b>{{ section_id }}</b> wurde nicht verändert und deshalb auch nicht gespeichert.</p>',
     'The maximum number of archives that will be shown in the selection list'
       => 'Die maximale Anzahl von Archiven, die in der Auswahlliste angezeigt wird (Voreinstellung: 10)',
-    'The section <b>{{ section_id }}</b> was successfull saved.'
-      => 'Die Section <b>{{ section_id }}</b> wurde erfolgreich gespeichert.',
+    '<p>The page settings has been updated.</p>'
+      => '<p>Die Seiteneinstellungen wurden aktualisiert.</p>',
+    '<p>The page teaser was successfully updated.</p>'
+      => '<p>Die <b>aktuelle Meldung</b> für die Seite wurde aktualisiert.</p>',
+    '<p>The section <b>{{ section_id }}</b> was successfull saved.</p>'
+      => '<p>Die Section <b>{{ section_id }}</b> wurde erfolgreich gespeichert.</p>',
     'Update page information'
       => 'Seiten aktualisieren',
+    'Actual Message'
+      => 'Aktuelle Meldung',
     'Words'
       => 'Wörter'
 );

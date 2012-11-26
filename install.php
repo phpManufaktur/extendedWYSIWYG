@@ -74,11 +74,26 @@ $SQL = "CREATE TABLE IF NOT EXISTS `".TABLE_PREFIX."mod_wysiwyg_extension` ( ".
     "`section_id` INT(11) NOT NULL DEFAULT '0', ".
     "`page_id` INT(11) NOT NULL DEFAULT '0', ".
     "`options` VARCHAR(255) NOT NULL DEFAULT '0', ".
-    "`teaser_text` TEXT NOT NULL, ".
-    "`teaser_image` TEXT NOT NULL, ".
     "`timestamp` TIMESTAMP, ".
     "PRIMARY KEY (`extension_id`), ".
     "KEY (`section_id`, `page_id`) ".
+    ") ENGINE=MyIsam AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci";
+
+if (!$database->query($SQL))
+  $admin->print_error($database->get_error());
+
+// create the TEASER table
+$SQL = "CREATE TABLE IF NOT EXISTS `".TABLE_PREFIX."mod_wysiwyg_teaser` ( ".
+    "`teaser_id` INT(11) NOT NULL AUTO_INCREMENT, ".
+    "`page_id` INT(11) NOT NULL DEFAULT '0', ".
+    "`teaser_text` TEXT NOT NULL DEFAULT '', ".
+    "`hash` VARCHAR(32) NOT NULL DEFAULT '', ".
+    "`author` VARCHAR(255) NOT NULL DEFAULT '', ".
+    "`date_publish` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00', ".
+    "`status` ENUM('ACTIVE','UNPUBLISHED','BACKUP') NOT NULL DEFAULT 'ACTIVE', ".
+    "`timestamp` TIMESTAMP, ".
+    "PRIMARY KEY (`teaser_id`), ".
+    "KEY (`page_id`, `status`) ".
     ") ENGINE=MyIsam AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci";
 
 if (!$database->query($SQL))

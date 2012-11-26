@@ -73,6 +73,9 @@ class extendedWYSIWYG {
   const REQUEST_PUBLISH = 'publish';
   const REQUEST_ARCHIVE_ID = 'archive_id';
   const REQUEST_REMARK = 'remark';
+  const REQUEST_TEASER_ID = 'teaser_id';
+  const REQUEST_TEASER = 'teaser_text';
+  const REQUEST_TEASER_PUBLISH = 'teaser_publish';
 
   const ACTION_ABOUT = 'abt';
   const ACTION_DEFAULT = 'def';
@@ -86,12 +89,6 @@ class extendedWYSIWYG {
   const PROTECTION_FOLDER = 'wysiwyg_archive';
 
   const CMD_STRIPTAGS = 'CMD:STRIPTAGS';
-
-/*
-  const OPTION_SHOW_PAGE_SETTINGS = 1;
-  const OPTION_HIDE_SECTION = 2;
-  const OPTION_USE_AS_BLOG = 4;
-*/
 
   private static $error = '';
   private static $message = '';
@@ -321,7 +318,7 @@ class extendedWYSIWYG {
         'is_error' => $this->isError() ? 1 : 0,
         'content' => $this->isError() ? $this->getError() : $content
         );
-    return $this->getTemplate('body.lte', $data, true);
+    return $this->getTemplate('body.dwoo', $data, true);
   } // show()
 
   /**
@@ -350,19 +347,6 @@ class extendedWYSIWYG {
       if (isset($t[$string[$i-1]]) && !isset($t[$string[$i]])) $count++;
     return $count;
   } // count_words()
-
-  /**
-   * Check if the $options integer contains the $option and return true on success
-   *
-   * @param INT $options
-   * @param INT $option
-   * @return BOOL
-   */
-/*
-  protected static function checkOptions($options, $option) {
-    return ($options & $option) ? true: false;
-  } // checkOptions()
-*/
 
   /**
    * Return the complete WYSIWYG modify dialog
@@ -463,16 +447,57 @@ class extendedWYSIWYG {
       $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $database->get_error()));
       return false;
     }
-//    if (self::checkOptions($options, self::OPTION_SHOW_PAGE_SETTINGS)) {
-      // get the page settings
-      $SQL = "SELECT `page_title`, `description`, `keywords` FROM `".TABLE_PREFIX."pages` WHERE `page_id`='".self::$page_id."'";
+    // get the page settings
+    $SQL = "SELECT `page_title`, `description`, `keywords` FROM `".TABLE_PREFIX."pages` WHERE `page_id`='".self::$page_id."'";
+    $query = $database->query($SQL);
+    if ($database->is_error()) {
+      $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $database->get_error()));
+      return false;
+    }
+    $page = $query->fetchRow(MYSQL_ASSOC);
+
+    // get the archive for the teaser
+    $SQL = "SELECT * FROM `".TABLE_PREFIX."mod_wysiwyg_teaser` WHERE `page_id`='".self::$page_id."' ORDER BY `teaser_id` DESC LIMIT ".self::$cfg_archiveIdSelectLimit;
+    $query = $database->query($SQL);
+    if ($database->is_error()) {
+      $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $database->get_error()));
+      return false;
+    }
+    $teaser_archive = array();
+    $teaser_text = '';
+    $teaser_id = -1;
+    $teaser_publish = 1;
+    $i = 0;
+    while (false !== ($entry = $query->fetchRow(MYSQL_ASSOC))) {
+      $teaser_archive[$entry['teaser_id']] = array(
+          'text' => sprintf('%s | %s', $entry['timestamp'], $entry['status']),
+          'value' => $entry['teaser_id']
+          );
+      if ($i == 0) {
+        $teaser_text = self::unsanitizeText($entry['teaser_text']);
+        $teaser_id = $entry['teaser_id'];
+        $teaser_publish = ($entry['status'] == 'ACTIVE') ? 1 : 0;
+      }
+      $i++;
+    }
+    if (isset($_REQUEST[self::REQUEST_TEASER_ID]) && ((int) $_REQUEST[self::REQUEST_TEASER_ID] > 0)) {
+      // select a specific teaser ID
+      $SQL = "SELECT * FROM `".TABLE_PREFIX."mod_wysiwyg_teaser` WHERE `teaser_id`='".(int) $_REQUEST[self::REQUEST_TEASER_ID]."'";
       $query = $database->query($SQL);
       if ($database->is_error()) {
         $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $database->get_error()));
         return false;
       }
-      $page = $query->fetchRow(MYSQL_ASSOC);
-//    }
+      if ($query->numRows() < 1) {
+        $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $this->lang->translate('The Teaser ID {{ ID }} is not valid!',
+            array('id' => (int) $_REQUEST[self::REQUEST_TEASER_ID]))));
+        return false;
+      }
+      $teaser = $query->fetchRow(MYSQL_ASSOC);
+      $teaser_text = self::unsanitizeText($teaser['teaser_text']);
+      $teaser_id = $teaser['teaser_id'];
+      $teaser_publish = ($teaser['status'] == 'ACTIVE') ? 1 : 0;
+    }
 
     $leptoken = (defined('LEPTON_VERSION') && isset($_GET['leptoken'])) ? sprintf('&leptoken=%s', $_GET['leptoken']) : '';
     if (method_exists($admin, 'getFTAN')) {
@@ -487,8 +512,8 @@ class extendedWYSIWYG {
     // load LibraryAdmin for the jQuery presets
     include_once WB_PATH.'/modules/libraryadmin/include.php';
 
-    // check if libraryAdmin exists
-    if (file_exists(WB_PATH.'/modules/libraryadmin/inc/class.LABackend.php')) {
+    // check if libraryAdmin exists and load jQuery only for the first section!
+    if (($position == 1) && file_exists(WB_PATH.'/modules/libraryadmin/inc/class.LABackend.php')) {
       require_once WB_PATH.'/modules/libraryadmin/inc/class.LABackend.php';
       // create instance; if you're not using OOP, use a simple var, like $la
       $libraryAdmin = new LABackend();
@@ -541,33 +566,60 @@ class extendedWYSIWYG {
             'page_settings' => array(
                 'active' => ($position == 1) ? 1 : 0,
                 'checkbox' => array(
-                    'name' => 'page_settings',
-                    'value' => 1, //self::OPTION_SHOW_PAGE_SETTINGS,
+                    'name' => sprintf('page_settings_%d', self::$section_id),
+                    'value' => 1,
                     'checked' => in_array('page_settings', $options) ? 1 : 0
-                    //'checked' => self::checkOptions($options, self::OPTION_SHOW_PAGE_SETTINGS) ? 1 : 0
                     ),
                 'fields' => array(
-                    'title' => $page['page_title'],
-                    'description' => $page['description'],
-                    'keywords' => $page['keywords']
+                    'title' => array(
+                        'name' => 'page_title',
+                        'value' => $page['page_title']
+                        ),
+                    'description' => array(
+                        'name' => 'page_description',
+                        'value' => $page['description']
+                        ),
+                    'keywords' => array(
+                        'name' => 'page_keywords',
+                        'value' => $page['keywords']
+                        )
                     )
                 ),
             'hide_section' => array(
                 'checkbox' => array(
-                    'name' => 'hide_section',
-                    'value' => 1, //self::OPTION_HIDE_SECTION,
+                    'name' => sprintf('hide_section_%d', self::$section_id),
+                    'value' => 1,
                     'checked' => in_array('hide_section', $options) ? 1 : 0
-                    //'checked' => self::checkOptions($options, self::OPTION_HIDE_SECTION) ? 1 : 0
                     )
                 ),
             'use_as_blog' => array(
                 'active' => ($position == 1) ? 1 : 0,
                 'checkbox' => array(
-                    'name' => 'use_as_blog',
-                    'value' => 1, //self::OPTION_USE_AS_BLOG,
+                    'name' => sprintf('use_as_blog_%d', self::$section_id),
+                    'value' => 1,
                     'checked' => in_array('use_as_blog', $options) ? 1 : 0
-                    //'checked' => self::checkOptions($options, self::OPTION_USE_AS_BLOG) ? 1 : 0
-                    )
+                    ),
+                'fields' => array(
+                    'teaser' => array(
+                        'id' => $teaser_id,
+                        'name' => self::REQUEST_TEASER,
+                        'value' => $teaser_text,
+                        'publish' => $teaser_publish
+                        ),
+                    'archive' => array(
+                        'active' => empty($teaser_archive) ? 0 : 1,
+                        'name' => 'teaser_id',
+                        'items' => $teaser_archive,
+                        'link' => sprintf('%s?%s%s&%s=',
+                            self::$modify_url,
+                            http_build_query(array(
+                                self::REQUEST_PAGE_ID => self::$page_id,
+                            )),
+                            $leptoken,
+                            self::REQUEST_TEASER_ID),
+                        'anchor' => self::$section_anchor
+                        )
+                    ),
                 )
             ),
         'config' => array(
@@ -589,9 +641,9 @@ class extendedWYSIWYG {
                     self::REQUEST_CHANGE_SECTION => self::$section_id
                 )),
                 self::$section_anchor)
-        )
+            )
         );
-    return $this->getTemplate('modify.lte', $data);
+    return $this->getTemplate('modify.dwoo', $data);
   } // dlgModify()
 
   /**
@@ -676,92 +728,7 @@ class extendedWYSIWYG {
     global $database;
     global $admin;
 
-    // check if an extension record exists for this page
-    $SQL = "SELECT `options` FROM `".TABLE_PREFIX."mod_wysiwyg_extension` WHERE `page_id`='".self::$page_id."' AND `section_id`='".self::$section_id."'";
-    $query = $database->query($SQL);
-    if ($database->is_error()) {
-      $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $database->get_error()));
-      return $this->adminPrintError(self::$modify_url);
-    }
-    if ($query->numRows() < 1) {
-      // insert an extension record
-      $SQL = "INSERT INTO `".TABLE_PREFIX."mod_wysiwyg_extension` (`section_id`, `page_id`) VALUES ('".self::$section_id."','".self::$page_id."')";
-      if (!$database->query($SQL)) {
-        $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $database->get_error()));
-        return $this->adminPrintError(self::$modify_url);
-      }
-      $old_options = array();
-    }
-
-    else {
-      $old = $query->fetchRow(MYSQL_ASSOC);
-      $old_options = explode(',', $old['options']);
-    }
-
-    // first we process the options for the section
-//    if (isset($_REQUEST['options'])) {
-/*      $opt = $_REQUEST['options'];
-      $options = 0;
-      foreach ($opt as $option)
-        $options += $option;
-*/
-      $option_array = array();
-      if (isset($_REQUEST['page_settings'])) $option_array[] = 'page_settings';
-      if (isset($_REQUEST['hide_section'])) $option_array[] = 'hide_section';
-      if (isset($_REQUEST['use_as_blog'])) $option_array[] = 'use_as_blog';
-      $options = implode(',', $option_array);
-      // we have to process the page settings
-      $SQL = "UPDATE `".TABLE_PREFIX."mod_wysiwyg_extension` SET `options`='$options' WHERE `section_id`='".self::$section_id."'";
-      if (!$database->query($SQL)) {
-        $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $database->get_error()));
-        return $this->adminPrintError(self::$modify_url);
-      }
-      // it's possible that the page settings are not shown yet...
-      if (isset($_REQUEST['page_title']) && isset($_REQUEST['page_description']) && isset($_REQUEST['page_keywords'])) {
-        $SQL = "SELECT `page_title`, `description`, `keywords` FROM `".TABLE_PREFIX."pages` WHERE `page_id`='".self::$page_id."'";
-        $query = $database->query($SQL);
-        if ($database->is_error()) {
-          $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $database->get_error()));
-          return $this->adminPrintError(self::$modify_url);
-        }
-        $page = $query->fetchRow(MYSQL_ASSOC);
-        $page_title = self::sanitizeVariable($_REQUEST['page_title']);
-        $page_description = self::sanitizeVariable($_REQUEST['page_description']);
-        $keywords = explode(',', $_REQUEST['page_keywords']);
-        $new_keywords = array();
-        foreach ($keywords as $keyword) {
-          $kw = trim($keyword);
-          $kw = str_replace('  ', ' ', $kw);
-          if (!empty($kw)) $new_keywords[] = $kw;
-        }
-        $page_keywords = implode(',', $new_keywords);
-        $page_keywords = self::sanitizeVariable($page_keywords);
-        if (($page['page_title'] != $page_title) || ($page['description'] != $page_description) || ($page['keywords'] != $page_keywords)) {
-          $SQL = "UPDATE `".TABLE_PREFIX."pages` SET `page_title`='$page_title', `description`='$page_description', `keywords`='$page_keywords' WHERE `page_id`='".self::$page_id."'";
-          if (!$database->query($SQL)) {
-            $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $database->get_error()));
-            return $this->adminPrintError(self::$modify_url);
-          }
-        }
-      }
-/*    }
-    else {
-      // dont process the page settings
-      $SQL = "UPDATE `".TABLE_PREFIX."mod_wysiwyg_extension` SET `options`='0' WHERE `section_id`='".self::$section_id."'";
-      if (!$database->query($SQL)) {
-        $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $database->get_error()));
-        return $this->adminPrintError(self::$modify_url);
-      }
-    }
-*/
-
-//    if (self::checkOptions($old_options, self::OPTION_HIDE_SECTION)) {
-    if (in_array('hide_section', $old_options)) {
-      // this section was hidden, so we have nothing more to process
-      $this->setMessage($this->lang->translate('The content of the section <b>{{ section_id }}</b> is hidden, so nothing was to process.',
-          array('section_id' => self::$section_id)));
-      return $this->adminPrintSuccess(self::$modify_url);
-    }
+    $message = $this->getMessage();
 
     if (!isset($_REQUEST['content'.self::$section_id])) {
       // upps, missing content!
@@ -779,6 +746,75 @@ class extendedWYSIWYG {
       return $this->adminPrintError(self::$modify_url);
     }
 
+    // get the options for this section
+    $SQL = "SELECT `options` FROM `".TABLE_PREFIX."mod_wysiwyg_extension` WHERE `section_id`='".self::$section_id."'";
+    $options_str = $database->get_one($SQL, MYSQL_ASSOC);
+    if ($database->is_error()) {
+      $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $database->get_error()));
+      return $this->adminPrintError(self::$modify_url);
+    }
+    // explode the options into an array
+    $options = explode(',', $options_str);
+
+    // check the page settings?
+    if (in_array('page_settings', $options)) {
+      $page_title = self::sanitizeVariable($_REQUEST['page_title']);
+      $description = self::sanitizeVariable($_REQUEST['page_description']);
+      $keywords = self::sanitizeVariable($_REQUEST['page_keywords']);
+      // update the page settings
+      $SQL = "UPDATE `".TABLE_PREFIX."pages` SET `page_title`='$page_title', `description`='$description', `keywords`='$keywords' WHERE `page_id`='".self::$page_id."'";
+      $database->query($SQL);
+      if ($database->is_error()) {
+        $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $database->get_error()));
+        return $this->adminPrintError(self::$modify_url);
+      }
+      $message .= $this->lang->translate('<p>The page settings has been updated.</p>');
+    } // page_settings
+
+    // check if the page is used as blog
+    if (in_array('use_as_blog', $options)) {
+      if (!isset($_REQUEST[self::REQUEST_TEASER_ID])) {
+        $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $this->lang->translate('Missing the TEASER ID!')));
+        return $this->adminPrintError(self::$modify_url);
+      }
+      // get the saved hash for the actual teaser ID
+      $SQL = "SELECT `hash`,`status` FROM `".TABLE_PREFIX."mod_wysiwyg_teaser` WHERE `teaser_id`='".(int) $_REQUEST[self::REQUEST_TEASER_ID]."'";
+      $query = $database->query($SQL);
+      if ($database->is_error()) {
+        $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $database->get_error()));
+        return $this->adminPrintError(self::$modify_url);
+      }
+      $old_hash = '';
+      $old_status = 'ACTIVE';
+      if ($query->numRows() > 0) {
+        // fetch the old hash
+        $data = $query->fetchRow(MYSQL_ASSOC);
+        $old_hash = $data['hash'];
+        $old_status = $data['status'];
+      }
+      $teaser_text = self::sanitizeVariable($_REQUEST[self::REQUEST_TEASER]);
+      $new_hash = md5($teaser_text);
+      $publish = isset($_REQUEST[self::REQUEST_TEASER_PUBLISH]) ? 'ACTIVE' : 'UNPUBLISHED';
+      if (($old_hash <> $new_hash) || ($old_status <> $publish)) {
+        // set the old teaser to BACKUP status
+        $SQL = "UPDATE `".TABLE_PREFIX."mod_wysiwyg_teaser` SET `status`='BACKUP' WHERE `page_id`='".self::$page_id."'";
+        $database->query($SQL);
+        if ($database->is_error()) {
+          $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $database->get_error()));
+          return $this->adminPrintError(self::$modify_url);
+        }
+        // save the teaser
+        $SQL = "INSERT INTO `".TABLE_PREFIX."mod_wysiwyg_teaser` (`page_id`,`teaser_text`,`hash`,`author`,`date_publish`,`status`) ".
+          "VALUES ('".self::$page_id."','$teaser_text','$new_hash','".$admin->get_display_name()."','".date('Y-m-d H:i:s')."','$publish')";
+        $database->query($SQL);
+        if ($database->is_error()) {
+          $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $database->get_error()));
+          return $this->adminPrintError(self::$modify_url);
+        }
+        $message .= $this->lang->translate('<p>The page teaser was successfully updated.</p>');
+      }
+
+    } // use_as_blog
 
     // get the content and sanitize it
     $content = $_REQUEST['content'.self::$section_id];
@@ -835,8 +871,10 @@ class extendedWYSIWYG {
           // first we remove the command...
           $text = str_ireplace(self::CMD_STRIPTAGS, '', $text);
           // then change the $content to $text
-          $content = $text;
+          $content = self::sanitizeVariable($text);
         }
+        // sanitize text
+        $text = self::sanitizeVariable($text);
         $SQL = sprintf("UPDATE `%smod_wysiwyg` SET `content`='%s', `text`='%s' WHERE `section_id`='%d'",
             TABLE_PREFIX, $content, $text, self::$section_id);
         if (null == $database->query($SQL)) {
@@ -858,14 +896,16 @@ class extendedWYSIWYG {
         return $this->adminPrintError(self::$modify_url);
       }
       // all done, prompt success message
-      $this->setMessage($this->lang->translate('The section <b>{{ section_id }}</b> was successfull saved.',
-          array('section_id' => self::$section_id)));
+      $message .= $this->lang->translate('<p>The section <b>{{ section_id }}</b> was successfull saved.</p>',
+          array('section_id' => self::$section_id));
+      $this->setMessage($message);
       return $this->adminPrintSuccess(self::$modify_url);
     }
     else {
       // nothing to do !!!
-      $this->setMessage($this->lang->translate('The content of the section <b>{{ section_id }}</b> has not changed, so nothing was to save.',
-          array('section_id' => self::$section_id)));
+      $message .= $this->lang->translate('<p>The content of the section <b>{{ section_id }}</b> has not changed, so nothing was to save.</p>',
+          array('section_id' => self::$section_id));
+      $this->setMessage($message);
       return $this->adminPrintSuccess(self::$modify_url);
     }
   } // saveSection()
@@ -951,7 +991,7 @@ class extendedWYSIWYG {
           'title' => sprintf('extendedWYSIWYG Archive File - %s', date('Y-m-d H:i:s', $time)),
           'content' => $content
       );
-      $html = $this->getTemplate('archive_file.lte', $data);
+      $html = $this->getTemplate('archive_file.dwoo', $data);
       if (!file_put_contents($directory_path.'/index.html', $html)) {
         $this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__,
             $this->lang->translate("Error: Can't write the file <b>{{ file }}</b>!",
@@ -1098,7 +1138,7 @@ class extendedWYSIWYG {
                 self::REQUEST_PAGE_ID => self::$page_id)),
             self::$section_anchor)
         );
-    return $this->getTemplate('about.lte', $data);
+    return $this->getTemplate('about.dwoo', $data);
   } // dlgAbout()
 
 } // class extendedWYSIWYG

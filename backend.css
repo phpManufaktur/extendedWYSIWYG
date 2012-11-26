@@ -16,6 +16,13 @@
 
 @import url(../manufaktur_config/backend.css);
 
+.clear {
+  clear: both;
+  margin: 0;
+  padding: 0;
+  width: 1px;
+  height: 1px;
+}
 .wysiwyg_body {
   margin: 0;
   padding: 0;
@@ -73,16 +80,20 @@
   margin: 0;
   text-align: left;
 }
+.wysiwyg_blog_publish,
 .wysiwyg_control_publish {
   float: left;
   width: 164px;
   margin: 0;
   padding: 0 0 5px 0;
 }
+.wysiwyg_blog_publish input,
+.wysiwyg_blog_publish label,
 .wysiwyg_control_publish input,
 .wysiwyg_control_publish label {
   float:left;
 }
+.wysiwyg_blog_archiv_id,
 .wysiwyg_control_archiv_id {
   float: left;
   width: 250px;
@@ -100,8 +111,8 @@
 }
 .wysiwyg_system {
   width: 100%;
-  margin: 0 0 5px 0;
-  padding: 0;
+  margin: 0;
+  padding: 5px 0 15px 0;
   text-align: right;
   font-size: 9px;
 }
@@ -170,23 +181,45 @@
   text-align: left;
   overflow-y: scroll;
 }
-.wysiwyg_page_settings {
+#wysiwyg_page_settings {
   clear: both;
   margin: 0;
   padding: 0 0 5px 0;
 }
-.wysiwyg_page_settings_item {
-  clear: both;
-}
-.wysiwyg_page_settings_label {
-  float: left;
-  width: 120px;
-}
-.wysiwyg_page_settings_value {
-  float: left;
-  width: 750px;
-  padding: 0 0 3px 0;
+#wysiwyg_page_settings textarea,
+#wysiwyg_page_settings input {
+  border: 1px inset #d3d3d3;
+  color: #333;
+  background-color: #fff;
 }
 .wysiwyg_page_settings_value textarea {
   height: 30px;
+}
+.wysiwyg_blog_item,
+.wysiwyg_page_settings_item {
+  clear: both;
+}
+.wysiwyg_blog_label,
+.wysiwyg_page_settings_label {
+  float: left;
+  width: 20%;
+}
+.wysiwyg_blog_value,
+.wysiwyg_page_settings_value {
+  float: left;
+  width: 80%;
+  padding: 0 0 3px 0;
+}
+.wysiwyg_blog_content,
+.wysiwyg_page_settings_content {
+  float: left;
+  width: 80%;
+}
+.wysiwyg_blog_help,
+.wysiwyg_page_settings_help {
+  float: left;
+  width: 20%;
+}
+.wysiwyg_system {
+  margin: 2px 0 10px 0;
 }
