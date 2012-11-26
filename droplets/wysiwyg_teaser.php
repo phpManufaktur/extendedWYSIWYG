@@ -22,10 +22,26 @@ if (file_exists(WB_PATH.'/modules/'.basename(dirname(__FILE__)).'/languages/'.LA
 
 global $database;
 
-$param_order = (isset($order) && (strtolower($order) == 'desc')) ? 'DESC' : 'ASC';
+$param_order = (isset($order) && (strtolower($order) == 'asc')) ? 'ASC' : 'DESC';
 $param_limit = (isset($limit)) ? (int) $limit : 5;
 $param_title = (isset($title) && (strtolower($title) == 'false')) ? false : true;
+$param_css = (isset($css) && (strtolower($css) == 'false')) ? false : true;
+$param_link = (isset($link) && (strtolower($link) == 'false')) ? false : true;
 
+// exists dropletsExtension?
+if (file_exists(WB_PATH.'/modules/droplets_extension/interface.php')) {
+  // load dropletsExtension
+  require_once(WB_PATH.'/modules/droplets_extension/interface.php');
+  if ($param_css) {
+    // load CSS!
+    if (!is_registered_droplet_css('wysiwyg_teaser', PAGE_ID)) {
+      register_droplet_css('wysiwyg_teaser', PAGE_ID, 'wysiwyg', 'wysiwyg_teaser.css');
+    }
+  }
+  elseif (is_registered_droplet_css('wysiwyg_teaser', PAGE_ID)) {
+    unregister_droplet_css('wysiwyg_teaser', PAGE_ID);
+  }
+}
 $result = '';
 
 $SQL = "SELECT * FROM `".TABLE_PREFIX."mod_wysiwyg_teaser` WHERE `status`='ACTIVE' ORDER BY `date_publish` $param_order LIMIT $param_limit";
@@ -44,17 +60,18 @@ else {
     // set title?
     if ($param_title) {
       $title = $database->get_one("SELECT `page_title` FROM `".TABLE_PREFIX."pages` WHERE `page_id`='{$teaser['page_id']}'", MYSQL_ASSOC);
-      $result .= sprintf('<h3>%s</div>', $title);
+      $result .= sprintf('<div class="wysiwyg_teaser_title">%s</div>', $title);
     }
     // add the teaser content
     $content = stripcslashes($teaser['teaser_text']);
     $content = str_replace(array("&lt;","&gt;","&quot;","&#039;"), array("<",">","\"","'"), $content);
     $result .= sprintf('<div class="wysiwyg_teaser_item_content">%s</div>', $content);
     // add the link to the article
-    $link = $database->get_one("SELECT `link` FROM `".TABLE_PREFIX."pages` WHERE `page_id`='{$teaser['page_id']}'", MYSQL_ASSOC);
-    $link = WB_URL.PAGES_DIRECTORY.$link.PAGE_EXTENSION;
-    $result .= sprintf('<div class="wysiwyg_teaser_link"><a href="%s">%s</a></div>', $link,
-        $I18n->translate('read more ...'));
+    if ($param_link) {
+      $link = $database->get_one("SELECT `link` FROM `".TABLE_PREFIX."pages` WHERE `page_id`='{$teaser['page_id']}'", MYSQL_ASSOC);
+      $link = WB_URL.PAGES_DIRECTORY.$link.PAGE_EXTENSION;
+      $result .= sprintf('<div class="wysiwyg_teaser_link"><a href="%s">%s</a></div>', $link, $I18n->translate('read more ...'));
+    }
     // end teaser item container
     $result .= '</div>';
   }
