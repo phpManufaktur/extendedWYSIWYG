@@ -4,7 +4,7 @@
 MIT License (MIT) http://www.opensource.org/licenses/MIT
 https://addons.phpmanufaktur.de/extendedWYSIWYG
 
-Release 10.16 - NOT PUBLISHED
+Release 10.16 - 2012-11-26
 
 * added counting of characters and words
 * renamed templates from *.lte to *.dwoo
@@ -12,6 +12,9 @@ Release 10.16 - NOT PUBLISHED
 * added extendedWYSIWYG.jquery for dynamic change of settings
 * added dynamic checkboxes for editing the page settings, use extendedWYSIWYG
   as blog and hide the section
+* added ability to create teasers for the pages
+* added teasers to the versioning system
+* added droplet wysiwyg_teaser to show teasers at any place
 
 Release 10.15 - 2012-07-28
 
