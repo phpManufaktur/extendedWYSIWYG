@@ -40,7 +40,7 @@
           <!-- SETTINGS -->
           <div class="wysiwyg_page_settings_item">
             <div class="wysiwyg_page_settings_label">&nbsp;</div>
-            <div class="wysiwyg_page_settings_value"><strong>{translate('Page settings')}</strong></div>
+            <div class="wysiwyg_page_settings_value"><strong>{translate('Page Settings')}</strong></div>
           </div>        
           <div class="wysiwyg_page_settings_item">
             <div class="wysiwyg_page_settings_label">{translate('Page Title')}</div>

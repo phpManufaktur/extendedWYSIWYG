@@ -67,6 +67,8 @@ $LANG = array(
       => 'Beschreibung',
     'Page Keywords'
       => 'Schlüsselwörter',
+    'Page Settings'
+      => 'Seiteneinstellungen',
     'Page Title'
       => 'Seitentitel',
     'Please help to improve Open Source Software and report this problem to the <a href="{{ url }}" target="_blank">phpManufaktur Addons Support</a> Group.'
