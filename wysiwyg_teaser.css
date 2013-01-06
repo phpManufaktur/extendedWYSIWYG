@@ -44,3 +44,13 @@
 .wysiwyg_teaser_link {
   text-align: right;
 }
+#wysiwyg_teaser a.wysiwyg_teaser_link_content {
+  color: #363636;
+  background-color: transparent;
+}
+#wysiwyg_teaser a:link.wysiwyg_teaser_link_content,
+#wysiwyg_teaser a:visited.wysiwyg_teaser_link_content,
+#wysiwyg_teaser a:hover.wysiwyg_teaser_link_content,
+#wysiwyg_teaser a:active.wysiwyg_teaser_link_content  {
+  text-decoration: none;
+}

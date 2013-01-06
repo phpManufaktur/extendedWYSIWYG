@@ -27,6 +27,7 @@ $param_limit = (isset($limit)) ? (int) $limit : 5;
 $param_title = (isset($title) && (strtolower($title) == 'false')) ? false : true;
 $param_css = (isset($css) && (strtolower($css) == 'false')) ? false : true;
 $param_link = (isset($link) && (strtolower($link) == 'false')) ? false : true;
+$param_link_content = (isset($link_content) && (strtolower($link_content) == 'true')) ? true : false;
 
 // exists dropletsExtension?
 if (file_exists(WB_PATH.'/modules/droplets_extension/interface.php')) {
@@ -55,6 +56,11 @@ if ($query->numRows() < 1) {
 else {
   // build the teasers
   while (false !== ($teaser = $query->fetchRow(MYSQL_ASSOC))) {
+    // build the link
+    $link = $database->get_one("SELECT `link` FROM `".TABLE_PREFIX."pages` WHERE `page_id`='{$teaser['page_id']}'", MYSQL_ASSOC);
+    $link = WB_URL.PAGES_DIRECTORY.$link.PAGE_EXTENSION;
+    if ($param_link_content)
+      $result .= sprintf('<a class="wysiwyg_teaser_link_content" href="%s" title="%s">', $link, $I18n->translate('read more ...'));
     // start teaser item container
     $result .= '<div class="wysiwyg_teaser_item">';
     // set title?
@@ -68,12 +74,12 @@ else {
     $result .= sprintf('<div class="wysiwyg_teaser_item_content">%s</div>', $content);
     // add the link to the article
     if ($param_link) {
-      $link = $database->get_one("SELECT `link` FROM `".TABLE_PREFIX."pages` WHERE `page_id`='{$teaser['page_id']}'", MYSQL_ASSOC);
-      $link = WB_URL.PAGES_DIRECTORY.$link.PAGE_EXTENSION;
       $result .= sprintf('<div class="wysiwyg_teaser_link"><a href="%s">%s</a></div>', $link, $I18n->translate('read more ...'));
     }
     // end teaser item container
     $result .= '</div>';
+    if ($param_link_content)
+      $result .= '</a>';
   }
 }
 

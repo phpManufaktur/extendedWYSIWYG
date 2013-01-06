@@ -4,6 +4,11 @@
 MIT License (MIT) http://www.opensource.org/licenses/MIT
 https://addons.phpmanufaktur.de/extendedWYSIWYG
 
+Release 10.17 - NOT PUBLISHED
+
+* added parameter "link_content" to the droplet wysiwyg_teaser - setting
+  link_content=true will create a link to the whole teaser item
+
 Release 10.16 - 2012-11-26
 
 * added counting of characters and words
