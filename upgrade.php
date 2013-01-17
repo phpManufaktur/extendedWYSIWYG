@@ -3,9 +3,9 @@
 /**
  * extendedWYSIWYG
  *
- * @author Ralf Hertsch <ralf.hertsch@phpmanufaktur.de>
+ * @author Team phpManufaktur <team@phpmanufaktur.de>
  * @link https://addons.phpmanufaktur.de/extendedWYSIWYG
- * @copyright 2012 phpManufaktur by Ralf Hertsch
+ * @copyright 2012 Ralf Hertsch <ralf.hertsch@phpmanufaktur.de>
  * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
  */
 
@@ -217,6 +217,12 @@ if (!function_exists('wb_unpack_and_import')) {
 }
 // install the droplet(s)
 @wb_unpack_and_import(WB_PATH.'/modules/wysiwyg/droplets/droplet_wysiwyg_teaser.zip', WB_PATH . '/temp/unzip/');
+
+/**
+ * RELEASE 11.01
+ */
+
+rrmdir(LEPTON_PATH.'/modules/wysiwyg/restore');
 
 require_once LEPTON_PATH.'/modules/manufaktur_config/library.php';
 
