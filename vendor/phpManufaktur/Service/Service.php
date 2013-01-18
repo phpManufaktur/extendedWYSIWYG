@@ -11,7 +11,7 @@
 
 namespace phpManufaktur\Service;
 
-use phpManufaktur\CMS\Classes\boneClass;
+use phpManufaktur\CMS\Bridge\Control\boneClass;
 use phpManufaktur\CMS\Bridge;
 
 global $logger;

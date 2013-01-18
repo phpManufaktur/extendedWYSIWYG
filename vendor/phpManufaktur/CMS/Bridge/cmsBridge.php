@@ -9,13 +9,13 @@
  * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
  */
 
-namespace phpManufaktur\CMS;
+namespace phpManufaktur\CMS\Bridge;
 
-use phpManufaktur\CMS\Classes\boneClass;
-use phpManufaktur\CMS\Classes\detectCMS;
+use phpManufaktur\CMS\Bridge\Control\boneClass;
+use phpManufaktur\CMS\Bridge\Control\detectCMS;
 use phpManufaktur\CMS\Bridge\Data\LEPTON as LEPTON;
 use phpManufaktur\CMS\Bridge\Data\WebsiteBaker as WebsiteBaker;
-use phpManufaktur\CMS\Classes\browserLanguage;
+use phpManufaktur\CMS\Bridge\Data\browserLanguage;
 
 global $logger;
 global $db;
@@ -161,13 +161,13 @@ class cmsBridge extends boneClass {
    * @return boolean
    */
   public function getCMSversion() {
-    $lepton_version = new LEPTON\Classes\Version();
+    $lepton_version = new LEPTON\Version();
     if (!$lepton_version->check()) {
       if ($lepton_version->isError()) {
         return false;
       }
       // ok - try WebsiteBaker
-      $wb_version = new WebsiteBaker\Classes\Version();
+      $wb_version = new WebsiteBaker\Version();
       if (!$wb_version->check()) {
         return false;
       }

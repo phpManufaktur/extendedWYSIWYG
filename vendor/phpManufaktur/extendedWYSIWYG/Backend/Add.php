@@ -11,7 +11,7 @@
 
 namespace phpManufaktur\extendedWYSIWYG\Backend;
 
-use phpManufaktur\CMS\Classes\boneClass;
+use phpManufaktur\CMS\Bridge\Control\boneClass;
 
 global $db;
 

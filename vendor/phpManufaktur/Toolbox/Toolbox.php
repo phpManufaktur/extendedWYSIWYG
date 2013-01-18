@@ -11,7 +11,7 @@
 
 namespace phpManufaktur\Toolbox;
 
-use phpManufaktur\CMS\Classes\boneClass;
+use phpManufaktur\CMS\Bridge\Control\boneClass;
 
 class Toolbox extends boneClass {
 

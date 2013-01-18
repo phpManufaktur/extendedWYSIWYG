@@ -9,9 +9,9 @@
  * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
  */
 
-namespace phpManufaktur\CMS\Bridge\WebsiteBaker\Classes;
+namespace phpManufaktur\CMS\Bridge\Data\WebsiteBaker;
 
-use phpManufaktur\CMS\Classes\boneClass;
+use phpManufaktur\CMS\Bridge\Control\boneClass;
 
 global $db;
 global $logger;

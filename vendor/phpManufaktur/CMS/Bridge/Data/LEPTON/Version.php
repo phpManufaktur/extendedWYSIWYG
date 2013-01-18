@@ -9,9 +9,9 @@
  * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
  */
 
-namespace phpManufaktur\CMS\Bridge\LEPTON\Classes;
+namespace phpManufaktur\CMS\Bridge\Data\LEPTON;
 
-use phpManufaktur\CMS\Classes\boneClass;
+use phpManufaktur\CMS\Bridge\Control\boneClass;
 
 global $db;
 global $logger;

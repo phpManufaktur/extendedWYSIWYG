@@ -13,8 +13,7 @@ include __DIR__.'/vendor/Autoloader.php';
 
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
-use phpManufaktur\CMS\cmsBridge;
-use phpManufaktur\CMS\Classes\tinyDB;
+use phpManufaktur\CMS\Bridge\cmsBridge;
 use phpManufaktur\Toolbox\Toolbox;
 use phpManufaktur\Service\Service;
 

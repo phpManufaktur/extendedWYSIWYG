@@ -9,7 +9,7 @@
  * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
  */
 
-namespace phpManufaktur\CMS\Classes;
+namespace phpManufaktur\CMS\Bridge\Control;
 
 global $logger;
 

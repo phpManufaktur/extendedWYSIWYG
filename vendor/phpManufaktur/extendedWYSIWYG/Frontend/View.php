@@ -11,8 +11,7 @@
 
 namespace phpManufaktur\extendedWYSIWYG\Frontend;
 
-use phpManufaktur\CMS\Classes\boneClass;
-use phpManufaktur\CMS\Bridge;
+use phpManufaktur\CMS\Bridge\Control\boneClass;
 
 global $logger;
 global $tools;

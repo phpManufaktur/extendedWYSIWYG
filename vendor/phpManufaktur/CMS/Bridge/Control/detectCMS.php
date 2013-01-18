@@ -9,10 +9,10 @@
  * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
  */
 
-namespace phpManufaktur\CMS\Classes;
+namespace phpManufaktur\CMS\Bridge\Control;
 
-use phpManufaktur\CMS\Classes\boneClass;
-use phpManufaktur\CMS\Classes\parseTokens;
+use phpManufaktur\CMS\Bridge\Control\boneClass;
+use phpManufaktur\CMS\Bridge\Data\parseTokens;
 
 global $logger;
 
