@@ -10,4 +10,4 @@
  */
 
 $parent_directory = substr(__DIR__, 0, strrpos(__DIR__, '/'));
-include $parent_directory.'/vendor/phpManufaktur/extendedWYSIWYG/Data/Location/DE.php';
+include $parent_directory.'/vendor/phpManufaktur/extendedWYSIWYG/Data/Location/EN.php';
