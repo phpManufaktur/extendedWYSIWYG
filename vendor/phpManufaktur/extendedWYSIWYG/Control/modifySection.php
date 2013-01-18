@@ -20,7 +20,7 @@ class modifySection extends boneClass {
   protected static $PAGE_ID = null;
 
   public function __construct($page_id, $section_id) {
-    $this->setInfo('Construct class modifySection', __METHOD__, __LINE__);
+    $this->setInfo('Initialize class modifySection', __METHOD__, __LINE__);
     self::$PAGE_ID = $page_id;
     self::$SECTION_ID = $section_id;
   } // __construct()
