@@ -9,7 +9,7 @@
  * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
  */
 
-namespace phpManufaktur\Toolbox;
+namespace phpManufaktur\Toolbox\Control;
 
 use phpManufaktur\CMS\Bridge\Control\boneClass;
 
