@@ -14,8 +14,8 @@ include __DIR__.'/vendor/Autoloader.php';
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use phpManufaktur\CMS\Bridge\cmsBridge;
-use phpManufaktur\Toolbox\Toolbox;
-use phpManufaktur\Service\Service;
+use phpManufaktur\Toolbox\Control\Toolbox;
+use phpManufaktur\Service\View\Service;
 
 
 if (!defined('CMS_ADDON_PATH'))
