@@ -37,7 +37,7 @@ class wysiwygSection extends boneClass {
   } // addBlank()
 
   /**
-   * Get the content for the $section_id and return it
+   * Get the content for the $section_id for FRONTEND output and return it
    *
    * @param integer $section_id
    * @return string
