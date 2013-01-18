@@ -40,8 +40,8 @@ if (defined('WB_PATH')) {
  
  
 if ( true == version_compare( phpversion(), '5', '<' ) )
-	include_once( 'pathfinder_php4.php' ) ;
+	include_once( '../../../LEPTON/1.1.4/modules/wysiwyg/classes/pathfinder_php4.php' ) ;
 else
-	include_once( 'pathfinder_php5.php' ) ;
+	include_once( '../../../LEPTON/1.1.4/modules/wysiwyg/classes/pathfinder_php5.php' ) ;
 
 ?>
