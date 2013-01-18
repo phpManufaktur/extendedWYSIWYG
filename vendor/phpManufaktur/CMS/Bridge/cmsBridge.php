@@ -226,13 +226,20 @@ class cmsBridge extends boneClass {
     }
 
     // set some CMS defines for easy access
-    define('CMS_PATH', $this->getCMS_PATH());
-    define('CMS_URL', $this->getCMS_TYPE());
-    define('CMS_ADMIN_PATH', $this->getCMS_ADMIN_PATH());
-    define('CMS_ADMIN_URL', $this->getCMS_ADMIN_URL());
-    define('CMS_TABLE_PREFIX', $this->getCMS_TABLE_PREFIX());
-    define('CMS_TEMP_PATH', $this->getCMS_TEMP_PATH());
-    define('CMS_TEMP_URL', $this->getCMS_TEMP_URL());
+    if (!defined('CMS_PATH'))
+      define('CMS_PATH', $this->getCMS_PATH());
+    if (!defined('CMS_URL'))
+      define('CMS_URL', $this->getCMS_TYPE());
+    if (!defined('CMS_ADMIN_PATH'))
+      define('CMS_ADMIN_PATH', $this->getCMS_ADMIN_PATH());
+    if (!defined('CMS_ADMIN_URL'))
+      define('CMS_ADMIN_URL', $this->getCMS_ADMIN_URL());
+    if (!defined('CMS_TABLE_PREFIX'))
+      define('CMS_TABLE_PREFIX', $this->getCMS_TABLE_PREFIX());
+    if (!defined('CMS_TEMP_PATH'))
+      define('CMS_TEMP_PATH', $this->getCMS_TEMP_PATH());
+    if (!defined('CMS_TEMP_URL'))
+      define('CMS_TEMP_URL', $this->getCMS_TEMP_URL());
 
     // set status to prepared
     self::setStatus(self::STATUS_PREPARED);
@@ -254,7 +261,7 @@ class cmsBridge extends boneClass {
       return false;
     }
     self::$config['CMS_LANGUAGE'] = strtoupper($browserLanguage->get($available_languages, 'en'));
-    if (!defined('CMS_LANGUGAGE'))
+    if (!defined('CMS_LANGUAGE'))
       define('CMS_LANGUAGE', self::$config['CMS_LANGUAGE']);
     return true;
   } // setLanguage()
