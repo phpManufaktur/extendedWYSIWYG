@@ -120,21 +120,10 @@ class cmsBridge extends boneClass {
       $this->setError('The cmsBridge must be initialized to use this function', __METHOD__, __LINE__);
       return false;
     }
-    $SQL = "SELECT `value` FROM `".CMS_TABLE_PREFIX."settings` WHERE `name`='media_directory'";
-    $this->setInfo("SQL: $SQL", __METHOD__, __LINE__);
-    try {
-      $query = $db->query($SQL);
-    } catch (\Doctrine\DBAL\DBALException $e) {
-      $this->setError($e->getMessage(), __METHOD__, $e->getLine());
+    $media = new LEPTON\mediaDirectory();
+    if (false === ($media_directory = $media->getDirectoryName()))
       return false;
-    }
-    if ($query->rowCount() != 1) {
-      // no entry for the media directory
-      return false;
-    }
-    // fetch the value
-    $setting = $query->fetch();
-    self::$config['CMS_MEDIA_DIRECTORY'] = $setting['value'];
+    self::$config['CMS_MEDIA_DIRECTORY'] = $media_directory;
     return true;
   }
 
