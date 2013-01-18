@@ -11,9 +11,9 @@
 
 include __DIR__.'/bootstrap.php';
 
-use phpManufaktur\extendedWYSIWYG\Data\View;
+use phpManufaktur\extendedWYSIWYG\Data\viewSection;
 
-$View = new View();
-if (false === ($section = $View->getSection($section_id)))
-  trigger_error($View->getError(), E_USER_ERROR);
+$view = new viewSection();
+if (false === ($section = $view->getSection($section_id)))
+  trigger_error($view->getError(), E_USER_ERROR);
 echo $section;

@@ -16,7 +16,7 @@ use phpManufaktur\CMS\Bridge\Control\boneClass;
 global $logger;
 global $tools;
 
-class View extends boneClass {
+class viewSection extends boneClass {
 
   /**
    * Get the content for the $section_id and return it
