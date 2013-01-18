@@ -13,8 +13,8 @@ namespace phpManufaktur\CMS;
 
 use phpManufaktur\CMS\Classes\boneClass;
 use phpManufaktur\CMS\Classes\detectCMS;
-use phpManufaktur\CMS\Bridge\LEPTON as LEPTON;
-use phpManufaktur\CMS\Bridge\WebsiteBaker as WebsiteBaker;
+use phpManufaktur\CMS\Bridge\Data\LEPTON as LEPTON;
+use phpManufaktur\CMS\Bridge\Data\WebsiteBaker as WebsiteBaker;
 use phpManufaktur\CMS\Classes\browserLanguage;
 
 global $logger;
