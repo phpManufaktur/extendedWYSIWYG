@@ -40,7 +40,7 @@ else {
 global $logger;
 // initialize the logger
 $logger = new Logger('extendedWYSIWYG');
-$logger->pushHandler(new StreamHandler(__DIR__.'/extendedWYSIWYG.log', $logger_level));
+$logger->pushHandler(new StreamHandler(__DIR__.'/logfile/extendedWYSIWYG.log', $logger_level));
 $logger->addInfo('Monolog initialized');
 
 global $cms;
