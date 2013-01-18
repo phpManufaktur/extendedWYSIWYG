@@ -10,13 +10,13 @@
  */
 
 $path = __DIR__;
-// at maximum step 8 levels back!
 for ($i=0; $i < 10; $i++) {
-  $path = substr($path, 0, strrpos($path, '/'));
-  // at this point we really want no error messages!
+  // try to find and load the bootstrap.php
   if (@file_exists($path.'/bootstrap.php')) {
     include $path.'/bootstrap.php';
     break;
   }
+  $path = substr($path, 0, strrpos($path, '/'));
 }
-exit('Sorry, no access!');
+header($_SERVER['SERVER_PROTOCOL']." 403 Forbidden");
+exit('<p><b>ACCESS DENIED!</b></p>');
