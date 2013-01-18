@@ -39,10 +39,11 @@ class wysiwygSection extends boneClass {
   /**
    * Get the content for the $section_id for FRONTEND output and return it
    *
-   * @param integer $section_id
+   * @param integer $section_id the section ID
+   * @param boolean $edit_mode if true don't process frontend preparation
    * @return string
    */
-  public function get($section_id) {
+  public function get($section_id, $edit_mode=false) {
     global $db;
     global $tools;
 
@@ -59,12 +60,16 @@ class wysiwygSection extends boneClass {
       $this->setError($e->getMessage(), __METHOD__, $e->getLine());
       return $this->getError();
     }
-
+    // unsanitize the text
     $section = $tools->unsanitizeText($section['content']);
-    if ((CMS_TYPE == 'WebsiteBaker') && (CMS_VERSION == '2.8.1')) {
-      // in WB 2.8.1 the [wblinks ...] must be preprocessed separate
-      global $wb;
-      $wb->preprocess($section);
+
+    if (!$edit_mode) {
+      // prepare the content for frontend output
+      if ((CMS_TYPE == 'WebsiteBaker') && (CMS_VERSION == '2.8.1')) {
+        // in WB 2.8.1 the [wblinks ...] must be preprocessed separate
+        global $wb;
+        $wb->preprocess($section);
+      }
     }
     return $section;
   } // get()
@@ -87,5 +92,28 @@ class wysiwygSection extends boneClass {
     }
     return true;
   } // emptySection()
+
+  /**
+   * Update a WYSIWYG section
+   *
+   * @param integer $section_id
+   * @param string $content
+   * @return boolean
+   */
+  public function update($section_id, $content) {
+    global $db;
+    global $tools;
+
+    $text = $tools->sanitizeText(strip_tags($content));
+    $content = $tools->sanitizeText($content);
+    try {
+      $db->update(CMS_TABLE_PREFIX.'mod_wysiwyg', array('content' => $content, 'text' => $text),
+          array('section_id' => $section_id));
+    } catch (\Doctrine\DBAL\DBALException $e) {
+      $this->setError($e->getMessage(), __METHOD__, $e->getLine());
+      return false;
+    }
+    return true;
+  } // update()
 
 } // class getSection

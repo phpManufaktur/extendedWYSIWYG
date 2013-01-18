@@ -15,11 +15,19 @@ function execOnChange(target_url, select_id, anchor) {
   return false;	
 }
 
-function saveSection(section_id) {
-  var page_id;
-  var form_name;
+function saveSection(sec_id) {
+  var instance_name = 'content_'+sec_id;
+  var content;
   
-  page_id = document.getElementsByName('page_id')[0].value;
-  alert('Hi: '+section_id+ 'P: '+page_id);
+  for (var i in CKEDITOR.instances) {
+    if (CKEDITOR.instances[i].name == instance_name) {
+      // get the content from the CKE
+      content = encodeURI(CKEDITOR.instances[i].getData());
+    }
+  }
+  $.post('http://test.dev.phpmanufaktur.de/modules/wysiwyg/vendor/phpManufaktur/extendedWYSIWYG/Control/getCKEcontent.php', { section_id: sec_id, 'section_content': content },
+  function(data) {
+    alert("Data Loaded: " + data);
+  });
   return false;
 }

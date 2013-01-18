@@ -13,6 +13,7 @@ namespace phpManufaktur\extendedWYSIWYG\View;
 
 use phpManufaktur\CMS\Bridge\Control\boneClass;
 use phpManufaktur\extendedWYSIWYG\View\viewException;
+use phpManufaktur\extendedWYSIWYG\Data\wysiwygSection;
 
 require_once CMS_PATH.'/modules/dwoo/dwoo-1.1.1/dwoo/Dwoo/Exception.php';
 
@@ -85,6 +86,15 @@ class modifySection extends boneClass {
 
   protected function prepareDialog() {
 
+    // get the content of the section
+    $section = new wysiwygSection();
+    $section_content = $section->get(self::$SECTION_ID, true);
+    if ($section->isError()) {
+      $this->setError($section->getError(), __METHOD__, __LINE__);
+      return false;
+    }
+
+
     $data = array(
         'page' => array(
             'name' => 'page_id',
@@ -92,7 +102,9 @@ class modifySection extends boneClass {
             ),
         'section' => array(
             'name' => 'section_id',
-            'id' => self::$SECTION_ID
+            'id' => self::$SECTION_ID,
+            'editor_id' => 'content_'.self::$SECTION_ID,
+            'text' => $section_content
             )
         );
     return $this->getTemplate('modify.dwoo', $data);
