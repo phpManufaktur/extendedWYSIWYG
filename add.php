@@ -11,7 +11,7 @@
 
 include __DIR__.'/bootstrap.php';
 
-use phpManufaktur\extendedWYSIWYG\Backend\Add;
+use phpManufaktur\extendedWYSIWYG\Data\Add;
 
 global $section_id;
 global $page_id;

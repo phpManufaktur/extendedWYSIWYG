@@ -11,7 +11,7 @@
 
 include __DIR__.'/bootstrap.php';
 
-use phpManufaktur\extendedWYSIWYG\Frontend\View;
+use phpManufaktur\extendedWYSIWYG\Data\View;
 
 $View = new View();
 if (false === ($section = $View->getSection($section_id)))

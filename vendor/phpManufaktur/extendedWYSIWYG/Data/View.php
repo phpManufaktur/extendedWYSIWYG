@@ -9,7 +9,7 @@
  * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
  */
 
-namespace phpManufaktur\extendedWYSIWYG\Frontend;
+namespace phpManufaktur\extendedWYSIWYG\Data;
 
 use phpManufaktur\CMS\Bridge\Control\boneClass;
 
