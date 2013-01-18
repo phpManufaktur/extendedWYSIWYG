@@ -9,6 +9,7 @@
  * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
  */
 
+/*
 // include class.secure.php to protect this file and the whole CMS!
 if (defined('WB_PATH')) {
     if (defined('LEPTON_VERSION')) include(WB_PATH.'/framework/class.secure.php');
@@ -36,3 +37,11 @@ require_once LEPTON_PATH.'/modules/'.basename(dirname(__FILE__)).'/class.wysiwyg
 
 $wysiwyg = new extendedWYSIWYG($section_id, $page_id);
 $wysiwyg->action(extendedWYSIWYG::ACTION_MODIFY);
+*/
+
+include __DIR__.'/bootstrap.php';
+
+use phpManufaktur\extendedWYSIWYG\Control\modifySection;
+
+$modify = new modifySection($page_id, $section_id);
+echo $modify->action();

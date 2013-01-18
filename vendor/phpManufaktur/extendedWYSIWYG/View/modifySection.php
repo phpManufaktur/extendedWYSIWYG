@@ -9,10 +9,14 @@
  * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
  */
 
-include __DIR__.'/bootstrap.php';
+namespace phpManufaktur\extendedWYSIWYG\View;
 
-use phpManufaktur\extendedWYSIWYG\Data\wysiwygSection;
+use phpManufaktur\CMS\Bridge\Control\boneClass;
 
-$section = new wysiwygSection();
-if (!$section->delete($section_id))
-  trigger_error($section->getError(), E_USER_ERROR);
+class modifySection extends boneClass {
+
+  public function view() {
+    echo __METHOD__;
+  } // view()
+
+} // class modifySection

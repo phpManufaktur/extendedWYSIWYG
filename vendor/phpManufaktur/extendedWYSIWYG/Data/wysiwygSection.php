@@ -13,17 +13,36 @@ namespace phpManufaktur\extendedWYSIWYG\Data;
 
 use phpManufaktur\CMS\Bridge\Control\boneClass;
 
-global $logger;
-global $tools;
+class wysiwygSection extends boneClass {
 
-class viewSection extends boneClass {
+  /**
+   * Add a new, blank Section to the WYSIWYG table
+   *
+   * @param integer $page_id
+   * @param integer $section_id
+   * @return boolean
+   */
+  public function addBlank($page_id, $section_id) {
+    global $db;
+
+    try {
+      $db->insert(CMS_TABLE_PREFIX.'mod_wysiwyg', array(
+          'page_id' => (int) $page_id, 'section_id' => (int) $section_id));
+      $this->setInfo("Added empty WYSIWYG Section for $page_id / $section_id", __METHOD__, __LINE__);
+    } catch (\Doctrine\DBAL\DBALException $e) {
+      $this->setError($e->getMessage(), __METHOD__, $e->getLine());
+      return false;
+    }
+    return true;
+  } // addBlank()
 
   /**
    * Get the content for the $section_id and return it
    *
+   * @param integer $section_id
    * @return string
    */
-  public function getSection($section_id) {
+  public function get($section_id) {
     global $db;
     global $tools;
 
@@ -48,6 +67,25 @@ class viewSection extends boneClass {
       $wb->preprocess($section);
     }
     return $section;
-  } // getSection()
+  } // get()
 
-} // class View
+  /**
+   * Delete a WYSIWYG section
+   *
+   * @param integer $section_id
+   * @return boolean
+   */
+  public function delete($section_id) {
+    global $db;
+
+    try {
+      $db->delete(CMS_TABLE_PREFIX.'mod_wysiwyg', array('section_id' => $section_id));
+      $this->setInfo("Deleted WYSIWYG Section ".$section_id, __METHOD__, __LINE__);
+    } catch (\Doctrine\DBAL\DBALException $e) {
+      $this->setError($e->getMessage(), __METHOD__, $e->getLine());
+      return false;
+    }
+    return true;
+  } // emptySection()
+
+} // class getSection
