@@ -14,3 +14,12 @@ function execOnChange(target_url, select_id, anchor) {
   window.location = x;
   return false;	
 }
+
+function saveSection(section_id) {
+  var page_id;
+  var form_name;
+  
+  page_id = document.getElementsByName('page_id')[0].value;
+  alert('Hi: '+section_id+ 'P: '+page_id);
+  return false;
+}

@@ -13,9 +13,9 @@
  *
  * Use {dump()} to get a list of all in this template available variables!
  *}
-<form name="wysiwyg{$section_id}" action="{$action.link}#{$action['anchor']}" method="post">
-  <input type="hidden" name="page_id" value="{$page_id}" />
-  <input type="hidden" name="section_id" value="{$section_id}" />
+<form name="wysiwyg{$section.id}">
+  <input type="hidden" name="{$page.name}" value="{$page.id}" />
+  <input type="hidden" name="{$section.name}" value="{$section.id}" />
   <input type="hidden" name="archive_id" value="{$archive['id']}" /> 
   <input type="hidden" name="teaser_id" value="{$options.use_as_blog.fields.teaser.id}" />
   {if $ftan.active == 1}
@@ -121,7 +121,7 @@
       
     </div>
     <div class="wysiwyg_editor_buttons">
-      <input type="submit" value="{translate('Save')}" />
+      <input type="button" value="{translate('Save')}" onclick="javascript:saveSection('{$section.id}');" />
       <input type="button" value="{translate('Abort')}" onclick="javascript:window.location='index.php';" />
     </div>
   </div><!-- /wysiwyg_container -->

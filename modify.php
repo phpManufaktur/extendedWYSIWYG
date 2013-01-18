@@ -14,5 +14,4 @@ include __DIR__.'/bootstrap.php';
 use phpManufaktur\extendedWYSIWYG\Control\modifySection;
 
 $modify = new modifySection($page_id, $section_id);
-$content = $modify->action();
-echo $modify->isError() ? $modify->getError() : $content;
+echo $modify->action();

@@ -16,6 +16,10 @@ use phpManufaktur\extendedWYSIWYG\View;
 
 class modifySection extends boneClass {
 
+  const REQUEST_ACTION = 'act';
+
+  const ACTION_MODIFY = 'mod';
+
   protected static $SECTION_ID = null;
   protected static $PAGE_ID = null;
 
@@ -25,10 +29,25 @@ class modifySection extends boneClass {
     self::$SECTION_ID = $section_id;
   } // __construct()
 
+  /**
+   * Action handler for class modifySection
+   *
+   * @return string modify dialog
+   */
   public function action() {
 
-    $modify = new View\modifySection();
-    return $modify->view();
+    // set requested action or default $command
+    $action = (isset($_REQUEST[self::REQUEST_ACTION])) ? $_REQUEST[self::REQUEST_ACTION] : self::ACTION_MODIFY;
+
+    switch ($action):
+
+    case self::ACTION_MODIFY:
+    default:
+      $modify = new View\modifySection(self::$PAGE_ID, self::$SECTION_ID);
+      $content = $modify->view();
+    endswitch;
+
+    return $content;
   } // view()
 
 } // class modifySection

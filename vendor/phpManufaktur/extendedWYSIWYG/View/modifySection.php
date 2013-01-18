@@ -16,19 +16,31 @@ use phpManufaktur\extendedWYSIWYG\View\viewException;
 
 require_once CMS_PATH.'/modules/dwoo/dwoo-1.1.1/dwoo/Dwoo/Exception.php';
 
-global $I18n;
-
 class modifySection extends boneClass {
 
+  const ANCHOR = 'wysiwyg_';
+
+  const REQUEST_ACTION = 'act';
+
+  const ACTION_MODIFY = 'mod';
+
+  protected static $PAGE_ID = null;
+  protected static $SECTION_ANCHOR = null;
+  protected static $SECTION_ID = null;
   protected static $TEMPLATE_PATH = null;
+
+
   protected $lang = null;
 
-  public function __construct() {
+  public function __construct($page_id, $section_id) {
     global $I18n;
 
     $this->setInfo('Initialize Class View\modifySection', __METHOD__, __LINE__);
     self::$TEMPLATE_PATH = __DIR__.'/Templates/Backend/';
     $this->lang = $I18n;
+    self::$PAGE_ID = $page_id;
+    self::$SECTION_ID = $section_id;
+    self::$SECTION_ANCHOR = self::ANCHOR.self::$SECTION_ID;
   } // __construct()
 
   /**
@@ -45,7 +57,7 @@ class modifySection extends boneClass {
     // check if a custom template exists ...
     $load_template = (file_exists(self::$TEMPLATE_PATH.'custom.'.$template)) ? self::TEMPLATE_PATH.'custom.'.$template : self::$TEMPLATE_PATH.$template;
     try {
-      $result = $dwoo->get('x'.$load_template, $template_data);
+      $result = $dwoo->get($load_template, $template_data);
     }
     catch (\Dwoo_Exception $e) {
       $this->setError($this->lang->translate('Error executing the template <b>{{ template }}</b>: {{ error }}',
@@ -55,13 +67,35 @@ class modifySection extends boneClass {
     return $result;
   } // getTemplate()
 
+  /**
+   * Return the completed View
+   *
+   * @return Ambigous <boolean, \phpManufaktur\extendedWYSIWYG\View\Ambigous, string, mixed>
+   */
   public function view() {
+    $content = $this->prepareDialog();
 
     $data = array(
+        'anchor' => self::$SECTION_ANCHOR,
         'is_error' => (int) $this->isError(),
-        'content' => 'TEST'
-        );
+        'content' => ($this->isError()) ? $this->getError() : $content
+    );
     return $this->getTemplate('body.dwoo', $data);
+  }
+
+  protected function prepareDialog() {
+
+    $data = array(
+        'page' => array(
+            'name' => 'page_id',
+            'id' => self::$PAGE_ID
+            ),
+        'section' => array(
+            'name' => 'section_id',
+            'id' => self::$SECTION_ID
+            )
+        );
+    return $this->getTemplate('modify.dwoo', $data);
   } // view()
 
 } // class modifySection
