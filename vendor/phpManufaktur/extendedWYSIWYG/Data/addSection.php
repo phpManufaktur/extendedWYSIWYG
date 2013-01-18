@@ -15,7 +15,7 @@ use phpManufaktur\CMS\Bridge\Control\boneClass;
 
 global $db;
 
-class Add extends boneClass {
+class addSection extends boneClass {
 
   /**
    * Add a new, empty Section to the WYSIWYG table
@@ -38,4 +38,4 @@ class Add extends boneClass {
     return true;
   } // emptySection()
 
-} // class Add
+} // class addSection
