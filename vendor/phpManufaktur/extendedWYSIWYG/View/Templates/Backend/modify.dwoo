@@ -18,9 +18,6 @@
   <input type="hidden" name="{$section.name}" value="{$section.id}" />
   <input type="hidden" name="archive_id" value="{$archive['id']}" /> 
   <input type="hidden" name="teaser_id" value="{$options.use_as_blog.fields.teaser.id}" />
-  {if $ftan.active == 1}
-  <input type="hidden" name="{$ftan.name}" value="{$ftan.value}" />
-  {/if}
   <div class="wysiwyg_system">
     <div class="wysiwyg_options">
       {if $options.page_settings.active == 1}
@@ -33,7 +30,7 @@
     </div>
     [<a href="{$about.link}">extendedWYSIWYG</a>] [<a href="{$config.link}">{translate('Settings')}</a>]
   </div>
-  <div id="wysiwyg_container_{$section_id}">
+  <div id="wysiwyg_container_{$section.id}">
     {if $options.page_settings.active == 1}
       <div id="wysiwyg_page_settings">
         <div class="wysiwyg_page_settings_content">
@@ -45,19 +42,19 @@
           <div class="wysiwyg_page_settings_item">
             <div class="wysiwyg_page_settings_label">{translate('Page Title')}</div>
             <div class="wysiwyg_page_settings_value">
-              <input type="text" name="{$options.page_settings.fields.title.name}" value="{$options.page_settings.fields.title.value}" />
+              <input id="{$options.page_settings.fields.title.name}" type="text" name="{$options.page_settings.fields.title.name}" value="{$options.page_settings.fields.title.value}" />
             </div>
           </div>
           <div class="wysiwyg_page_settings_item">
             <div class="wysiwyg_page_settings_label">{translate('Page Description')}</div>
             <div class="wysiwyg_page_settings_value">
-              <textarea name="{$options.page_settings.fields.description.name}">{$options.page_settings.fields.description.value}</textarea>
+              <textarea id="{$options.page_settings.fields.description.name}" name="{$options.page_settings.fields.description.name}">{$options.page_settings.fields.description.value}</textarea>
             </div>
           </div>
           <div class="wysiwyg_page_settings_item">
             <div class="wysiwyg_page_settings_label">{translate('Page Keywords')}</div>
             <div class="wysiwyg_page_settings_value">
-              <input type="text" name="{$options.page_settings.fields.keywords.name}" value="{$options.page_settings.fields.keywords.value}" />
+              <input id="{$options.page_settings.fields.keywords.name}" type="text" name="{$options.page_settings.fields.keywords.name}" value="{$options.page_settings.fields.keywords.value}" />
             </div>
           </div>
         </div>
@@ -121,7 +118,7 @@
       
     </div>
     <div class="wysiwyg_editor_buttons">
-      <input type="button" value="{translate('Save')}" onclick="javascript:saveSection('{$section.id}');" />
+      <input type="button" value="{translate('Save')}" onclick="javascript:saveSection('{$link.save.url}','{$section.id}','{$page.id}');" />
       <input type="button" value="{translate('Abort')}" onclick="javascript:window.location='index.php';" />
     </div>
   </div><!-- /wysiwyg_container -->

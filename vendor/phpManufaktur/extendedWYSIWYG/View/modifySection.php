@@ -14,6 +14,8 @@ namespace phpManufaktur\extendedWYSIWYG\View;
 use phpManufaktur\CMS\Bridge\Control\boneClass;
 use phpManufaktur\extendedWYSIWYG\View\viewException;
 use phpManufaktur\extendedWYSIWYG\Data\wysiwygSection;
+use phpManufaktur\extendedWYSIWYG\Data\wysiwygOptions;
+use phpManufaktur\extendedWYSIWYG\Data\pageSettings;
 
 require_once CMS_PATH.'/modules/dwoo/dwoo-1.1.1/dwoo/Dwoo/Exception.php';
 
@@ -94,6 +96,16 @@ class modifySection extends boneClass {
       return false;
     }
 
+    // get the position of the section
+    $position = $section->getPosition(self::$SECTION_ID);
+
+    // get the options of the section
+    $opt = new wysiwygOptions();
+    $options = $opt->getOptionsArray(self::$SECTION_ID);
+
+    // get the page settings
+    $pageSettings = new pageSettings();
+    $page = $pageSettings->getSettingsArray(self::$PAGE_ID);
 
     $data = array(
         'page' => array(
@@ -105,6 +117,43 @@ class modifySection extends boneClass {
             'id' => self::$SECTION_ID,
             'editor_id' => 'content_'.self::$SECTION_ID,
             'text' => $section_content
+            ),
+        'options' => array(
+            'page_settings' => array(
+                'active' => ($position == 1) ? 1 : 0,
+                'checkbox' => array(
+                    'name' => sprintf('page_settings_%d', self::$SECTION_ID),
+                    'value' => 1,
+                    'checked' => in_array('page_settings', $options) ? 1 : 0
+                    ),
+                'fields' => array(
+                    'title' => array(
+                        'name' => 'page_title',
+                        'value' => $page['page_title']
+                        ),
+                    'description' => array(
+                        'name' => 'page_description',
+                        'value' => $page['description']
+                        ),
+                    'keywords' => array(
+                        'name' => 'page_keywords',
+                        'value' => $page['keywords']
+                        )
+                    )
+                ),
+            'hide_section' => array(
+                'checkbox' => array(
+                    'name' => sprintf('hide_section_%d', self::$SECTION_ID),
+                    'value' => 1,
+                    'checked' => in_array('hide_section', $options) ? 1 : 0
+                    )
+                ),
+
+            ),
+        'link' => array(
+            'save' => array(
+                'url' => CMS_ADDON_URL.'/vendor/phpManufaktur/extendedWYSIWYG/Control/retrieveCKEditorContent.php'
+                ),
             )
         );
     return $this->getTemplate('modify.dwoo', $data);

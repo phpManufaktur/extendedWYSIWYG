@@ -15,8 +15,8 @@ function execOnChange(target_url, select_id, anchor) {
   return false;	
 }
 
-function saveSection(sec_id) {
-  var instance_name = 'content_'+sec_id;
+function saveSection(script_url, section_id, page_id) {
+  var instance_name = 'content_'+section_id;
   var content;
   
   for (var i in CKEDITOR.instances) {
@@ -25,7 +25,22 @@ function saveSection(sec_id) {
       content = encodeURI(CKEDITOR.instances[i].getData());
     }
   }
-  $.post('http://test.dev.phpmanufaktur.de/modules/wysiwyg/vendor/phpManufaktur/extendedWYSIWYG/Control/getCKEcontent.php', { section_id: sec_id, 'section_content': content },
+  
+  var check_page_settings = 0;
+  var page_title = '';
+  var page_description = '';
+  var page_keywords = '';
+  if (document.getElementById('page_settings_'+section_id) && 
+    (document.getElementById('page_settings_'+section_id).value == 1)) {
+    check_page_settings = 1;
+    page_title = encodeURI(document.getElementById('page_title').value);
+    page_description = encodeURI(document.getElementById('page_description').value);
+    page_keywords = encodeURI(document.getElementById('page_keywords').value);
+  }
+  alert('D: '+page_description+page_keywords);
+  $.post(script_url, { 'section_id': section_id, 'section_content': content, 'page_id': page_id, 
+    'check_page_settings': check_page_settings, 'page_title': page_title, 'page_description': page_description,
+    'page_keywords': page_keywords },
   function(data) {
     alert("Data Loaded: " + data);
   });

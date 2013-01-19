@@ -16,12 +16,7 @@
 <div class="wysiwyg_body">
   <a name="{$anchor}"></a>
   {if $is_error == 1}
-    <div class="wysiwyg_error">
-      {$content}
-      <div class="wysiwyg_error_support">
-        {translate('Please help to improve Open Source Software and report this problem to the <a href="{{ url }}" target="_blank">phpManufaktur Addons Support</a> Group.', array(url='https://phpmanufaktur.de/support'))}
-      </div>
-    </div>
+    
   {else}
     {$content} 
   {/if}
