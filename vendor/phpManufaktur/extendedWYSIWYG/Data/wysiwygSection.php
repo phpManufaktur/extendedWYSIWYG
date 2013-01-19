@@ -22,7 +22,7 @@ class wysiwygSection extends boneClass {
    * @param integer $section_id
    * @return boolean
    */
-  public function addBlank($page_id, $section_id) {
+  public function insertBlank($page_id, $section_id) {
     global $db;
 
     try {
@@ -34,7 +34,7 @@ class wysiwygSection extends boneClass {
       return false;
     }
     return true;
-  } // addBlank()
+  } // insertBlank()
 
   /**
    * Get the content for the $section_id for FRONTEND output and return it
@@ -43,7 +43,7 @@ class wysiwygSection extends boneClass {
    * @param boolean $edit_mode if true don't process frontend preparation
    * @return string
    */
-  public function get($section_id, $edit_mode=false) {
+  public function select($section_id, $edit_mode=false) {
     global $db;
     global $tools;
 
@@ -123,7 +123,7 @@ class wysiwygSection extends boneClass {
    * @param integer $section_id
    * @return number
    */
-  public function getPosition($section_id) {
+  public function getSectionPositionInPage($section_id) {
     global $db;
 
     try {
@@ -134,6 +134,6 @@ class wysiwygSection extends boneClass {
       return $this->getError();
     }
     return (int) $position['position'];
-  } // getPosition()
+  } // getSectionPositionWithinPage()
 
-} // class getSection
+} // class wysiwygSection

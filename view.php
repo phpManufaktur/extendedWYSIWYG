@@ -14,6 +14,6 @@ include __DIR__.'/bootstrap.php';
 use phpManufaktur\extendedWYSIWYG\Data\wysiwygSection;
 
 $section = new wysiwygSection();
-if (false === ($content = $section->get($section_id)))
+if (false === ($content = $section->select($section_id)))
   trigger_error($section->getError(), E_USER_ERROR);
 echo $content;
