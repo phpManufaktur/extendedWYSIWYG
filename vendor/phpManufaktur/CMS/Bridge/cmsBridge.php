@@ -20,6 +20,7 @@ use phpManufaktur\CMS\Bridge\Data\browserLanguage;
 global $logger;
 global $db;
 
+
 class cmsBridge extends boneClass {
 
   public $logger = null;
@@ -275,5 +276,80 @@ class cmsBridge extends boneClass {
       define('CMS_LANGUAGE', self::$config['CMS_LANGUAGE']);
     return true;
   } // setLanguage()
+
+  /**
+   * Check wether a user is authenticated for the CMS or not
+   *
+   * @return boolean
+   */
+  public function isUserAuthenticated() {
+    global $wb;
+    global $admin;
+
+    // use the WB / LEPTON function
+    if (is_object($wb))
+      return $wb->is_authenticated();
+    elseif (is_object($admin))
+      return $admin->is_authenticated();
+    else
+      return false;
+  } // isUserAuthenticated()
+
+  /**
+   * Get the login name of the authenticated user.
+   * If not authenticated the function return an empty string
+   *
+   * @return Ambigous <string, unknown>
+   */
+  public function getUserLoginName() {
+    global $wb;
+    global $admin;
+
+    // use the WB / LEPTON function
+    if (is_object($wb))
+      return $wb->get_username();
+    elseif (is_object($admin))
+      return $admin->get_username();
+    else
+      return '';
+  } // getUserLoginName()
+
+  /**
+   * Get the Display Name of the authenticated user.
+   * If not authenticated the function return an empty string
+   *
+   * @return Ambigous <string, unknown>
+   */
+  public function getUserDisplayName() {
+    global $admin;
+    global $wb;
+
+    // use the WB / LEPTON function
+    if (is_object($wb))
+      return $wb->get_display_name();
+    elseif (is_object($admin))
+      return $admin->get_display_name();
+    else
+      return '';
+  } // getUserDisplayName()
+
+  /**
+   * Get the EMail Address of the authenticated user.
+   * If not authenticated the function return an empty string
+   *
+   * @return Ambigous <string, unknown>
+   */
+  public function getUserEMailAddress() {
+    global $wb;
+    global $admin;
+
+    // use the WB / LEPTON function
+    if (is_object($wb))
+      return $wb->get_email();
+    elseif (is_object($admin))
+      return $admin->get_email();
+    else
+      return '';
+  } // getUserEMailAddress
 
 } // class cmsBridge
