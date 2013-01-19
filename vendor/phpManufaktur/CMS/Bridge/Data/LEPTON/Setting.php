@@ -23,7 +23,7 @@ class Setting extends boneClass {
    * @param string $setting
    * @return boolean|Ambigous <>
    */
-  public function get($setting) {
+  public function select($setting) {
     global $db;
 
     try {
