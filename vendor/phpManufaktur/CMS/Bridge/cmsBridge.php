@@ -135,6 +135,14 @@ class cmsBridge extends boneClass {
     return (isset(self::$config['CMS_MEDIA_DIRECTORY']) && isset(self::$config['CMS_URL'])) ? self::$config['CMS_URL'].self::$config['CMS_MEDIA_DIRECTORY'] : null;
   }
 
+  public function getCMS_ADDON_URL() {
+    if (isset(self::$config['CMS_PATH']) && isset(self::$config['CMS_URL'])) {
+      return self::$config['CMS_URL'] . substr(CMS_ADDON_PATH, strlen(self::$config['CMS_PATH']));
+    }
+    else
+      return null;
+  }
+
   public function detectCMS() {
     $detectCMS = new detectCMS();
      if (!$detectCMS->checkConfiguration()) {
@@ -229,7 +237,7 @@ class cmsBridge extends boneClass {
     if (!defined('CMS_PATH'))
       define('CMS_PATH', $this->getCMS_PATH());
     if (!defined('CMS_URL'))
-      define('CMS_URL', $this->getCMS_TYPE());
+      define('CMS_URL', $this->getCMS_URL());
     if (!defined('CMS_ADMIN_PATH'))
       define('CMS_ADMIN_PATH', $this->getCMS_ADMIN_PATH());
     if (!defined('CMS_ADMIN_URL'))
@@ -240,6 +248,8 @@ class cmsBridge extends boneClass {
       define('CMS_TEMP_PATH', $this->getCMS_TEMP_PATH());
     if (!defined('CMS_TEMP_URL'))
       define('CMS_TEMP_URL', $this->getCMS_TEMP_URL());
+    if (!defined('CMS_ADDON_URL'))
+      define('CMS_ADDON_URL', $this->getCMS_ADDON_URL());
 
     // set status to prepared
     self::setStatus(self::STATUS_PREPARED);
