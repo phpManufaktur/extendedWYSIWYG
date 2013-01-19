@@ -9,29 +9,9 @@
  * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
  */
 
-// include class.secure.php to protect this file and the whole CMS!
-if (defined('WB_PATH')) {
-  if (defined('LEPTON_VERSION'))
-    include(WB_PATH.'/framework/class.secure.php');
-}
-else {
-  $oneback = "../";
-  $root = $oneback;
-  $level = 1;
-  while (($level < 10) && (!file_exists($root.'/framework/class.secure.php'))) {
-    $root .= $oneback;
-    $level += 1;
-  }
-  if (file_exists($root.'/framework/class.secure.php')) {
-    include($root.'/framework/class.secure.php');
-  }
-  else {
-    trigger_error(sprintf("[ <b>%s</b> ] Can't include class.secure.php!", $_SERVER['SCRIPT_NAME']), E_USER_ERROR);
-  }
-}
-// end include class.secure.php
+if (!defined('WB_PATH'))
+  include __DIR__.'/bootstrap.php';
 
-// Checking Requirements
 global $database;
 
 $checked = true;
@@ -54,21 +34,6 @@ $check = array(
         'version' => '0.24',
         'problem' => 'dropletsExtension => <b><a href="https://addons.phpmanufaktur.de/download.php?file=dropletsExtension" target="_blank">Download actual version</a></b>'
     ),
-    'wbLib' => array(
-        'directory' => 'wblib',
-        'version' => '0.65',
-        'problem' => 'wbLib => <b><a href="https://github.com/webbird/wblib/downloads" target="_blank">Download actual version</a></b>'
-        ),
-    'LibraryAdmin' => array(
-        'directory' => 'libraryadmin',
-        'version' => '1.9',
-        'problem' => 'LibraryAdmin => <b><a href="http://jquery.lepton-cms.org/modules/download_gallery/dlc.php?file=75&id=1318585713" target="_blank">Download actual version</a></b>'
-         ),
-    'libJQuery' => array(
-        'directory' => 'lib_jquery',
-        'version' => '1.25',
-        'problem' => 'libJQuery => <b><a href="http://jquery.lepton-cms.org/modules/download_gallery/dlc.php?file=76&id=1320743410" target="_blank">Download actual version</a></b>'
-        ),
     'manufakturConfig' => array(
         'directory' => 'manufaktur_config',
         'version' => '0.16',
@@ -108,20 +73,6 @@ $PRECHECK['CUSTOM_CHECKS'][$key] = array(
     'REQUIRED' => 'utf-8',
     'ACTUAL' => $charset,
     'STATUS' => ($charset == 'utf-8')
-);
-
-// jQueryAdmin should be uninstalled
-if (file_exists(WB_PATH . '/modules/jqueryadmin/tool.php')) {
-  $checked = false;
-  $key = 'jQueryAdmin is <b>deprecated</b>, please uninstall and<br />use <b>LibraryAdmin</b> instead!';
-}
-else
-  $key = 'jQueryAdmin';
-
-$PRECHECK['CUSTOM_CHECKS'][$key] = array(
-    'REQUIRED' => 'REMOVED',
-    'ACTUAL' => (file_exists(WB_PATH . '/modules/jqueryadmin/tool.php')) ? 'INSTALLED' : 'REMOVED',
-    'STATUS' => (!file_exists(WB_PATH . '/modules/jqueryadmin/tool.php'))
 );
 
 if (!$checked) {
