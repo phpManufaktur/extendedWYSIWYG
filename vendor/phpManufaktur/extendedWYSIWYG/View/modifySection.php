@@ -16,6 +16,7 @@ use phpManufaktur\extendedWYSIWYG\View\viewException;
 use phpManufaktur\extendedWYSIWYG\Data\wysiwygSection;
 use phpManufaktur\extendedWYSIWYG\Data\wysiwygOptions;
 use phpManufaktur\extendedWYSIWYG\Data\pageSettings;
+use phpManufaktur\extendedWYSIWYG\Data\wysiwygArchive;
 
 require_once CMS_PATH.'/modules/dwoo/dwoo-1.1.1/dwoo/Dwoo/Exception.php';
 
@@ -87,25 +88,32 @@ class modifySection extends boneClass {
   }
 
   protected function prepareDialog() {
+    global $tools;
+    global $cms;
 
     // get the content of the section
     $section = new wysiwygSection();
-    $section_content = $section->get(self::$SECTION_ID, true);
+    $section_content = $section->select(self::$SECTION_ID, true);
     if ($section->isError()) {
       $this->setError($section->getError(), __METHOD__, __LINE__);
       return false;
     }
 
     // get the position of the section
-    $position = $section->getPosition(self::$SECTION_ID);
+    $position = $section->getSectionPositionInPage(self::$SECTION_ID);
 
     // get the options of the section
     $opt = new wysiwygOptions();
-    $options = $opt->getOptionsArray(self::$SECTION_ID);
+    $options = $opt->selectArray(self::$SECTION_ID);
 
     // get the page settings
     $pageSettings = new pageSettings();
     $page = $pageSettings->getSettingsArray(self::$PAGE_ID);
+
+    // set the default author
+    $author = $cms->getUserDisplayName();
+
+    $archive = new wysiwygArchive();
 
     $data = array(
         'page' => array(
@@ -117,6 +125,12 @@ class modifySection extends boneClass {
             'id' => self::$SECTION_ID,
             'editor_id' => 'content_'.self::$SECTION_ID,
             'text' => $section_content
+            ),
+        'publish' => $publish,
+        'author' => $author,
+        'count' => array(
+            'words' => $tools->countWords($section_content),
+            'chars' => strlen(strip_tags($section_content))
             ),
         'options' => array(
             'page_settings' => array(

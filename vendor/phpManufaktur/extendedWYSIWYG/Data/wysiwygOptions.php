@@ -23,7 +23,7 @@ class wysiwygOptions extends boneClass {
    * @param integer $section_id
    * @return array
    */
-  public function getOptionsArray($section_id) {
+  public function selectArray($section_id) {
     global $db;
 
     try {
