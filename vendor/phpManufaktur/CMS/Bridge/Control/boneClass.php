@@ -37,7 +37,7 @@ class boneClass {
   protected function setError($error, $method, $line) {
     global $logger;
     self::$error = sprintf('[%s - %s] %s', $method, $line, $error);
-    $logger->addError(self::$error);
+    $logger->addError(strip_tags(self::$error));
   } // setError()
 
   /**
@@ -68,7 +68,7 @@ class boneClass {
   protected function setMessage($message, $method, $line) {
     global $logger;
     self::$message = $message;
-    $logger->addInfo(sprintf('[%s - %s] %s', $method, $line, $message));
+    $logger->addInfo(sprintf('[%s - %s] %s', $method, $line, strip_tags($message)));
   } // setMessage()
 
   /**
