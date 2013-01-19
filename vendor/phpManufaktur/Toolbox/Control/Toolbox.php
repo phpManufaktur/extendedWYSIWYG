@@ -80,7 +80,7 @@ class Toolbox extends boneClass {
       // if a new word start count
     if (isset($t[$string[$i-1]]) && !isset($t[$string[$i]])) $count++;
     return $count;
-  } // count_words()
+  } // countWords()
 
 
 } // class Toolbox
