@@ -32,6 +32,8 @@ class modifySection extends boneClass {
   protected static $SECTION_ANCHOR = null;
   protected static $SECTION_ID = null;
   protected static $TEMPLATE_PATH = null;
+  protected static $ARCHIVE_ID = null;
+  protected static $MODIFY_PAGE_URL = null;
 
 
   protected $lang = null;
@@ -45,7 +47,26 @@ class modifySection extends boneClass {
     self::$PAGE_ID = $page_id;
     self::$SECTION_ID = $section_id;
     self::$SECTION_ANCHOR = self::ANCHOR.self::$SECTION_ID;
+    self::$MODIFY_PAGE_URL = CMS_ADMIN_URL.'/pages/modify.php';
   } // __construct()
+
+  /**
+   * Set the ARCHIVE ID
+   *
+   * @param integer $archive_id
+   */
+  public function setArchiveID($archive_id) {
+    self::$ARCHIVE_ID = $archive_id;
+  } // setArchiveID()
+
+  /**
+   * Get the active ARCHIVE ID
+   *
+   * @return integer|NULL
+   */
+  public function getArchiveID() {
+    return self::$ARCHIVE_ID;
+  } // getArchiveID()
 
   /**
    * Get the template, set the data and return the compiled
@@ -80,6 +101,7 @@ class modifySection extends boneClass {
     $content = $this->prepareDialog();
 
     $data = array(
+        'CMS_ADDON_URL' => CMS_ADDON_URL,
         'anchor' => self::$SECTION_ANCHOR,
         'is_error' => (int) $this->isError(),
         'content' => ($this->isError()) ? $this->getError() : $content
@@ -91,15 +113,8 @@ class modifySection extends boneClass {
     global $tools;
     global $cms;
 
-    // get the content of the section
-    $section = new wysiwygSection();
-    $section_content = $section->select(self::$SECTION_ID, true);
-    if ($section->isError()) {
-      $this->setError($section->getError(), __METHOD__, __LINE__);
-      return false;
-    }
-
     // get the position of the section
+    $section = new wysiwygSection();
     $position = $section->getSectionPositionInPage(self::$SECTION_ID);
 
     // get the options of the section
@@ -110,10 +125,61 @@ class modifySection extends boneClass {
     $pageSettings = new pageSettings();
     $page = $pageSettings->getSettingsArray(self::$PAGE_ID);
 
-    // set the default author
-    $author = $cms->getUserDisplayName();
-
+    // get the archive content for this section
     $archive = new wysiwygArchive();
+    if (!is_null(self::$ARCHIVE_ID)) {
+      // select the given ARCHIVE ID
+      if (false === ($archive_record = $archive->select(self::$ARCHIVE_ID))) {
+        $this->setError($archive->getError(), __METHOD__, __LINE__);
+        return false;
+      }
+    }
+    else {
+      // select the last record of the archive
+      if (false === ($archive_record = $archive->selectLast(self::$SECTION_ID))) {
+        $this->setError($archive->getError(), __METHOD__, __LINE__);
+        return false;
+      }
+    }
+
+    if (count($archive_record) > 0) {
+      // get the content from the Archive record
+      $section_content = $archive_record['content'];
+      $author = $archive_record['author'];
+      $publish = (int) ($archive_record['status'] == 'ACTIVE');
+    }
+    else {
+      // it exists no Archive Record, we have to create one from the section
+      $section_content = $section->select(self::$SECTION_ID, true);
+      if ($section->isError()) {
+        $this->setError($section->getError(), __METHOD__, __LINE__);
+        return false;
+      }
+      // set the actual user as author
+      $author = $cms->getUserDisplayName();
+      $archive_id = -1;
+      if (!$archive->insert(self::$PAGE_ID, self::$SECTION_ID, $section_content, $author, $archive_id)) {
+        $this->setError($archive->getError(), __METHOD__, __LINE__);
+        return false;
+      }
+      self::$ARCHIVE_ID = $archive_id;
+      $publish = true;
+    }
+    $archives = $archive->selectArchiveListForDialog(self::$SECTION_ID);
+    if ($archive->isError()) {
+      $this->setError($archive->getError(), __METHOD__, __LINE__);
+      return false;
+    }
+
+    $archive_array = array();
+    foreach ($archives as $item) {
+      $archive_array[$item['archive_id']] = array(
+          'text' => sprintf('%s | %s', $item['timestamp'], $item['status']),
+          'value' => $item['archive_id']
+          );
+    }
+
+    $leptoken = (defined('LEPTON_VERSION') && isset($_GET['leptoken'])) ? sprintf('&leptoken=%s', $_GET['leptoken']) : '';
 
     $data = array(
         'page' => array(
@@ -131,6 +197,20 @@ class modifySection extends boneClass {
         'count' => array(
             'words' => $tools->countWords($section_content),
             'chars' => strlen(strip_tags($section_content))
+            ),
+        'archive' => array(
+            'id' => self::$ARCHIVE_ID,
+            'name' => 'archiv_id'.self::$SECTION_ID,
+            'items' => $archive_array,
+            'link' => sprintf('%s?%s%s&archive_id%d=',
+                self::$MODIFY_PAGE_URL,
+                http_build_query(array(
+                    'page_id' => self::$PAGE_ID,
+                    )),
+                $leptoken,
+                self::$SECTION_ID
+                ),
+            'anchor' => self::$SECTION_ANCHOR
             ),
         'options' => array(
             'page_settings' => array(

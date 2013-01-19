@@ -33,6 +33,6 @@ class wysiwygOptions extends boneClass {
       $this->setError($e->getMessage(), __METHOD__, $e->getLine());
       return $this->getError();
     }
-    return explode(',', $options_string);
+    return explode(',', $options_string['options']);
   } // getOptionArray()
 }

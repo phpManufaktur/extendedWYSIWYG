@@ -17,11 +17,13 @@ use phpManufaktur\extendedWYSIWYG\View;
 class modifySection extends boneClass {
 
   const REQUEST_ACTION = 'act';
+  const REQUEST_ARCHIVE_ID = 'archive_id';
 
   const ACTION_MODIFY = 'mod';
 
   protected static $SECTION_ID = null;
   protected static $PAGE_ID = null;
+  protected static $ARCHIVE_ID = null;
 
   public function __construct($page_id, $section_id) {
     $this->setInfo('Initialize class modifySection', __METHOD__, __LINE__);
@@ -44,6 +46,11 @@ class modifySection extends boneClass {
     case self::ACTION_MODIFY:
     default:
       $modify = new View\modifySection(self::$PAGE_ID, self::$SECTION_ID);
+      if (isset($_REQUEST[self::REQUEST_ARCHIVE_ID.self::$SECTION_ID])) {
+        // set the ARCHIVE ID
+        self::$ARCHIVE_ID = (int) $_REQUEST[self::REQUEST_ARCHIVE_ID.self::$SECTION_ID];
+        $modify->setArchiveID(self::$ARCHIVE_ID);
+      }
       $content = $modify->view();
     endswitch;
 
