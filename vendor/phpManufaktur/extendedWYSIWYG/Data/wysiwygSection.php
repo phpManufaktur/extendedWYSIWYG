@@ -116,4 +116,24 @@ class wysiwygSection extends boneClass {
     return true;
   } // update()
 
+
+  /**
+   * Get the position of the WYSIWYG section within the page
+   *
+   * @param integer $section_id
+   * @return number
+   */
+  public function getPosition($section_id) {
+    global $db;
+
+    try {
+      $SQL = "SELECT `position` FROM `".CMS_TABLE_PREFIX."sections` WHERE `module`='wysiwyg' AND `section_id`=?";
+      $position = $db->fetchAssoc($SQL, array($section_id));
+    } catch (\Doctrine\DBAL\DBALException $e) {
+      $this->setError($e->getMessage(), __METHOD__, $e->getLine());
+      return $this->getError();
+    }
+    return (int) $position['position'];
+  } // getPosition()
+
 } // class getSection
