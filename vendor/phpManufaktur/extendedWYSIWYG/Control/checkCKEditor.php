@@ -38,7 +38,7 @@ class checkCKEditor extends boneClass {
       $setting = new LEPTON\Setting();
     else
       $setting = new WebsiteBaker\Setting();
-    return ($setting->get('ckeditor') == 'ckeditor');
+    return ($setting->select('ckeditor') == 'ckeditor');
   } // isActiveEditor()
 
 } // class checkCKEactive
