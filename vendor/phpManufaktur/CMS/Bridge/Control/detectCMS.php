@@ -91,6 +91,9 @@ class detectCMS extends boneClass {
       case 'WB_PATH':
         $config_file['CMS_PATH'] = $root_path;
         break;
+      case 'WB_URL':
+        $config_file['CMS_URL'] = $defines[$define];
+        break;
       case 'ADMIN_PATH':
         $admin = substr($defines['ADMIN_URL'], strlen($defines['WB_URL']));
         $config_file['CMS_ADMIN_PATH'] = $root_path.$admin;
