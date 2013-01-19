@@ -55,4 +55,32 @@ class Toolbox extends boneClass {
     return $text;
   } // unsanitizeText()
 
+  /**
+   * Count words as proposed from stano110@azet.sk at
+   * http://de2.php.net/manual/de/function.str-word-count.php
+   * and works well with UTF-8
+   *
+   * @param string $string
+   * @return number
+   */
+  public static function countWords($string)  {
+    $string = htmlspecialchars_decode(strip_tags($string));
+    if (strlen($string)==0)
+      return 0;
+    // separators
+    $t = array(' '=>1, '_'=>1, "\x20"=>1, "\xA0"=>1, "\x0A"=>1, "\x0D"=>1, "\x09"=>1,
+        "\x0B"=>1, "\x2E"=>1, "\t"=>1, '='=>1, '+'=>1, '-'=>1, '*'=>1, '/'=>1, '\\'=>1,
+        ','=>1, '.'=>1, ';'=>1, ':'=>1, '"'=>1, '\''=>1, '['=>1, ']'=>1, '{'=>1, '}'=>1,
+        '('=>1, ')'=>1, '<'=>1, '>'=>1, '&'=>1, '%'=>1, '$'=>1, '@'=>1, '#'=>1, '^'=>1,
+        '!'=>1, '?'=>1);
+    $count= isset($t[$string[0]]) ? 0:1;
+    if (strlen($string) == 1)
+      return $count;
+    for ($i=1; $i<strlen($string); $i++)
+      // if a new word start count
+    if (isset($t[$string[$i-1]]) && !isset($t[$string[$i]])) $count++;
+    return $count;
+  } // count_words()
+
+
 } // class Toolbox
