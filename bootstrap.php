@@ -114,11 +114,14 @@ else {
   if (!class_exists('LEPTON_Helper_I18n'))
     require_once CMS_PATH.'/modules/manufaktur_config/framework/LEPTON/Helper/I18n.php';
   // detect and set the actual language
-  if (!$cms->setLanguage(CMS_ADDON_PATH.'/languages'))
+  if (!$cms->setLanguage(CMS_ADDON_PATH.'/vendor/phpManufaktur/extendedWYSIWYG/Data/Location/'))
     trigger_error($cms->getError());
   // initialize the I18n service
   if (!is_object($I18n))
     $I18n = new LEPTON_Helper_I18n();
+  // add the needed language file if possible
+  if (file_exists(CMS_ADDON_PATH.'/vendor/phpManufaktur/extendedWYSIWYG/Data/Location/'.CMS_LANGUAGE.'.php'))
+    $I18n->addFile(CMS_LANGUAGE.'.php', CMS_ADDON_PATH.'/vendor/phpManufaktur/extendedWYSIWYG/Data/Location/');
 
   global $dwoo;
   // we use the Dwoo template engine (as external addon)
