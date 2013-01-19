@@ -14,5 +14,5 @@ include __DIR__.'/bootstrap.php';
 use phpManufaktur\extendedWYSIWYG\Data\wysiwygSection;
 
 $section = new wysiwygSection();
-if (!$section->addBlank($page_id, $section_id))
+if (!$section->insertBlank($page_id, $section_id))
   trigger_error($section->getError(), E_USER_ERROR);
