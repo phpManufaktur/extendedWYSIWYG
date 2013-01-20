@@ -28,7 +28,9 @@
       {/if}
       <input id="{$options.hide_section.checkbox.name}" type="checkbox" name="{$options.hide_section.checkbox.name}" value="{$options.hide_section.checkbox.value}"{if $options.hide_section.checkbox.checked == 1} checked="checked"{/if} /> {translate('Hide Section')}
     </div>
+    {if $section.position == 1}
     [<a href="{$about.link}">extendedWYSIWYG</a>] [<a href="{$config.link}">{translate('Settings')}</a>]
+    {/if}
   </div>
   <div id="wysiwyg_container_{$section.id}">
     {if $options.page_settings.active == 1}
@@ -96,6 +98,7 @@
         <div class="clear"></div>
       </div>
     {/if}
+    <div id="wysiwyg_info">&nbsp;</div>
     <div class="wysiwyg_editor">
       {show_wysiwyg_editor($section.editor_id, $section.editor_id, $section.text, '100%', '250px', 'Smart')}
     </div>
@@ -104,7 +107,7 @@
         <input type="checkbox" name="publish" value="1"{if $publish == 1} checked="checked"{/if} /><label for="publish">{translate('publish')}</label>
       </div>
       <div class="wysiwyg_control_archiv_id">
-        <select id="{$archive.name}" name="{$archive.name}" onchange="javascript:execOnChange('{$archive.link}','{$archive.name}','{$archive.anchor}');">
+        <select id="{$archive.name}" name="{$archive.name}" > {* onchange="javascript:execOnChange('{$archive.link}','{$archive.name}','{$archive.anchor}');" *}
           {foreach $archive.items item}
           <option value="{$item.value}"{if $item.value == $archive.id} selected="selected"{/if}>{$item.text}</option>
           {/foreach}
@@ -118,7 +121,7 @@
       
     </div>
     <div class="wysiwyg_editor_buttons">
-      <input type="button" value="{translate('Save')}" onclick="javascript:saveSection('{$link.save.url}','{$section.id}','{$page.id}');" />
+      <input id="save_{$section.id}" type="button" value="{translate('Save')}" /> {* onclick="javascript:saveSection('{$link.save.url}','{$section.id}','{$page.id}');" *}
       <input type="button" value="{translate('Abort')}" onclick="javascript:window.location='index.php';" />
     </div>
   </div><!-- /wysiwyg_container -->

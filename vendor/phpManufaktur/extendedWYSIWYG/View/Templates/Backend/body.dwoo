@@ -13,10 +13,14 @@
  *
  * Use {dump()} to get a list of all in this template available variables!
  *}
-<script type="text/javascript">
-  var CMS_ADDON_URL = '{$CMS_ADDON_URL}';
-</script>
-<script type="text/javascript" charset="utf-8" src="{$CMS_ADDON_URL}/vendor/phpManufaktur/extendedWYSIWYG/View/Templates/Backend/scripts/functions.js"></script> 
+
+{if $section_position == 1}
+  <script type="text/javascript">
+    var CMS_ADDON_URL = '{$CMS_ADDON_URL}';
+  </script>
+  <script type="text/javascript" charset="utf-8" src="{$CMS_ADDON_URL}/vendor/phpManufaktur/extendedWYSIWYG/Control/jquery.timer.js"></script> 
+  <script type="text/javascript" charset="utf-8" src="{$CMS_ADDON_URL}/vendor/phpManufaktur/extendedWYSIWYG/Control/updateSection.js"></script> 
+{/if}
 <div class="wysiwyg_body">
   <a name="{$anchor}"></a>
   {if $is_error == 1}

@@ -214,3 +214,9 @@
 .wysiwyg_system {
   margin: 2px 0 10px 0;
 }
+#wysiwyg_info {
+  clear: both;
+  margin: 0;
+  padding: 0;
+  display: none;
+}
