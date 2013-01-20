@@ -110,7 +110,7 @@ else {
   }
 
   global $I18n;
-  // we use the translation service from the addon manufakturConfig
+  // we use the I18n service from the addon manufakturConfig
   if (!class_exists('LEPTON_Helper_I18n'))
     require_once CMS_PATH.'/modules/manufaktur_config/framework/LEPTON/Helper/I18n.php';
   // detect and set the actual language
