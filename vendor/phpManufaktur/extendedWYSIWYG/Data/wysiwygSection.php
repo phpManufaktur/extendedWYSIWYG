@@ -136,4 +136,22 @@ class wysiwygSection extends boneClass {
     return (int) $position['position'];
   } // getSectionPositionWithinPage()
 
+  public function getSectionIDsOrderByPosition($page_id) {
+    global $db;
+
+    try {
+      $SQL = "SELECT `section_id` FROM `".CMS_TABLE_PREFIX."sections` WHERE `module`='wysiwyg' AND `page_id`='$page_id' ORDER BY `position` ASC";
+      $result = $db->fetchAll($SQL);
+    } catch (\Doctrine\DBAL\DBALException $e) {
+      $this->setError($e->getMessage(), __METHOD__, $e->getLine());
+      return $this->getError();
+    }
+    $sections = array();
+    if (is_array($result)) {
+      foreach ($result as $section)
+        $sections[] = $section['section_id'];
+    }
+    return $sections;
+  }
+
 } // class wysiwygSection

@@ -25,8 +25,8 @@ class wysiwygArchive extends boneClass {
     global $db;
 
     $table = CMS_TABLE_PREFIX.'mod_wysiwyg_archive';
-    $SQL = <<<EOD
-      CREATE TABLE IF NOT EXISTS `$table` (
+$SQL = <<<EOD
+    CREATE TABLE IF NOT EXISTS `$table` (
       `archive_id` INT(11) NOT NULL AUTO_INCREMENT,
       `section_id` INT(11) NOT NULL DEFAULT '0',
       `page_id` INT(11) NOT NULL DEFAULT '0',
@@ -38,12 +38,12 @@ class wysiwygArchive extends boneClass {
       `timestamp` TIMESTAMP,
       PRIMARY KEY (`archive_id`),
       KEY (`section_id`, `page_id`, `status`)
-      )
-      COMMENT='extendedWYSIWYG Archive'
-      ENGINE=InnoDB
-      AUTO_INCREMENT=1
-      DEFAULT CHARSET=utf8
-      COLLATE='utf8_general_ci'
+    )
+    COMMENT='extendedWYSIWYG Archive'
+    ENGINE=InnoDB
+    AUTO_INCREMENT=1
+    DEFAULT CHARSET=utf8
+    COLLATE='utf8_general_ci'
 EOD;
     try {
       $db->query($SQL);
@@ -74,15 +74,17 @@ EOD;
     }
     $archive = array();
     // loop through the result and unsanitize the returned values
-    foreach ($result as $key => $value)
-      $archive[$key] = $tools->unsanitizeText($value);
+    if (is_array($result)) {
+      foreach ($result as $key => $value)
+        $archive[$key] = $tools->unsanitizeText($value);
+    }
     return $archive;
   } // select()
 
   /**
    * Select the last Archive record for the given SECTION ID and return a array
    *
-   * @param unknown_type $section_id
+   * @param integer $section_id
    * @return boolean|multitype:
    */
   public function selectLast($section_id) {
@@ -98,8 +100,9 @@ EOD;
     }
     $archive = array();
     // loop through the result and unsanitize the returned values
-    foreach ($result as $key => $value) {
-      $archive[$key] = $tools->unsanitizeText($value);
+    if (is_array($result)) {
+      foreach ($result as $key => $value)
+        $archive[$key] = $tools->unsanitizeText($value);
     }
     return $archive;
   } // selectLast()
