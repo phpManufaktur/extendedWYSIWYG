@@ -18,12 +18,14 @@ class modifySection extends boneClass {
 
   const REQUEST_ACTION = 'act';
   const REQUEST_ARCHIVE_ID = 'archive_id';
+  const REQUEST_TEASER_ID = 'teaser_id';
 
   const ACTION_MODIFY = 'mod';
 
   protected static $SECTION_ID = null;
   protected static $PAGE_ID = null;
   protected static $ARCHIVE_ID = null;
+  protected static $TEASER_ID = null;
 
   public function __construct($page_id, $section_id) {
     $this->setInfo('Initialize class modifySection', __METHOD__, __LINE__);
@@ -50,6 +52,10 @@ class modifySection extends boneClass {
         // set the ARCHIVE ID
         self::$ARCHIVE_ID = (int) $_REQUEST[self::REQUEST_ARCHIVE_ID.self::$SECTION_ID];
         $modify->setArchiveID(self::$ARCHIVE_ID);
+      }
+      if (isset($_REQUEST[self::REQUEST_TEASER_ID])) {
+        self::$TEASER_ID = (int) $_REQUEST[self::REQUEST_TEASER_ID];
+        $modify->setTeaserID(self::$TEASER_ID);
       }
       $content = $modify->view();
     endswitch;
