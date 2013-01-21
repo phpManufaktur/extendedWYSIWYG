@@ -62,9 +62,9 @@ function formatError($error_message) {
 } // formatError()
 
 // check the essential parameters
-if (!isset($_REQUEST['section_id']) ||
-    !isset($_REQUEST['section_content']) ||
-    !isset($_REQUEST['page_id'])
+if (!isset($_GET['section_id']) ||
+    !isset($_GET['section_content']) ||
+    !isset($_GET['page_id'])
     ) {
   $error = $I18n->translate('[ {{ file }} ] Missing essential parameters!', array('file' => basename(__FILE__)));
   $logger->addError(strip_tags($error));
@@ -76,9 +76,9 @@ if (!isset($_REQUEST['section_id']) ||
 $messages = '';
 
 // save the WYSIWYG section
-$page_id = (int) $_REQUEST['page_id'];
-$section_id = (int) $_REQUEST['section_id'];
-$section_content = rawurldecode($_REQUEST['section_content']);
+$page_id = (int) $_GET['page_id'];
+$section_id = (int) $_GET['section_id'];
+$section_content = rawurldecode($_GET['section_content']);
 $section = new wysiwygSection();
 if (!$section->update($section_id, $section_content)) {
   $error = $I18n->translate('[ {{ file }} ] Error while updating the Section with the ID {{ section_id }}: {{ error }}',
@@ -94,13 +94,13 @@ else {
   $messages .= $message;
 }
 
-if (isset($_REQUEST['check_page_settings']) && ($_REQUEST['check_page_settings'] == 1) &&
-  isset($_REQUEST['page_title']) && isset($_REQUEST['page_description']) && isset($_REQUEST['page_keywords'])) {
+if (isset($_GET['check_page_settings']) && ($_GET['check_page_settings'] == 1) &&
+  isset($_GET['page_title']) && isset($_GET['page_description']) && isset($_GET['page_keywords'])) {
   // save the page settings
   $fields = array(
-      'page_title' => rawurldecode($_REQUEST['page_title']),
-      'description' => rawurldecode($_REQUEST['page_description']),
-      'keywords' => rawurldecode($_REQUEST['page_keywords'])
+      'page_title' => rawurldecode($_GET['page_title']),
+      'description' => rawurldecode($_GET['page_description']),
+      'keywords' => rawurldecode($_GET['page_keywords'])
       );
 
   $page_settings = new pageSettings();
@@ -118,4 +118,5 @@ if (isset($_REQUEST['check_page_settings']) && ($_REQUEST['check_page_settings']
 }
 
 // quit the script and return all messages
-exit($messages);
+$result = sprintf('<div class="wysiwyg_message">%s</div>', $messages);
+exit($result);

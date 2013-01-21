@@ -7,7 +7,7 @@
  * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
  *
  */
-
+/*
 function execOnChange(target_url, select_id, anchor) {
 	  var x;
 	  x = target_url + document.getElementById(select_id).value + '#' + anchor;
@@ -16,7 +16,7 @@ function execOnChange(target_url, select_id, anchor) {
 	  return false;	
 	}
   
-
+*/
 function saveSection(script_url, section_id, page_id) {
   var instance_name = 'content_'+section_id;
   var content;
@@ -68,34 +68,131 @@ if (typeof 'jQuery' != 'undefined') {
     $.get(CONTROL_URL+"/controlSections.php?page_id="+PAGE_ID, function(sections) {
 
       if (sections.indexOf('[') >= 0) {
-        // if the result contain a [ an error was occured!
+        // if the result contains a [ an error was occured!
         $('#wysiwyg_info').html(sections);
+        // show the error message
         $('#wysiwyg_info').css('display', 'block');
         // stop the timer
         timer.stop();
         // stop the script
         return false;
       }
-alert(sections);      
+     
       // explode result to section_ids
       var section_ids = sections.split(',');
 
+      // EVENT HANDLER for TEASER ARCHIVE SELECTION
+      $("#teaser_id").live("change", function(event) {
+        var TEASER_ID = $(this).val();
+        
+        $.get(CONTROL_URL+'/controlTeaserArchive.php', { 'page_id':PAGE_ID, 'teaser_id':TEASER_ID }, 
+            function(msg) {
+            
+          var result = jQuery.parseJSON(msg);
+          var instance_name = 'teaser_text';
+          var publish_field = 'teaser_publish';
+          var publish_status = (result.publish == 1);
+          var section_content = result.content;
+          
+          if (result.status == 'OK') {
+            // success - change the content of the editor
+            for (var i in CKEDITOR.instances) {
+              if (CKEDITOR.instances[i].name == instance_name) {
+                // get the content from the CKE
+                CKEDITOR.instances[i].setData(section_content, function() {
+                  // Checks whether the current editor contents contain changes
+                  this.checkDirty()
+                });
+              }
+            }
+            if (result.publish !== undefined) {
+              $('#teaser_publish').prop('checked', publish_status);
+            } 
+          }                       
+          $('#wysiwyg_info').html(result.message);
+          $('#wysiwyg_info').css('display', 'block');
+          var new_position = $('#wysiwyg_info').offset();
+          window.scrollTo(new_position.left,new_position.top);
+        });
+      }); // TEASER ARCHIVE SELECTION
+      
+      
       // loop through the sections
       for (var i=0; i<section_ids.length; i++) {
-
         
+        // EVENT HANDLER for SECTION ARCHIVE SELECTION
       	$("#archiv_id"+section_ids[i]).live("change", function(event) {
-      	  // EVENT HANDLER for ARCHIVE SELECTION
       		var prefix = '#archiv_id';
           var SECTION_ID = $(this).attr('name').substr(prefix.length-1);	
-      		alert('juju: ' + SECTION_ID);
-      	});
+          var ARCHIVE_ID = $(this).val();
+          
+      		$.get(CONTROL_URL+'/controlWysiwygArchive.php', { 'page_id':PAGE_ID, 'section_id':SECTION_ID,
+            'archive_id':ARCHIVE_ID }, function(msg) {
+              
+            var result = jQuery.parseJSON(msg);
+            var instance_name = 'content_'+SECTION_ID;
+            var publish_field = '#publish_' + SECTION_ID;
+            var publish_status = (result.publish == 1);
+            var section_content = result.content;
+            
+            if (result.status == 'OK') {
+              // success - change the content of the editor
+              for (var i in CKEDITOR.instances) {
+                if (CKEDITOR.instances[i].name == instance_name) {
+                  // get the content from the CKE
+                  CKEDITOR.instances[i].setData(section_content, function() {
+                    // Checks whether the current editor contents contain changes
+                    this.checkDirty()
+                  });
+                }
+              }
+              if (result.publish !== undefined) {
+                $('#publish_'+SECTION_ID).prop('checked', publish_status);
+              } 
+            }                       
+            $('#wysiwyg_info').html(result.message);
+            $('#wysiwyg_info').css('display', 'block');
+            var new_position = $('#wysiwyg_info').offset();
+            window.scrollTo(new_position.left,new_position.top);
+          });
+      	}); // SECTION ARCHIVE SELECTION
       	
+      	// EVENT HANDLER for SAVE SECTION
       	$('#save_'+section_ids[i]).live('click', function(event, section_id) {
-      	  // EVENT HANDLER for SAVE SECTION
       	  var prefix = '#save_';
-          var SECTION_ID = $(this).attr('id').substr(prefix.length-1);  
-      	  alert('save: '+SECTION_ID+" p: "+PAGE_ID);
+          var SECTION_ID = $(this).attr('id').substr(prefix.length-1); 
+          var instance_name = 'content_'+SECTION_ID;
+          var content = '';
+          var page_title = '';
+          var page_description = '';
+          var page_keywords = '';
+          var check_page_settings = 0;
+          
+          // loop through the CKEDITOR instances
+          for (var i in CKEDITOR.instances) {
+            // get the content from the CKE for this section
+            if (CKEDITOR.instances[i].name == instance_name) {
+              content = encodeURI(CKEDITOR.instances[i].getData());
+            }
+          }          
+          if (document.getElementById('page_settings_'+section_id) && 
+            (document.getElementById('page_settings_'+section_id).value == 1)) {
+            // get the page settings
+            check_page_settings = 1;
+            page_title = encodeURI(document.getElementById('page_title').value);
+            page_description = encodeURI(document.getElementById('page_description').value);
+            page_keywords = encodeURI(document.getElementById('page_keywords').value);
+          }  
+          var publish = $('#publish_'+SECTION_ID).attr('checked') ? 1 : 0;
+          alert(publish);
+          // transmit the contents to the control and show the result
+          $.get(CONTROL_URL+'/retrieveCKEditorContent.php', { 'page_id':PAGE_ID, 'section_id':SECTION_ID,
+            'section_content':content, 'check_page_settings':check_page_settings, 'page_title':page_title,
+            'page_description':page_description, 'page_keywords':page_keywords 
+            }, function(msg) {
+              $('#wysiwyg_info').html(msg);
+              $('#wysiwyg_info').css('display', 'block');
+          });
       	});
     	  
         // preset the visibility depending on the options checkboxes

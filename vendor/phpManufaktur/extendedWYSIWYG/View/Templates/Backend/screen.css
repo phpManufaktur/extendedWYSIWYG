@@ -218,5 +218,14 @@
   clear: both;
   margin: 0;
   padding: 0;
-  display: none;
+  width: auto;
+  min-height: 1px;
+  display: block;
+}
+.wysiwyg_message {
+  margin: 10px 0 10px 0;
+  padding: 10px;
+  font-size: 10px;
+  color: #363636;
+  background-color: #d6c48d;
 }

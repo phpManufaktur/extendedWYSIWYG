@@ -32,6 +32,7 @@
     [<a href="{$about.link}">extendedWYSIWYG</a>] [<a href="{$config.link}">{translate('Settings')}</a>]
     {/if}
   </div>
+  <div id="wysiwyg_info">&nbsp;</div>
   <div id="wysiwyg_container_{$section.id}">
     {if $options.page_settings.active == 1}
       <div id="wysiwyg_page_settings">
@@ -82,7 +83,7 @@
                 <input type="checkbox" name="teaser_publish" value="1"{if $options.use_as_blog.fields.teaser.publish == 1} checked="checked"{/if} /><label for="publish">{translate('publish')}</label>
               </div>
               <div class="wysiwyg_blog_archiv_id">
-                <select id="{$options.use_as_blog.fields.archive.name}" name="{$options.use_as_blog.fields.archive.name}" onchange="javascript:execOnChange('{$options.use_as_blog.fields.archive.link}','{$options.use_as_blog.fields.archive.name}','{$options.use_as_blog.fields.archive.anchor}');">
+                <select id="{$options.use_as_blog.fields.archive.name}" name="{$options.use_as_blog.fields.archive.name}" > {* onchange="javascript:execOnChange('{$options.use_as_blog.fields.archive.link}','{$options.use_as_blog.fields.archive.name}','{$options.use_as_blog.fields.archive.anchor}');"> *}
                   {foreach $options.use_as_blog.fields.archive.items item}
                   <option value="{$item.value}"{if $item.value == $options.use_as_blog.fields.teaser.id} selected="selected"{/if}>{$item.text}</option>
                   {/foreach}
@@ -98,13 +99,12 @@
         <div class="clear"></div>
       </div>
     {/if}
-    <div id="wysiwyg_info">&nbsp;</div>
     <div class="wysiwyg_editor">
       {show_wysiwyg_editor($section.editor_id, $section.editor_id, $section.text, '100%', '250px', 'Smart')}
     </div>
     <div class="wysiwyg_control">
       <div class="wysiwyg_control_publish">
-        <input type="checkbox" name="publish" value="1"{if $publish == 1} checked="checked"{/if} /><label for="publish">{translate('publish')}</label>
+        <input id="{$publish.name}" type="checkbox" name="{$publish.name}" value="{$publish.value}"{if $publish.value == 1} checked="checked"{/if} /><label for="publish">{translate('publish')}</label>
       </div>
       <div class="wysiwyg_control_archiv_id">
         <select id="{$archive.name}" name="{$archive.name}" > {* onchange="javascript:execOnChange('{$archive.link}','{$archive.name}','{$archive.anchor}');" *}

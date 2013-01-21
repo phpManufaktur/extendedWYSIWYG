@@ -193,7 +193,7 @@ class modifySection extends boneClass {
         return false;
       }
       self::$ARCHIVE_ID = $archive_id;
-      $publish = true;
+      $publish = 1;
     }
 
     // get the list of the last archives for the selection
@@ -262,7 +262,11 @@ class modifySection extends boneClass {
             'text' => $section_content,
             'position' => self::$SECTION_POSITION
             ),
-        'publish' => $publish,
+        'publish' => array(
+            'name' => 'publish_'.self::$SECTION_ID,
+            'value' => 1,
+            'status' => $publish,
+            ),
         'author' => $author,
         'count' => array(
             'words' => $tools->countWords($section_content),
