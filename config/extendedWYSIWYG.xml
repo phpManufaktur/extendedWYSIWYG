@@ -11,6 +11,13 @@
         <hint>A change of a WYSIWYG section will update the last modified field of the page (recommend!)</hint>
       </dialog>
     </setting>
+    <setting name="cfgUseRelativeMediaURL" usage="REGULAR" update="INSERT">
+      <value type="BOOLEAN">1</value>
+      <dialog set="" page="Settings">
+        <label>Use relative MEDIA URL</label>
+        <hint>Replace the URL of files from the MEDIA directory with a placeholder while saving the WYSIWYG content (recommend!)</hint>
+      </dialog>
+    </setting>
     <setting name="cfgArchiveIdSelectLimit" usage="REGULAR" update="INSERT">
       <value type="INTEGER">10</value>
       <dialog set="" page="Settings">
