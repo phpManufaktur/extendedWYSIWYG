@@ -229,3 +229,9 @@
   color: #363636;
   background-color: #d6c48d;
 }
+
+#wysiwyg_settings {
+  margin: 20px auto 0 auto;
+  padding: 0;
+  width: 960px;
+}
