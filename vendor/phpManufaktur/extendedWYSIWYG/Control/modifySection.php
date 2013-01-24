@@ -47,7 +47,7 @@ class modifySection extends boneClass {
 
     case self::ACTION_MODIFY:
     default:
-      $modify = new View\modifySection(self::$PAGE_ID, self::$SECTION_ID);
+      $modify = new View\viewModifySection(self::$PAGE_ID, self::$SECTION_ID);
       if (isset($_REQUEST[self::REQUEST_ARCHIVE_ID.self::$SECTION_ID])) {
         // set the ARCHIVE ID
         self::$ARCHIVE_ID = (int) $_REQUEST[self::REQUEST_ARCHIVE_ID.self::$SECTION_ID];
