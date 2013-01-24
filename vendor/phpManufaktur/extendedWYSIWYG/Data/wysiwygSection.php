@@ -12,6 +12,8 @@
 namespace phpManufaktur\extendedWYSIWYG\Data;
 
 use phpManufaktur\CMS\Bridge\Control\boneClass;
+use phpManufaktur\extendedWYSIWYG\Data\wysiwygConfiguration;
+use phpManufaktur\kitCommand\kitCommand;
 
 class wysiwygSection extends boneClass {
 
@@ -40,7 +42,7 @@ class wysiwygSection extends boneClass {
    * Get the content for the $section_id for FRONTEND output and return it
    *
    * @param integer $section_id the section ID
-   * @param boolean $edit_mode if true don't process frontend preparation
+   * @param boolean $edit_mode if false (default) don't process frontend preparation
    * @return string
    */
   public function select($section_id, $edit_mode=false) {
@@ -63,6 +65,9 @@ class wysiwygSection extends boneClass {
     // unsanitize the text
     $section = $tools->unsanitizeText($section['content']);
 
+    // replace placeholders with the actual MEDIA URL
+    //$section = str_replace('~~ REPLACE:CMS_MEDIA_URL ~~', CMS_MEDIA_URL, $section);
+
     if (!$edit_mode) {
       // prepare the content for frontend output
       if ((CMS_TYPE == 'WebsiteBaker') && (CMS_VERSION == '2.8.1')) {
@@ -71,8 +76,11 @@ class wysiwygSection extends boneClass {
         $wb->preprocess($section);
       }
     }
+
+    $kitCommand = new kitCommand();
+    $section = $kitCommand->Exec($section);
     return $section;
-  } // get()
+  } // select()
 
   /**
    * Delete a WYSIWYG section
@@ -103,6 +111,19 @@ class wysiwygSection extends boneClass {
   public function update($section_id, $content) {
     global $db;
     global $tools;
+    global $cms;
+
+    $config = new wysiwygConfiguration();
+    $use_relative_url = $config->getValue('cfgUseRelativeMediaURL');
+    if ($config->isError()) {
+      $this->setError($config->getMessage(), __METHOD__, __LINE__);
+      return false;
+    }
+    if ($use_relative_url) {
+      // replace absolute URLs
+      $searchfor = '@(<[^>]*=\s*")('.preg_quote(CMS_MEDIA_URL).')([^">]*".*>)@siU';
+      $content = preg_replace($searchfor, '$1~~ system replace[CMS_MEDIA_URL] ~~$3', $content);
+    }
 
     $text = $tools->sanitizeText(strip_tags($content));
     $content = $tools->sanitizeText($content);
@@ -112,6 +133,35 @@ class wysiwygSection extends boneClass {
     } catch (\Doctrine\DBAL\DBALException $e) {
       $this->setError($e->getMessage(), __METHOD__, $e->getLine());
       return false;
+    }
+    // update field "Last modified" of the page?
+    $update_last_modified = $config->getValue('cfgUpdateModifiedPage');
+    if ($config->isError()) {
+      $this->setError($config->getMessage(), __METHOD__, __LINE__);
+      return false;
+    }
+    if ($update_last_modified) {
+      // process the page field "last modified"
+      try {
+        // get the PAGE ID
+        $SQL = "SELECT `page_id` FROM `".CMS_TABLE_PREFIX."sections` WHERE `section_id`='$section_id'";
+        $page = $db->fetchAssoc($SQL);
+      } catch (\Doctrine\DBAL\DBALException $e) {
+        $this->setError($e->getMessage(), __METHOD__, $e->getLine());
+        return false;
+      }
+      try {
+        // update the page fields
+        $db->update(CMS_TABLE_PREFIX.'pages',
+            array(
+              'modified_by' => $cms->getUserID(),
+              'modified_when' => time()),
+            array(
+                'page_id' => $page['page_id']));
+      } catch (\Doctrine\DBAL\DBALException $e) {
+        $this->setError($e->getMessage(), __METHOD__, $e->getLine());
+        return false;
+      }
     }
     return true;
   } // update()
@@ -133,9 +183,36 @@ class wysiwygSection extends boneClass {
       $this->setError($e->getMessage(), __METHOD__, $e->getLine());
       return $this->getError();
     }
+    if (!isset($position['position'])) return null;
     return (int) $position['position'];
   } // getSectionPositionWithinPage()
 
+  /**
+   * Get the position number of the first WYSIWYG section within the given page ID
+   *
+   * @param integer $page_id
+   * @return string|NULL|number
+   */
+  public function getPositionOfFirstSectionInPage($page_id) {
+    global $db;
+
+    try {
+      $SQL = "SELECT `position` FROM `".CMS_TABLE_PREFIX."sections` WHERE `module`='wysiwyg' AND `page_id`=? ORDER BY `position` ASC LIMIT 1";
+      $position = $db->fetchAssoc($SQL, array($page_id));
+    } catch (\Doctrine\DBAL\DBALException $e) {
+      $this->setError($e->getMessage(), __METHOD__, $e->getLine());
+      return $this->getError();
+    }
+    if (!isset($position['position'])) return null;
+    return (int) $position['position'];
+  } // getPositionOfFirstSectionInPage()
+
+  /**
+   * Get the SECTION IDs in order of the position within the page
+   *
+   * @param integer $page_id
+   * @return multitype:unknown
+   */
   public function getSectionIDsOrderByPosition($page_id) {
     global $db;
 
@@ -152,6 +229,6 @@ class wysiwygSection extends boneClass {
         $sections[] = $section['section_id'];
     }
     return $sections;
-  }
+  } // getSectionIDsOrderByPosition()
 
 } // class wysiwygSection
