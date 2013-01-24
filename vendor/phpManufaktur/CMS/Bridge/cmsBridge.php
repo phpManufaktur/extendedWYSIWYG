@@ -283,16 +283,7 @@ class cmsBridge extends boneClass {
    * @return boolean
    */
   public function isUserAuthenticated() {
-    global $wb;
-    global $admin;
-
-    // use the WB / LEPTON function
-    if (is_object($wb))
-      return $wb->is_authenticated();
-    elseif (is_object($admin))
-      return $admin->is_authenticated();
-    else
-      return false;
+    return (isset($_SESSION['USER_ID']) && ($_SESSION['USER_ID'] != '') && is_numeric($_SESSION['USER_ID']));
   } // isUserAuthenticated()
 
   /**
@@ -302,16 +293,7 @@ class cmsBridge extends boneClass {
    * @return Ambigous <string, unknown>
    */
   public function getUserLoginName() {
-    global $wb;
-    global $admin;
-
-    // use the WB / LEPTON function
-    if (is_object($wb))
-      return $wb->get_username();
-    elseif (is_object($admin))
-      return $admin->get_username();
-    else
-      return '';
+    return (isset($_SESSION['USER_NAME'])) ? $_SESSION['USER_NAME'] : '';
   } // getUserLoginName()
 
   /**
@@ -321,17 +303,18 @@ class cmsBridge extends boneClass {
    * @return Ambigous <string, unknown>
    */
   public function getUserDisplayName() {
-    global $admin;
-    global $wb;
-
-    // use the WB / LEPTON function
-    if (is_object($wb))
-      return $wb->get_display_name();
-    elseif (is_object($admin))
-      return $admin->get_display_name();
-    else
-      return '';
+    return (isset($_SESSION['DISPLAY_NAME'])) ? $_SESSION['DISPLAY_NAME'] : '';
   } // getUserDisplayName()
+
+  /**
+   * Get the User ID of the authenticated user.
+   * If not authenticated return -1
+   *
+   * @return Ambigous <string, unknown>|number
+   */
+  public function getUserID() {
+    return (isset($_SESSION['USER_ID'])) ? $_SESSION['USER_ID'] : -1;
+  }
 
   /**
    * Get the EMail Address of the authenticated user.
@@ -351,5 +334,32 @@ class cmsBridge extends boneClass {
     else
       return '';
   } // getUserEMailAddress
+
+  /**
+   * Get the relative directory for the desired $page_id
+   *
+   * @param integer $page_id
+   * @return boolean|string
+   */
+  public function getDirectoryForPageID($page_id) {
+    global $I18n;
+
+    $settings = new LEPTON\Setting();
+    if (false === ($directory = $settings->select('pages_directory'))) {
+      $this->setError($settings->getError(), __METHOD__, __LINE__);
+      return false;
+    }
+    $pages = new LEPTON\Page();
+    if (false === ($page = $pages->select($page_id))) {
+      $this->setError($pages->getError(), __METHOD__, __LINE__);
+      return false;
+    }
+    if (count($page) < 1) {
+      $this->setError($I18n->translate('<p>There exists no entry for the page ID {{ page_id }}!</p>',
+          array('page_id' => $page_id)));
+      return false;
+    }
+    return $directory.$page['link'];
+  } // getDirectoryForPageID()
 
 } // class cmsBridge
