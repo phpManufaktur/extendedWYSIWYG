@@ -1,0 +1,33 @@
+{* 
+ * extendedWYSIWYG
+ *
+ * @author Team phpManufaktur <team@phpmanufaktur.de>
+ * @link https://addons.phpmanufaktur.de/extendedWYSIWYG
+ * @copyright 2012 Ralf Hertsch <ralf.hertsch@phpmanufaktur.de>
+ * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
+ *
+ * Please consult the Dwoo Documentation & WIKI to get further informations 
+ * and hints for the usage of the Dwoo template engine.
+ *
+ * @link http://wiki.dwoo.org/
+ *
+ * Use {dump()} to get a list of all in this template available variables!
+ *}
+<!DOCTYPE html> 
+<html lang="en"> 
+  <head> 
+    <meta charset="utf-8" /> 
+    <title>{$title}</title>  
+    <link rel="stylesheet" href="{$css_config_url}" media="all" type="text/css" />
+    <link rel="stylesheet" href="{$css_url}" media="all" type="text/css" />  
+  </head>  
+  <body> 
+    <div id="wysiwyg_settings">
+      {if $is_error == 1}
+        {include('error.dwoo')} 
+      {else}
+        {$content} 
+      {/if}
+    </div>
+  </body> 
+</html>
