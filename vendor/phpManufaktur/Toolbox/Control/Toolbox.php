@@ -82,5 +82,50 @@ class Toolbox extends boneClass {
     return $count;
   } // countWords()
 
+  /**
+   * Generate a random password of $length
+   *
+   * @param integer $length
+   * @return string password
+   */
+  public static function generatePassword($length=12) {
+    $password = '';
+    $salt = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz123456789';
+    srand((double) microtime() * 1000000);
+    for ($i=0; $i < $length; $i++) {
+      $num = rand() % 33;
+      $tmp = substr($salt, $num, 1);
+      $password .= $tmp;
+    }
+    return $password;
+  } // generatePassword()
+
+  /**
+   * Check if the desired $path exists and try to create it also with nested
+   * subdirectories if $create is true
+   *
+   * @param string $path
+   * @param boolean $create try to create the directory
+   * @return boolean
+   */
+  public function checkDirectory($path, $create=true) {
+    global $I18n;
+
+    if (!file_exists($path)) {
+      if ($create) {
+        if (!mkdir($path, 0755, true)) {
+          $this->setError($I18n->translate("Can't create the directory <b>{{ directory }}</b>!",
+              array('directory', $path)), __METHOD__, __LINE__);
+          return false;
+        }
+      }
+      else {
+        $this->setError($I18n->translate('The directory {{ directory }} does not exists!',
+            array('directory' => $path)), __METHOD__, __LINE__);
+        return false;
+      }
+    }
+    return true;
+  } // checkPath()
 
 } // class Toolbox
