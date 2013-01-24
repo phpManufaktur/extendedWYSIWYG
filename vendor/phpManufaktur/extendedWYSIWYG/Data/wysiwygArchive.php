@@ -12,7 +12,7 @@
 namespace phpManufaktur\extendedWYSIWYG\Data;
 
 use phpManufaktur\CMS\Bridge\Control\boneClass;
-use phpManufaktur\extendedWYSIWYG\Control\wysiwygConfiguration;
+use phpManufaktur\extendedWYSIWYG\Data\wysiwygConfiguration;
 
 class wysiwygArchive extends boneClass {
 
@@ -78,6 +78,10 @@ EOD;
       foreach ($result as $key => $value)
         $archive[$key] = $tools->unsanitizeText($value);
     }
+
+    // replace placeholders with the actual MEDIA URL
+    $archive['content'] = str_replace('~~ system replace[CMS_MEDIA_URL] ~~', CMS_MEDIA_URL, $archive['content']);
+
     return $archive;
   } // select()
 
@@ -104,8 +108,42 @@ EOD;
       foreach ($result as $key => $value)
         $archive[$key] = $tools->unsanitizeText($value);
     }
+
+    // replace placeholders with the actual MEDIA URL
+    $archive['content'] = str_replace('~~ system replace[CMS_MEDIA_URL] ~~', CMS_MEDIA_URL, $archive['content']);
+
     return $archive;
   } // selectLast()
+
+  /**
+   * Select the last ACTIVE Archive record for the given SECTION ID and return a array
+   *
+   * @param integer $section_id
+   * @return boolean|multitype:
+   */
+  public function selectLastActive($section_id) {
+    global $db;
+    global $tools;
+
+    try {
+      $SQL = "SELECT * FROM `".CMS_TABLE_PREFIX."mod_wysiwyg_archive` WHERE `section_id`=:section_id AND `status`='ACTIVE' ORDER BY `archive_id` DESC LIMIT 1";
+      $result = $db->fetchAssoc($SQL, array('section_id' => $section_id));
+    } catch (\Doctrine\DBAL\DBALException $e) {
+      $this->setError($e->getMessage(), __METHOD__, $e->getLine());
+      return false;
+    }
+    $archive = array();
+    // loop through the result and unsanitize the returned values
+    if (is_array($result)) {
+      foreach ($result as $key => $value)
+        $archive[$key] = $tools->unsanitizeText($value);
+    }
+
+    // replace placeholders with the actual MEDIA URL
+    $archive['content'] = str_replace('~~ system replace[CMS_MEDIA_URL] ~~', CMS_MEDIA_URL, $archive['content']);
+
+    return $archive;
+  } // selectLastActive()
 
   /**
    * Insert a new ARCHIVE record from the given SECTION content
@@ -117,10 +155,31 @@ EOD;
    * @param integer $archive_id REFERENCE
    * @return boolean
    */
-  public function insert($page_id, $section_id, $content, $author, &$archive_id=-1) {
+  public function insert($page_id, $section_id, $content, $author, $status, &$archive_id=-1) {
     global $db;
     global $tools;
     global $I18n;
+
+    try {
+      // first we set all previous archive entries with the ACTUAL status for this SECTION_ID to BACKUP status
+      $SQL = "UPDATE `".CMS_TABLE_PREFIX."mod_wysiwyg_archive` SET `status`='BACKUP' WHERE `section_id`='$section_id' AND `status`!='UNPUBLISHED'";
+      $db->query($SQL);
+    } catch (\Doctrine\DBAL\DBALException $e) {
+      $this->setError($e->getMessage(), __METHOD__, $e->getLine());
+      return false;
+    }
+
+    $config = new wysiwygConfiguration();
+    $use_relative_url = $config->getValue('cfgUseRelativeMediaURL');
+    if ($config->isError()) {
+      $this->setError($config->getMessage(), __METHOD__, __LINE__);
+      return false;
+    }
+    if ($use_relative_url) {
+      // replace absolute URLs
+      $searchfor = '@(<[^>]*=\s*")('.preg_quote(CMS_MEDIA_URL).')([^">]*".*>)@siU';
+      $content = preg_replace($searchfor, '$1~~ system replace[CMS_MEDIA_URL] ~~$3', $content);
+    }
 
     try {
       // prepare the data array
@@ -129,7 +188,8 @@ EOD;
           'section_id' => (int) $section_id,
           'content' => $tools->sanitizeText($content),
           'hash' => md5($content),
-          'author' => $author
+          'author' => $author,
+          'status' => $status
           );
       $db->insert(CMS_TABLE_PREFIX.'mod_wysiwyg_archive', $data);
       $archive_id = $db->lastInsertId();
