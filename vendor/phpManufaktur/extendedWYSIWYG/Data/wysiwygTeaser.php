@@ -12,7 +12,7 @@
 namespace phpManufaktur\extendedWYSIWYG\Data;
 
 use phpManufaktur\CMS\Bridge\Control\boneClass;
-use phpManufaktur\extendedWYSIWYG\Control\wysiwygConfiguration;
+use phpManufaktur\extendedWYSIWYG\Data\wysiwygConfiguration;
 
 class wysiwygTeaser extends boneClass {
 
@@ -133,5 +133,37 @@ EOD;
     return $teaser;
   } // selectTeaserListForDialog()
 
+  public function insert($page_id, $teaser, $author, $date, $status, &$teaser_id=-1) {
+    global $db;
+    global $tools;
+
+    try {
+      // first we set all previous teaser's with the same ACTUAL status for this PAGE_ID to BACKUP status
+      $SQL = "UPDATE `".CMS_TABLE_PREFIX."mod_wysiwyg_teaser` SET `status`='BACKUP' WHERE `page_id`='$page_id' AND `status`='$status'";
+      $db->query($SQL);
+    } catch (\Doctrine\DBAL\DBALException $e) {
+      $this->setError($e->getMessage(), __METHOD__, $e->getLine());
+      return false;
+    }
+
+    $data = array(
+        'page_id' => $page_id,
+        'teaser_text' => $tools->sanitizeText($teaser),
+        'hash' => md5($teaser),
+        'author' => $tools->sanitizeText($author),
+        'date_publish' => $date,
+        'status' => $status
+        );
+
+    try {
+      // insert the new teaser
+      $db->insert(CMS_TABLE_PREFIX.'mod_wysiwyg_teaser', $data);
+      $teaser_id = $db->lastInsertId();
+    } catch (\Doctrine\DBAL\DBALException $e) {
+      $this->setError($e->getMessage(), __METHOD__, $e->getLine());
+      return false;
+    }
+    return true;
+  } // insert()
 
 } // class wysiwygTeaser
