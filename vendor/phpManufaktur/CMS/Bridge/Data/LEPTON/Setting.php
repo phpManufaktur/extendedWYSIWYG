@@ -34,7 +34,7 @@ class Setting extends boneClass {
       $this->setError($e->getMessage(), __METHOD__, $e->getLine());
       return false;
     }
-    return $result['value'];
+    return (isset($result['value'])) ? $result['value'] : null;
   } // get()
 
 }
