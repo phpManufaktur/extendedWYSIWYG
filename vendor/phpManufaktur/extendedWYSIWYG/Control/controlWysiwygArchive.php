@@ -70,7 +70,7 @@ if (!isset($_GET['section_id']) ||
   $logger->addError(strip_tags($error));
   $error = formatError($error);
   $data = array(
-      'status' => 'error',
+      'status' => 'ERROR',
       'message' => $error
       );
   exit(json_encode($data));
@@ -85,7 +85,7 @@ $archive = new wysiwygArchive();
 if (false === ($archive_record = $archive->select($archive_id))) {
   $error = formatError($archive->getError());
   $data = array(
-      'status' => 'error',
+      'status' => 'ERROR',
       'message' => $error
       );
   exit(json_encode($data));
