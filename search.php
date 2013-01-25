@@ -9,13 +9,9 @@
  * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
  */
 
-if (!defined('WB_PATH'))
-  include __DIR__.'/bootstrap.php';
+include __DIR__.'/bootstrap.php';
 
-if (!defined('LEPTON_PATH'))
-  require_once WB_PATH.'/modules/'.basename(dirname(__FILE__)).'/wb2lepton.php';
-
-require_once LEPTON_PATH.'/modules/wysiwyg/class.wysiwyg.php';
+use phpManufaktur\extendedWYSIWYG\Data\wysiwygSection;
 
 /**
  * This function will be called by the search function and returns the results
@@ -25,14 +21,15 @@ require_once LEPTON_PATH.'/modules/wysiwyg/class.wysiwyg.php';
  * @return boolean
  */
 function wysiwyg_search($search) {
-  global $database;
-  $SQL = sprintf("SELECT `content` FROM `%smod_wysiwyg` WHERE `section_id`='%d'",
-      TABLE_PREFIX, $search['section_id']);
-  $content = $database->get_one($SQL, MYSQL_ASSOC);
+
+  // we can ignore calls by DropletsExtions...
+  if (isset($_SESSION['DROPLET_EXECUTED_BY_DROPLETS_EXTENSION'])) return '- passed call by DropletsExtension -';
+
+  $section = new wysiwygSection();
+  if (false === ($content = $section->select($search['section_id'])))
+    trigger_error($section->getError(), E_USER_ERROR);
+
   if (!empty($content)) {
-    $content = extendedWYSIWYG::unsanitizeText($content);
-    // remove HTML
-    $content = strip_tags($content);
     // remove dbGlossary tags
     $content = str_replace('||', '', $content);
     $result = array(
@@ -44,7 +41,7 @@ function wysiwyg_search($search) {
         'page_modified_by' => $search['page_modified_by'],
         'text' => $content.'.',
         'max_exerpt_num' => $search['default_max_excerpt']
-        );
+    );
     if (print_excerpt2($result, $search))
       return true;
   }
