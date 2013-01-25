@@ -4,6 +4,10 @@
 MIT License (MIT) http://www.opensource.org/licenses/MIT
 https://addons.phpmanufaktur.de/extendedWYSIWYG
 
+Release 11.01 - NOT PUBLISHED
+
+* complete rework and redesign of extendedWYSIWYG
+
 Release 10.17 - NOT PUBLISHED
 
 * added parameter "link_content" to the droplet wysiwyg_teaser - setting
