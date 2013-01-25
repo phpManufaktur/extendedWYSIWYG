@@ -1,0 +1,33 @@
+<div id="login_dialog">
+  <h2>{translate('Login')}</h2>
+  {if $message.active == 1}
+    <div class="wysiwyg_message">{$message.content}</div>
+  {else}
+    <div class="wysiwyg_intro">
+      {translate('<p>You must login as administrator to get access to the extendedWYSIWYG settings.</p>')}
+    </div>
+  {/if}
+  <div id="login_container">
+    <form name="{$form.name}" action="{$form.action}" method="post">
+      <input type="hidden" name="{$action.name}" value="{$action.value}" />
+  
+      <div class="settings_label">{translate('Username')}</div>
+      <div class="settings_value">
+        <input type="text" name="{$login.username.name}" value="{$login.username.value}" />
+      </div>
+      <div class="settings_hint">&nbsp;</div>
+      <div class="settings_clear"></div>
+      <div class="settings_label">{translate('Password')}</div>
+      <div class="settings_value">
+        <input type="password" name="{$login.password.name}" value="{$login.password.value}" />
+      </div>
+      <div class="settings_hint">&nbsp;</div>
+      <div class="settings_clear"></div>
+      <div class="settings_label">&nbsp;</div>
+      <div class="settings_value">
+        <input type="submit" value="{translate('Login')}" />
+      </div>
+      <div class="settings_clear"></div>
+    </form>
+  </div>
+</div>
