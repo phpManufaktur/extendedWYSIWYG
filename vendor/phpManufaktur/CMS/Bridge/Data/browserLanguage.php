@@ -40,7 +40,7 @@ class browserLanguage {
    * Try to get the language from the browser.
    * This code is taken from SelfHTML
    *
-   * @author Christina Seiler <self@christian-seiler.de>
+   * @author Christian Seiler <self@christian-seiler.de>
    * @link http://aktuell.de.selfhtml.org/artikel/php/httpsprache/
    *
    * @param array $allowed_languages Array with the available languages (lowercase)
