@@ -16,13 +16,20 @@ use phpManufaktur\kitCommand\Command;
 
 class kitCommand extends boneClass {
 
+  // commands which can executed before the page is generated!
+  protected static $preprocess_commands = array(
+      'wysiwyg'
+      );
+
   /**
    * Execute the main function for kitCommand
    *
    * @param string $content
+   * @param boolean $preprocess
    * @return string
    */
-  public function Exec($content) {
+  public function Exec($content, $preprocess=false) {
+    $loader = array();
     // search for kitCommands ~~ command ARG1[value, value] arg2[] ~~
     preg_match_all('/(~~ ).*( ~~)/', $content, $matches, PREG_SET_ORDER);
     foreach ($matches as $match) {
@@ -34,6 +41,9 @@ class kitCommand extends boneClass {
       $command_array = explode(' ', $command_string);
       // the first match is the command!
       $command = strtolower(trim($command_array[0]));
+      // is a preprocessing command?
+      if ($preprocess && !in_array($command, self::$preprocess_commands))
+        continue;
       // exists the command execution file?
       $command_path = CMS_ADDON_PATH."/vendor/phpManufaktur/kitCommand/Command/$command/$command.php";
       if (file_exists($command_path)) {
