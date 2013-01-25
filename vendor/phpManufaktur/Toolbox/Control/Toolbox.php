@@ -128,4 +128,33 @@ class Toolbox extends boneClass {
     return true;
   } // checkPath()
 
+  /**
+   * Delete a directory recursivly
+   *
+   * @param string $directory_path
+   */
+  public function deleteDirectory($directory_path) {
+    if (is_dir($directory_path)) {
+      $items = scandir($directory_path);
+      foreach ($items as $item) {
+        if (($item != '.') && ($item != '..')) {
+          if (filetype($directory_path.'/'.$item) == 'dir')
+            $this->deleteDirectory($directory_path.'/'.$item);
+          elseif (!unlink($directory_path.'/'.$item)) {
+            $this->setError($I18n->translate("Can't delete the file {{ file }}.",
+                array('file' => $directory_path.'/'.$item)), __METHOD__, __LINE__);
+            return false;
+          }
+        }
+      }
+      reset($items);
+      if (!rmdir($directory_path)) {
+        $this->setError($I18n->translate("Can't delete the directory {{ directory }}.",
+            array('directory' => $directory_path)), __METHOD__, __LINE__);
+        return false;
+      }
+    }
+    return true;
+  } // deleteDirectory()
+
 } // class Toolbox
