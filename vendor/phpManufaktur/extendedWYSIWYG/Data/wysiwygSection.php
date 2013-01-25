@@ -11,11 +11,44 @@
 
 namespace phpManufaktur\extendedWYSIWYG\Data;
 
-use phpManufaktur\CMS\Bridge\Control\boneClass;
-use phpManufaktur\extendedWYSIWYG\Data\wysiwygConfiguration;
 use phpManufaktur\kitCommand\kitCommand;
 
+use phpManufaktur\CMS\Bridge\Control\boneClass;
+use phpManufaktur\extendedWYSIWYG\Data\wysiwygConfiguration;
+use phpManufaktur\kitCommand\Command\system\system;
+
 class wysiwygSection extends boneClass {
+
+  /**
+   * Create the table mod_wysiwyg
+   *
+   * @return boolean
+   */
+  public function create() {
+    global $db;
+
+    $table = CMS_TABLE_PREFIX.'mod_wysiwyg';
+$SQL = <<<EOD
+    CREATE TABLE IF NOT EXISTS `$table` (
+      `section_id` INT(11) NOT NULL DEFAULT '0',
+      `page_id` INT(11) NOT NULL DEFAULT '0',
+      `content` LONGTEXT NOT NULL,
+      `text` LONGTEXT NOT NULL,
+      PRIMARY KEY (`section_id`)
+    )
+    ENGINE=InnoDB
+    DEFAULT CHARSET=utf8
+    COLLATE='utf8_unicode_ci'
+EOD;
+    try {
+      $db->query($SQL);
+      $this->setInfo('Created table mod_wysiwyg', __METHOD__, __LINE__);
+    } catch (\Doctrine\DBAL\DBALException $e) {
+      $this->setError($e->getMessage(), __METHOD__, $e->getLine());
+      return false;
+    }
+    return true;
+  } // create()
 
   /**
    * Add a new, blank Section to the WYSIWYG table
@@ -66,7 +99,8 @@ class wysiwygSection extends boneClass {
     $section = $tools->unsanitizeText($section['content']);
 
     // replace placeholders with the actual MEDIA URL
-    //$section = str_replace('~~ REPLACE:CMS_MEDIA_URL ~~', CMS_MEDIA_URL, $section);
+    $kitCommand = new kitCommand();
+    $section = $kitCommand->Exec($section, true);
 
     if (!$edit_mode) {
       // prepare the content for frontend output
@@ -77,8 +111,6 @@ class wysiwygSection extends boneClass {
       }
     }
 
-    $kitCommand = new kitCommand();
-    $section = $kitCommand->Exec($section);
     return $section;
   } // select()
 
@@ -120,9 +152,9 @@ class wysiwygSection extends boneClass {
       return false;
     }
     if ($use_relative_url) {
-      // replace absolute URLs
+      // replace absolute URLs of MEDIA directory with a kitCommand
       $searchfor = '@(<[^>]*=\s*")('.preg_quote(CMS_MEDIA_URL).')([^">]*".*>)@siU';
-      $content = preg_replace($searchfor, '$1~~ system replace[CMS_MEDIA_URL] ~~$3', $content);
+      $content = preg_replace($searchfor, '$1~~ wysiwyg replace[CMS_MEDIA_URL] ~~$3', $content);
     }
 
     $text = $tools->sanitizeText(strip_tags($content));
