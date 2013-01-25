@@ -15,7 +15,7 @@ use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use phpManufaktur\CMS\Bridge\cmsBridge;
 use phpManufaktur\Toolbox\Control\Toolbox;
-use phpManufaktur\Service\View\Service;
+use phpManufaktur\extendedWYSIWYG\View\viewSettings;
 
 global $cms;
 global $logger;
@@ -141,9 +141,9 @@ else {
   $tools = new Toolbox();
 
   if (EXTERNAL_ACCESS) {
-    // redirect to the Service tool
-    $Service = new Service();
-    $Service->exec();
+    // redirect to the Settings tool
+    $Settings = new viewSettings();
+    echo $Settings->action();
     exit();
   }
 
