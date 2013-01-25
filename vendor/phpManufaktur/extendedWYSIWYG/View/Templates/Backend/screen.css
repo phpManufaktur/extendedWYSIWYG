@@ -7,6 +7,52 @@
  * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
  */
 
+#sub_navigation,
+#navigation {
+  padding: 3px 0 3px 10px;
+  margin: 15px 0 0 0;
+  border-bottom: 1px solid #ddd;
+  list-style-type: none;
+  text-align: left;
+}
+#sub_navigation li,
+#navigation li {
+  display: inline;
+  margin: 0;
+  padding: 0;
+}
+#sub_navigation li a,
+#navigation li a {
+  text-decoration: none;
+  padding: 3px 7px;
+  margin: 0 3px 0 0;
+  border: 1px solid #dddddd;
+  border-bottom: none;
+}
+#sub_navigation li a:link,
+#sub_navigation li a:visited,
+#navigation li a:link,
+#navigation li a:visited {
+  color: #fff;
+  background-color: #969696;
+}
+#sub_navigation li a:hover,
+#sub_navigation li a:active,
+#navigation li a:hover,
+#navigation li a:active {
+  background-color: #363636;
+  color: #fff;
+}
+#navigation li.selected a,
+#sub_navigation li.selected a { 
+  position: relative;
+  top: 1px;
+  padding-top: 4px;
+  color: #363636;
+  background-color: #fff;
+  font-weight: bold;
+}
+
 .clear {
   clear: both;
   margin: 0;
@@ -23,6 +69,7 @@
   color: #363636;
   background-color: transparent;
 }
+
 .wysiwyg_error {
   color: #fff;
   background-color: #992826;
@@ -222,16 +269,120 @@
   min-height: 1px;
   display: block;
 }
-.wysiwyg_message {
-  margin: 10px 0 10px 0;
+.wysiwyg_message,
+.wysiwyg_intro {
+  color: #fff;
+  background-color: #5b768a;
+  margin: 15px 120px 10px 0;
   padding: 10px;
   font-size: 10px;
+  min-height: 45px;
+}
+.wysiwyg_message {
   color: #363636;
   background-color: #d6c48d;
 }
 
 #wysiwyg_settings {
-  margin: 20px auto 0 auto;
+  font-family: Verdana, Arial, sans-serif;
+  font-size: 10px;
+  font-weight: normal;
+  color: #363636;
+  background-color: transparent;
+  margin: 40px auto 0 auto;
   padding: 0;
   width: 960px;
+}
+#settings_start,
+#login_dialog {
+  background-image: url(images/key_110x110.png);
+  background-position: top right;
+  background-repeat: no-repeat;
+  background-color: transparent;
+  margin: 0;
+  padding: 5px 10px 20px 10px;
+}
+#settings_start {
+  background-image: url(images/cog_110x110.png);
+}
+#login_container {
+  margin: 50px 0 0 0;
+  padding: 0;
+}
+#about_container {
+  margin: 50px 0 0 0;
+  padding: 0;
+}
+.about_changelog {
+  float: right;
+  width: 400px;
+  height: 175px;
+  font-size: 9px;
+  margin: 0 0 0 30px;
+  padding: 0;
+  overflow-y: scroll;
+}
+.about_image {
+  float: right;
+  margin: 0;
+  padding: 0;
+  text-align: right;
+}
+.about_image img {
+  border: 1px solid #5b768a;
+  padding: 5px;
+}
+.about_text {
+  float: right;
+  margin: 30px 30px 0 0;
+  text-align: right;
+}
+.about_text h2 {
+  font-size: 14px;
+  color: #da251d;
+  font-style: italic;
+}
+.about_label,
+.about_value {
+  float: right;
+  margin: 0;
+  padding: 0 0 0 10px;
+  font-weight: bold;
+}
+.about_label {
+  font-style: italic;
+  font-weight: normal;
+}
+.about_clear {
+  clear: both;
+  width: 1px;
+  height: 5px;
+}
+.settings_label {
+  float: left;
+  width: 200px;
+  margin: 0;
+  padding: 5px 20px 0 0;
+  text-align: right;
+}
+.settings_value {
+  float: left;
+  width: 330px;
+  margin: 0;
+  padding: 0 20px 0 0;
+  text-align: left;
+}
+.settings_hint {
+  float: left;
+  width: 400px;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+}
+.settings_clear {
+  clear: both;
+  width: 1px;
+  height: 5px;
+  margin: 0;
+  padding: 0;
 }
