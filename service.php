@@ -13,7 +13,7 @@ if (!defined('EXTERNAL_ACCESS'))
   define('EXTERNAL_ACCESS', false);
 include __DIR__.'/bootstrap.php';
 
-use phpManufaktur\extendedWYSIWYG\View\viewSettings;
+use phpManufaktur\extendedWYSIWYG\Control\controlSettings;
 
-$settings = new viewSettings();
+$settings = new controlSettings();
 echo $settings->action();
