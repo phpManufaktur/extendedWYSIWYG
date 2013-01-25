@@ -80,7 +80,7 @@ EOD;
     }
 
     // replace placeholders with the actual MEDIA URL
-    $archive['content'] = str_replace('~~ system replace[CMS_MEDIA_URL] ~~', CMS_MEDIA_URL, $archive['content']);
+    $archive['content'] = str_replace('~~ wysiwyg replace[CMS_MEDIA_URL] ~~', CMS_MEDIA_URL, $archive['content']);
 
     return $archive;
   } // select()
@@ -110,7 +110,7 @@ EOD;
     }
 
     // replace placeholders with the actual MEDIA URL
-    $archive['content'] = str_replace('~~ system replace[CMS_MEDIA_URL] ~~', CMS_MEDIA_URL, $archive['content']);
+    $archive['content'] = str_replace('~~ wysiwyg replace[CMS_MEDIA_URL] ~~', CMS_MEDIA_URL, $archive['content']);
 
     return $archive;
   } // selectLast()
@@ -140,7 +140,7 @@ EOD;
     }
 
     // replace placeholders with the actual MEDIA URL
-    $archive['content'] = str_replace('~~ system replace[CMS_MEDIA_URL] ~~', CMS_MEDIA_URL, $archive['content']);
+    $archive['content'] = str_replace('~~ wysiwyg replace[CMS_MEDIA_URL] ~~', CMS_MEDIA_URL, $archive['content']);
 
     return $archive;
   } // selectLastActive()
@@ -178,7 +178,7 @@ EOD;
     if ($use_relative_url) {
       // replace absolute URLs
       $searchfor = '@(<[^>]*=\s*")('.preg_quote(CMS_MEDIA_URL).')([^">]*".*>)@siU';
-      $content = preg_replace($searchfor, '$1~~ system replace[CMS_MEDIA_URL] ~~$3', $content);
+      $content = preg_replace($searchfor, '$1~~ wysiwyg replace[CMS_MEDIA_URL] ~~$3', $content);
     }
 
     try {
