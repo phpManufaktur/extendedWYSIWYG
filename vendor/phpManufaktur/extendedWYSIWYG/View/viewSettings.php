@@ -14,33 +14,38 @@ namespace phpManufaktur\extendedWYSIWYG\View;
 use phpManufaktur\extendedWYSIWYG\Data\wysiwygConfiguration;
 use phpManufaktur\CMS\Bridge\Control\boneClass;
 
+
 require_once CMS_PATH.'/modules/dwoo/dwoo-1.1.1/dwoo/Dwoo/Exception.php';
 require_once CMS_PATH.'/modules/manufaktur_config/class.dialog.php';
 
 global $I18n;
 global $logger;
 global $dwoo;
-global $tools;
-global $cms;
-
-$Settings = new viewSettings();
-$Settings->action();
 
 class viewSettings extends boneClass {
 
   const REQUEST_ACTION = 'act';
+  const REQUEST_USERNAME = 'usr';
+  const REQUEST_PASSWORD = 'pwd';
 
   const ACTION_DEFAULT = 'def';
   const ACTION_LOGIN = 'lgi';
+  const ACTION_LOGIN_CHECK = 'lgic';
+  const ACTION_LOGOUT = 'ext';
   const ACTION_SETTINGS = 'set';
+  const ACTION_START = 'sta';
 
   protected static $TEMPLATE_PATH = null;
-  protected static $IS_AUTHENTICATED = false;
+  protected static $TEMPLATE_URL = null;
   protected static $SETTINGS_URL = null;
 
+  /**
+   * Constructor for class viewSettings
+   */
   public function __construct() {
     self::$TEMPLATE_PATH = __DIR__.'/Templates/Backend/';
-    self::$SETTINGS_URL = CMS_ADDON_URL.'/settings.php';
+    self::$TEMPLATE_URL = CMS_ADDON_URL.'/vendor/phpManufaktur/extendedWYSIWYG/View/Templates/Backend';
+    self::$SETTINGS_URL = CMS_ADDON_URL.'/service.php';
   } // __construct()
 
   /**
@@ -68,63 +73,112 @@ class viewSettings extends boneClass {
     return $result;
   } // getTemplate()
 
-  public function action() {
-    if (!self::$IS_AUTHENTICATED) {
-      $_REQUEST[self::REQUEST_ACTION] = self::ACTION_SETTINGS;
+
+  /**
+   * Parse the final HTML page and return it
+   *
+   * @param string $action
+   * @param string $content
+   */
+  protected function show($action, $content) {
+    $tab_navigation_array = array(
+        self::ACTION_START => 'extendedWYSIWYG',
+        self::ACTION_SETTINGS => 'Settings',
+        self::ACTION_LOGOUT => 'Logout'
+    );
+
+    $navigation = array();
+    foreach ($tab_navigation_array as $key => $value) {
+      $navigation[] = array(
+          'active' => ($key == $action) ? 1 : 0,
+          'url' => sprintf('%s%s%s', self::$SETTINGS_URL,
+              (false === strpos(self::$SETTINGS_URL, '?')) ? '?' : '&',
+              http_build_query(array(self::REQUEST_ACTION => $key))),
+          'text' => $value
+      );
     }
 
-    $action = (isset($_REQUEST[self::REQUEST_ACTION])) ? $_REQUEST[self::REQUEST_ACTION] : self::ACTION_DEFAULT;
-
-    switch ($action):
-    case self::ACTION_SETTINGS:
-      $result = $this->show(self::ACTION_SETTINGS, $this->dialogSetttings());
-      break;
-    case self::ACTION_LOGIN:
-      $result = $this->show(self::ACTION_LOGIN, $this->dialogLogin());
-      break;
-    default:
-       $result = $this->show(self::ACTION_DEFAULT, '- not defined -');
-       break;
-    endswitch;
-
-    // prompt the complete settings dialog
-    return $result;
-  } // action()
-
-  protected function show($action, $content) {
     $data = array(
         'title' => 'extendedWYSIWYG Settings',
         'css_url' => CMS_ADDON_URL.'/vendor/phpManufaktur/extendedWYSIWYG/View/Templates/Backend/screen.css',
         'css_config_url' => CMS_URL.'/modules/manufaktur_config/backend.css',
-        'navigation' => '',
+        'navigation' => $navigation,
         'is_error' => $this->isError() ? 1 : 0,
         'content' => $this->isError() ? $this->getError() : $content
     );
     return $this->getTemplate('settings.page.dwoo', $data);
   } // show()
 
-  protected function dialogLogin() {
-    return __METHOD__;
-  } // dialotLogin()
+  /**
+   * Shows the login dialog
+   *
+   * @param string $action
+   * @param array $data
+   */
+  public function dialogLogin($action, $data) {
+    $template = array(
+        'form' => array(
+            'name' => 'login_dialog',
+            'action' => self::$SETTINGS_URL
+            ),
+        'action' => array(
+            'name' => self::REQUEST_ACTION,
+            'value' => self::ACTION_LOGIN_CHECK
+            ),
+        'message' => array(
+            'active' => (int) (isset($data['message']) && !empty($data['message'])),
+            'content' => (isset($data['message'])) ? $data['message'] : ''
+            ),
+        'login' => array(
+            'username' => array(
+                'name' => self::REQUEST_USERNAME,
+                'value' => $data['username']
+                ),
+            'password' => array(
+                'name' => self::REQUEST_PASSWORD,
+                'value' => ''
+                ),
+            ),
+        );
+    $dialog = $this->getTemplate('settings.login.dwoo', $template);
+    return $this->show($action, $dialog);
+  } // dialogLogin()
 
-  protected function dialogSetttings() {
+  /**
+   * Show the setting dialog for the general options
+   *
+   * @param string $action
+   * @param string $data
+   */
+  public function dialogSetttings($action, $data) {
     // set the link to call the dlgConfig()
-    $link = self::$SETTINGS_URL;
+    $link = sprintf('%s%s%s', self::$SETTINGS_URL,
+        (false === strpos(self::$SETTINGS_URL, '?')) ? '?' : '&',
+        http_build_query(array(self::REQUEST_ACTION => self::ACTION_SETTINGS)));
     // set the abort link (to modify page)
     $abort = self::$SETTINGS_URL;
     // exec manufakturConfig
     $dialog = new \manufakturConfigDialog('wysiwyg', 'extendedWYSIWYG', $link, $abort);
-    return $dialog->action();
+    $content = $dialog->action();
+    return $this->show($action, $content);
   } // dialogSettings()
+
+  /**
+   * Show the start dialog with addon information, changelog, actual log a.s.o.
+   *
+   * @param string $action
+   * @param array $data
+   */
+  public function dialogStart($action, $data) {
+    $template = array(
+        'template' => array(
+            'url' => self::$TEMPLATE_URL
+            ),
+        'about' => $data['about'],
+        );
+    $dialog = $this->getTemplate('settings.start.dwoo', $template);
+    return $this->show($action,$dialog);
+  } // dialogStart()
 
 } // class viewSettings
 
-/*
-// set the link to call the dlgConfig()
-$link = CMS_ADDON_URL.'/vendor/phpManufaktur/extendedWYSIWYG/View/viewSettings.php';
-// set the abort link (to modify page)
-$abort = CMS_ADDON_URL.'/vendor/phpManufaktur/extendedWYSIWYG/View/viewSettings.php';
-// exec manufakturConfig
-$dialog = new \manufakturConfigDialog('wysiwyg', 'extendedWYSIWYG', $link, $abort);
-echo $dialog->action();
-*/
