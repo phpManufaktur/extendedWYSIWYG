@@ -9,9 +9,6 @@
  * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
  */
 
-if (!defined('WB_PATH'))
-  include __DIR__.'/bootstrap.php';
-
 $module_directory = 'wysiwyg';
 $module_name = 'extendedWYSIWYG';
 $module_function = 'page';
