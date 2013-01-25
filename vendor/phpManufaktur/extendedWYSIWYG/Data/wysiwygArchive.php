@@ -80,7 +80,8 @@ EOD;
     }
 
     // replace placeholders with the actual MEDIA URL
-    $archive['content'] = str_replace('~~ wysiwyg replace[CMS_MEDIA_URL] ~~', CMS_MEDIA_URL, $archive['content']);
+    if (isset($archive['content']))
+      $archive['content'] = str_replace('~~ wysiwyg replace[CMS_MEDIA_URL] ~~', CMS_MEDIA_URL, $archive['content']);
 
     return $archive;
   } // select()
@@ -110,7 +111,8 @@ EOD;
     }
 
     // replace placeholders with the actual MEDIA URL
-    $archive['content'] = str_replace('~~ wysiwyg replace[CMS_MEDIA_URL] ~~', CMS_MEDIA_URL, $archive['content']);
+    if (isset($archive['content']))
+      $archive['content'] = str_replace('~~ wysiwyg replace[CMS_MEDIA_URL] ~~', CMS_MEDIA_URL, $archive['content']);
 
     return $archive;
   } // selectLast()
@@ -140,7 +142,8 @@ EOD;
     }
 
     // replace placeholders with the actual MEDIA URL
-    $archive['content'] = str_replace('~~ wysiwyg replace[CMS_MEDIA_URL] ~~', CMS_MEDIA_URL, $archive['content']);
+    if (isset($archive['content']))
+      $archive['content'] = str_replace('~~ wysiwyg replace[CMS_MEDIA_URL] ~~', CMS_MEDIA_URL, $archive['content']);
 
     return $archive;
   } // selectLastActive()
