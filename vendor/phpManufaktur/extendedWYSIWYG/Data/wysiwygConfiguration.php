@@ -38,4 +38,20 @@ class wysiwygConfiguration extends boneClass {
     return $value;
   } // getValue()
 
+  /**
+   * Read the desired XML file and set the values for the configuration
+   *
+   * @param string $path
+   * @param string $module_directory
+   * @param string $reset_values
+   * @return boolean
+   */
+  public function readXMLfile($path, $module_directory, $reset_values) {
+    if (!$this->config->readXMLfile($path, $module_directory, $reset_values)) {
+      $this->setError($this->config->getError(), __METHOD__, __LINE__);
+      return false;
+    }
+    return true;
+  }
+
 } // class wysiwygConfiguration
