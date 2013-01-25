@@ -356,7 +356,7 @@ class viewModifySection extends boneClass {
                 'url' => CMS_ADDON_URL.'/vendor/phpManufaktur/extendedWYSIWYG/Control/retrieveCKEditorContent.php'
                 ),
             'settings' => array(
-                'url' => CMS_ADDON_URL.'/settings.php'
+                'url' => CMS_ADDON_URL.'/service.php'
                 )
             )
         );
