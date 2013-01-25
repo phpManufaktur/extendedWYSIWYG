@@ -18,7 +18,7 @@ $checked = true;
 
 // check PHP version
 $PRECHECK['PHP_VERSION'] = array(
-    'VERSION' => '5.2.0',
+    'VERSION' => '5.3.2',
     'OPERATOR' => '>='
 );
 
@@ -26,17 +26,12 @@ $PRECHECK['PHP_VERSION'] = array(
 $check = array(
     'Dwoo' => array(
         'directory' => 'dwoo',
-        'version' => '0.16',
+        'version' => '0.17',
         'problem' => 'Dwoo => <b><a href="https://addons.phpmanufaktur.de/download.php?file=Dwoo" target="_blank">Download actual version</a></b>'
-    ),
-    'dropletsExtension' => array(
-        'directory' => 'droplets_extension',
-        'version' => '0.24',
-        'problem' => 'dropletsExtension => <b><a href="https://addons.phpmanufaktur.de/download.php?file=dropletsExtension" target="_blank">Download actual version</a></b>'
     ),
     'manufakturConfig' => array(
         'directory' => 'manufaktur_config',
-        'version' => '0.16',
+        'version' => '0.17',
         'problem' => 'manufakturConfig => <b><a href="https://addons.phpmanufaktur.de/download.php?file=manufakturConfig" target="_blank">Download actual version</a></b>'
         )
 );
