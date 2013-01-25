@@ -1,0 +1,32 @@
+<div id="settings_start">
+  <h2>{translate('extendedWYSIWYG')}</h2>
+  {if $message.active == 1}
+    <div class="wysiwyg_message">{$message.content}</div>
+  {else}
+    <div class="wysiwyg_intro">
+      {translate('<p>Welcome to the settings for extendWYSIWYG.</p>')}
+    </div>
+  {/if}
+  <div id="about_container">
+    <div class="about_changelog">{$about.changelog}</div>
+    <div class="about_image">
+      <img src="{$template.url}/images/extendedwysiwyg_250x167.jpg" alt="extendedWYSIWYG" width="250" height="167" />
+    </div>
+    <div class="about_text">
+      <h2>extendedWYSIWYG</h2>
+      <div class="about_value">{$about.release}</div>
+      <div class="about_label">Release</div>
+      <div class="about_clear"></div>
+      <div class="about_value">{$about.cms}</div>
+      <div class="about_label">CMS</div>
+      <div class="about_clear"></div>
+      <div class="about_value">{$about.php}</div>
+      <div class="about_label">PHP</div>
+      <div class="about_clear"></div>
+      <div class="about_value">{$about.mysql}</div>
+      <div class="about_label">MySQL</div>
+      <div class="about_clear"></div>      
+    </div>
+  </div>
+  
+</div>
