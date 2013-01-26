@@ -1,5 +1,7 @@
 <?php
 
+use phpManufaktur\extendedWYSIWYG\Control\controlSettings;
+
 /**
  * extendedWYSIWYG
  *
@@ -47,10 +49,11 @@ else {
     // default level for the logger
     $logger_level = Logger::ERROR;
   }
+  define('CMS_LOGGER_LEVEL', $logger_level);
 
   // initialize the logger
   $logger = new Logger('extendedWYSIWYG');
-  $logger->pushHandler(new StreamHandler(__DIR__.'/logfile/extendedWYSIWYG.log', $logger_level));
+  $logger->pushHandler(new StreamHandler(__DIR__.'/logfile/extendedWYSIWYG.log', CMS_LOGGER_LEVEL));
   $logger->addInfo('Monolog initialized');
 
   // the cmsBrige must prepared before it could initialized
@@ -142,8 +145,8 @@ else {
 
   if (EXTERNAL_ACCESS) {
     // redirect to the Settings tool
-    $Settings = new viewSettings();
-    echo $Settings->action();
+    $Settings = new controlSettings();
+    $Settings->action();
     exit();
   }
 
