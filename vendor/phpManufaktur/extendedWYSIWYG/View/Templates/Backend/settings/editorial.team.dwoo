@@ -1,0 +1,38 @@
+<div id="editorial">
+  <ul id="sub_navigation">
+  {foreach $sub_navigation nav}
+    {if $nav.active == 1}
+      <li class="selected"><a href="{$nav.url}">{translate($nav.text)}</a></li>
+    {else}
+      <li><a href="{$nav.url}">{translate($nav.text)}</a></li>
+    {/if}
+  {/foreach}
+  </ul>
+  <div id="editorial_team">
+    <h2>{translate('Editorial team')}</h2>
+    {if $message.active == 1}
+      <div class="wysiwyg_message">{$message.content}</div>
+    {else}
+      <div class="wysiwyg_intro">
+        {translate('<p>Please check your editorial team</p>')}
+      </div>
+    {/if}
+    
+    <div id="editor_edit">
+      <fieldset>
+        <legend>{translate('Add editor'}}</legend>
+        <div class="editor_label">{translate('Select user')}</div>
+        <div class="editor_value">
+          <select name="{$users.name}">
+            <option value="-1">{translate('- please select -')}</option>
+            {foreach $users.options option}
+            <option value="{$option.value}">{$option.text}</option>
+            {/foreach}
+          </select>
+        </div>
+        <div class="editor_hint">&nbsp;</div>
+        <div class="editor_clear"></div>
+      </fieldset>
+    </div>
+  </div>
+</div>

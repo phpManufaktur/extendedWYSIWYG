@@ -14,6 +14,8 @@
     </div>
     <div class="about_text">
       <h2>extendedWYSIWYG</h2>
+      <div class="about_label">&copy 2012 by <a href="https://addons.phpmanufaktur.de">phpManufaktur</a>, Berlin</div>
+      <div class="about_clear"></div>
       <div class="about_value">{$about.release}</div>
       <div class="about_label">Release</div>
       <div class="about_clear"></div>
@@ -27,6 +29,45 @@
       <div class="about_label">MySQL</div>
       <div class="about_clear"></div>      
     </div>
+    <div class="about_clear"></div>
   </div>
-  
+  <form name="{$form.name}" action="{$form.action}" method="post">
+    <input type="hidden" name="{$action.name}" value="{$action.value}" />
+    <div id="support_container">
+      <div class="support_info">
+        {translate('<p>If something is not working proper, please switch the error message to <b>E_ALL</b> and the errorlog level to <b>DEBUG</b>.</p><p>Execute the process again, return back to this dialog.</p><p>Check the logfile below and report all informations you can gather from this dialog to the <a href="https://phpmanufaktur.de/support" target="_blank">Addons Support Group</a>.</p>')}
+      </div>
+      <div class="support_settings">
+        <div class="support_value">
+          <select name="{$logfile.level.name}">
+            {foreach $logfile.level.options option}
+            <option value="{$option.value}"{if $logfile.level.value == $option.value} selected="selected"{/if}>{$option.name}</option>
+            {/foreach}
+          </select>
+        </div>
+        <div class="support_label">{translate('Errorlog, level')}</div>
+        <div class="about_clear"></div>
+        <div class="support_value">
+          <select name="{$error_level.name}">
+            {foreach $error_level.options option}
+            <option value="{$option.value}"{if $error_level.value == $option.value} selected="selected"{/if}>{$option.name}</option>
+            {/foreach}
+          </select>
+        </div>
+        <div class="support_label">{translate('Error messages, level')}</div>
+        <div class="about_clear"></div>
+        <div class="support_value">
+          <input type="submit" value="{translate('Change')}" />
+        </div>
+        <div class="about_clear"></div>
+      </div>
+      <div class="about_clear"></div>
+    </div>
+  </form>
+  {if $logfile.active}
+    <div id="about_logfile">
+      <p><b>{translate('Errorlog')}</b></p>
+      {$logfile.content}
+    </div>
+  {/if}
 </div>
