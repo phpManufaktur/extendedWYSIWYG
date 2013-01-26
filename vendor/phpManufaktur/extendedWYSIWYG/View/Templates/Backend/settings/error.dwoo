@@ -1,0 +1,21 @@
+{* 
+ * extendedWYSIWYG
+ *
+ * @author Team phpManufaktur <team@phpmanufaktur.de>
+ * @link https://addons.phpmanufaktur.de/extendedWYSIWYG
+ * @copyright 2012 Ralf Hertsch <ralf.hertsch@phpmanufaktur.de>
+ * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
+ *
+ * Please consult the Dwoo Documentation & WIKI to get further informations 
+ * and hints for the usage of the Dwoo template engine.
+ *
+ * @link http://wiki.dwoo.org/
+ *
+ * Use {dump()} to get a list of all in this template available variables!
+ *}
+<div class="wysiwyg_error">
+  {$content}
+  <div class="wysiwyg_error_support">
+    {translate('Please help to improve Open Source Software and report this problem to the <a href="{{ url }}" target="_blank">phpManufaktur Addons Support</a> Group.', array(url='https://phpmanufaktur.de/support'))}
+  </div>
+</div>
