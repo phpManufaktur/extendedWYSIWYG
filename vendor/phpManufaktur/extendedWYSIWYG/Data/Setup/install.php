@@ -11,6 +11,10 @@
 
 namespace phpManufaktur\extendedWYSIWYG\Data\Setup;
 
+use phpManufaktur\extendedWYSIWYG\Data\editorDepartment;
+
+use phpManufaktur\extendedWYSIWYG\Data\editorTeam;
+
 use phpManufaktur\extendedWYSIWYG\Data\wysiwygConfiguration;
 
 use phpManufaktur\extendedWYSIWYG\Data\wysiwygTeaser;
@@ -69,16 +73,38 @@ class install extends boneClass {
       return false;
     }
 
-    // initialize the configuration for extendedWYSIWYG
-    $wysiwygConfiguration = new wysiwygConfiguration();
-    $path = CMS_ADDON_CONFIG_PATH.'/extendedWYSIWYG.xml';
-    if (!$wysiwygConfiguration->readXMLfile($path, 'wysiwyg', true)) {
-      $this->setError($wysiwygConfiguration->getError(), __METHOD__, __LINE__);
+    // create table mod_wysiwyg_editor_team
+    $editorTeam = new editorTeam();
+    if (!$editorTeam->create()) {
+      $this->setError($editorTeam->getError(), __METHOD__, __LINE__);
+      return false;
+    }
+
+    // create table mod_wysiwyg_editor_department
+    $editorDepartment = new editorDepartment();
+    if (!$editorDepartment->create()) {
+      $this->setError($editorDepartment->getError(), __METHOD__, __LINE__);
       return false;
     }
 
     return true;
   } // createTables()
+
+  /**
+   * Initialize the configuration for extendedWYSIWYG
+   *
+   * @return boolean
+   */
+  protected function initConfiguration($reset_values=false) {
+    // initialize the configuration for extendedWYSIWYG
+    $wysiwygConfiguration = new wysiwygConfiguration();
+    $path = CMS_ADDON_CONFIG_PATH.'/extendedWYSIWYG.xml';
+    if (!$wysiwygConfiguration->readXMLfile($path, 'wysiwyg', $reset_values)) {
+      $this->setError($wysiwygConfiguration->getError(), __METHOD__, __LINE__);
+      return false;
+    }
+    return true;
+  } // initConfiguration()
 
   /**
    * Check if the WebsiteBaker output filter is already patched
@@ -194,6 +220,9 @@ class install extends boneClass {
       return false;
     // create the tables
     if (!$this->createTables())
+      return false;
+    // initialize the configuration
+    if (!$this->initConfiguration(true))
       return false;
     // add the output filter
     if (!$this->addFilter())

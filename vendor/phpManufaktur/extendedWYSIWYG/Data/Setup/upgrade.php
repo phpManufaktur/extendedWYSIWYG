@@ -79,6 +79,10 @@ class upgrade extends install {
     if (!$this->createTables())
       return false;
 
+    // initialize the configuration
+    if (!$this->initConfiguration(false))
+      return false;
+
     // add the output filter
     if (!$this->addFilter())
       return false;
