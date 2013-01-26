@@ -34,7 +34,7 @@ class boneClass {
    * @param string $method
    * @param string $line
    */
-  protected function setError($error, $method, $line) {
+  public function setError($error, $method, $line) {
     global $logger;
     self::$error = sprintf('[%s - %s] %s', $method, $line, $error);
     $logger->addError(strip_tags(self::$error));
