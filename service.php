@@ -16,4 +16,4 @@ include __DIR__.'/bootstrap.php';
 use phpManufaktur\extendedWYSIWYG\Control\controlSettings;
 
 $settings = new controlSettings();
-echo $settings->action();
+$settings->action();
