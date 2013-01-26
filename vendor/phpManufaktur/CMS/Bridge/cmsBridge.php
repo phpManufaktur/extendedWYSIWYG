@@ -344,7 +344,7 @@ class cmsBridge extends boneClass {
   public function getDirectoryForPageID($page_id) {
     global $I18n;
 
-    $settings = new LEPTON\Setting();
+    $settings = new LEPTON\Settings();
     if (false === ($directory = $settings->select('pages_directory'))) {
       $this->setError($settings->getError(), __METHOD__, __LINE__);
       return false;
