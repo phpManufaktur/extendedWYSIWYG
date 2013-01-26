@@ -11,8 +11,11 @@
 
 namespace phpManufaktur\extendedWYSIWYG\Control;
 
+use phpManufaktur\extendedWYSIWYG\Data\editorDepartment;
+use phpManufaktur\extendedWYSIWYG\Data\editorTeam;
+use phpManufaktur\CMS\Bridge\Data\LEPTON\Settings;
+use phpManufaktur\extendedWYSIWYG\Data\logfile;
 use Markdown\Markdown;
-
 use phpManufaktur\CMS\Bridge\Data\mysqlVersion;
 use phpManufaktur\extendedWYSIWYG\Data\addonVersion;
 use phpManufaktur\CMS\Bridge\Data\LEPTON\Users;
@@ -21,21 +24,7 @@ use phpManufaktur\CMS\Bridge\Control\boneClass;
 use phpManufaktur\CMS\Bridge\Data\LEPTON;
 use phpManufaktur\extendedWYSIWYG\View\viewSettings;
 
-class controlSettings extends boneClass {
-
-  const REQUEST_ACTION = 'act';
-  const REQUEST_USERNAME = 'usr';
-  const REQUEST_PASSWORD = 'pwd';
-
-  const ACTION_DEFAULT = 'def';
-  const ACTION_LOGIN = 'lgi';
-  const ACTION_LOGIN_CHECK = 'lgic';
-  const ACTION_LOGOUT = 'ext';
-  const ACTION_SETTINGS = 'set';
-  const ACTION_START = 'sta';
-
-  const SESSION_SETTINGS_AUTHENTICATED = 'ssa';
-  const SESSION_SETTINGS_USER = 'ssu';
+class controlSettings extends boneSettings {
 
   /**
    * Action handler for controlSettings and viewSettings
@@ -66,14 +55,37 @@ class controlSettings extends boneClass {
     case self::ACTION_LOGOUT:
       $result = $this->actionLogout();
       break;
+    case self::ACTION_CHANGE_LEVEL:
+      $result = $this->actionChangeLevel();
+      break;
+    case self::ACTION_EDITORIAL:
+      $subaction = (isset($_REQUEST[self::REQUEST_SUB_ACTION])) ? $_REQUEST[self::REQUEST_SUB_ACTION] : self::ACTION_EDITORIAL_TEAM;
+      switch ($subaction):
+      case self::ACTION_EDITORIAL_DEPARTMENT:
+        $result = $this->actionEditorialDepartment();
+        break;
+      case self::ACTION_EDITORIAL_TEAM:
+      default:
+        $result = $this->actionEditorialTeam();
+        break;
+      endswitch;
+      break;
     case self::ACTION_START:
     default:
        $result = $this->actionStart();
        break;
     endswitch;
 
-    // prompt the complete settings page
-    return $result;
+    if ($this->isError()) {
+      // prompt error
+      $View = new viewSettings();
+      $View->setError($this->getError(), __METHOD__, __LINE__);
+      echo $View->show($action, $this->getError());
+    }
+    else {
+      // prompt the complete settings page
+      echo $result;
+    }
   } // action()
 
   /**
@@ -140,10 +152,33 @@ class controlSettings extends boneClass {
     $mysqlVersion = new mysqlVersion();
     $markdown = new Markdown();
 
+    // read the changelog
     if (false === ($changelog = file_get_contents(CMS_ADDON_PATH.'/CHANGELOG'))) {
-      $this->setMessage($I18n->translate('<p>Can\t read the CHANGELOG!</p>'), __METHOD__, __LINE__);
+      $this->setMessage($I18n->translate('<p>Can\'t read the CHANGELOG!</p>'), __METHOD__, __LINE__);
       $changelog = '- error reading the CHANGELOG -';
     }
+
+    // read the logfile
+    $log = new logfile();
+    $logfile = $log->getLog(true);
+
+    $log_levels = array();
+    foreach ($log::$level_array as $name => $value) {
+      $log_levels[] = array(
+          'name' => $name,
+          'value' => $value
+          );
+    }
+
+    $error_levels = array();
+    foreach (self::$ERROR_LEVELS as $name => $value) {
+      $error_levels[] = array(
+          'name' => $name,
+          'value' => $value
+      );
+    }
+    $Settings = new LEPTON\Settings();
+    $error_level = $Settings->select('er_level');
 
     $data = array(
         'message' => $this->getMessage(),
@@ -154,9 +189,64 @@ class controlSettings extends boneClass {
             'mysql' => $mysqlVersion->get(),
             'changelog' => $markdown->parse($changelog)
             ),
+        'logfile' => array(
+            'active' => (int) !empty($logfile),
+            'content' => $logfile,
+            'level' => array(
+                'value' => self::$LOGGER_LEVEL,
+                'name' => self::REQUEST_LOGFILE_LEVEL,
+                'options' => $log_levels
+                )
+            ),
+        'error_level' => array(
+            'value' => $error_level,
+            'name' => self::REQUEST_ERROR_LEVEL,
+            'options' => $error_levels
+            ),
         );
     return $View->dialogStart(self::ACTION_START, $data);
   } // actionStart()
+
+  /**
+   * Change the Logger level
+   *
+   * @return boolean|string
+   */
+  protected function actionChangeLevel() {
+    global $I18n;
+    global $logger;
+
+    $messages = $this->getMessage();
+
+    if (isset($_REQUEST[self::REQUEST_LOGFILE_LEVEL])) {
+      $level = (int) $_REQUEST[self::REQUEST_LOGFILE_LEVEL];
+      if ($level != CMS_LOGGER_LEVEL) {
+        self::$LOGGER_LEVEL = $level;
+        $logfile = new logfile();
+        if (!$logfile->changeLoggerLevel($level)) {
+          $this->setError($logfile->getError(), __METHOD__, __LINE__);
+          return false;
+        }
+        $messages .= $I18n->translate('<p>The loglevel is successfull changed to {{ level }}</p>',
+            array('level' => $logger->getLevelName($level)));
+      }
+    }
+    if (isset($_REQUEST[self::REQUEST_ERROR_LEVEL])) {
+      $error_level = (int) $_REQUEST[self::REQUEST_ERROR_LEVEL];
+      $Settings = new LEPTON\Settings();
+      $old_level = $Settings->select('er_level');
+      if ($old_level != $error_level) {
+        if (!$Settings->update('er_level', $error_level)) {
+          $this->setError($Settings->getError(), __METHOD__, __LINE__);
+          return false;
+        }
+        $messages .= $I18n->translate('<p>The error level is successfull changed to {{ level }}.</p>',
+            array('level' => array_search($error_level, self::$ERROR_LEVELS)));
+      }
+    }
+    $this->setMessage($messages, __METHOD__, __LINE__);
+    return $this->actionStart();
+  } // actionChangeLevel()
 
   /**
    * Check if the user is authenticated and has administrator rights, sets
@@ -184,5 +274,65 @@ class controlSettings extends boneClass {
     unset($_SESSION[self::SESSION_SETTINGS_USER]);
     return false;
   } // checkLoginAsAdmin()
+
+  /**
+   * Action procedure for the editorial department
+   *
+   * @return boolean|string
+   */
+  protected function actionEditorialDepartment() {
+    // first fix the root_parent problem!
+    $Pages = new LEPTON\Pages();
+    if (!$Pages->fixRootParentProblem()) {
+      $this->setError($Pages->getError(), __METHOD__, __LINE__);
+      return false;
+    }
+
+    $editorDepartment = new editorDepartment();
+    if (false === ($pages_list = $editorDepartment->selectPagesList(1))) {
+      $this->setError($editorDepartment->getError(), __METHOD__, __LINE__);
+      return false;
+    }
+    echo "<pre>";
+    print_r($pages_list);
+    echo "</pre>";
+
+    $data = array(
+        );
+    $View = new viewSettings();
+    return $View->dialogEditorialDepartment(self::ACTION_EDITORIAL, self::ACTION_EDITORIAL_DEPARTMENT, $data);
+  } // actionEditorialDepartment()
+
+  /**
+   * Action procedure for the editorial team
+   *
+   * @return boolean|string
+   */
+  protected function actionEditorialTeam() {
+    $editorTeam = new editorTeam();
+    if (false === ($all_users = $editorTeam->selectAsEditorAvailableUsers())) {
+      $this->setError($editorTeam->getError(), __METHOD__, __LINE__);
+      return false;
+    }
+
+    $options_user = array();
+    foreach ($all_users as $user) {
+      // skip inactive users
+      if ($user['active'] != 1) continue;
+      $options_user[] = array(
+          'value' => $user['username'],
+          'text' => $user['display_name']
+          );
+    }
+
+    $data = array(
+        'users' => array(
+            'name' => self::REQUEST_USER,
+            'options' => $options_user
+            )
+    );
+    $View = new viewSettings();
+    return $View->dialogEditorialTeam(self::ACTION_EDITORIAL, self::ACTION_EDITORIAL_TEAM, $data);
+  } // actionEditorialTeam()
 
 } // class controlSettings
