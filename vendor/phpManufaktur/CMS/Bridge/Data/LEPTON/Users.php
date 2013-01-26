@@ -17,6 +17,15 @@ global $db;
 
 class Users extends boneClass {
 
+  /**
+   * Check if the user with the $username and $password can be authenticated.
+   * If $as_administrator is set to true, the user must also be administrator.
+   *
+   * @param string $username
+   * @param string $password
+   * @param boolean $as_administrator
+   * @return boolean
+   */
   public function checkLogin($username, $password, $as_administrator=false) {
     global $db;
 
@@ -39,5 +48,23 @@ class Users extends boneClass {
     }
     return false;
   } // checkLogin
+
+  /**
+   * Fetch all users from the table and return an associative array with all fields
+   *
+   * @return boolean|multitype:
+   */
+  public function selectAll() {
+    global $db;
+
+    try {
+      $SQL = "SELECT * FROM `".CMS_TABLE_PREFIX."users`";
+      $result = $db->fetchAll($SQL);
+    } catch (\Doctrine\DBAL\DBALException $e) {
+      $this->setError($e->getMessage(), __METHOD__, $e->getLine());
+      return false;
+    }
+    return $result;
+  } // selectAll()
 
 } // class Users
