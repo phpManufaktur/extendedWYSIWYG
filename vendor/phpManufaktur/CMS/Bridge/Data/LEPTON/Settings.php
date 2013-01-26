@@ -15,7 +15,7 @@ use phpManufaktur\CMS\Bridge\Control\boneClass;
 
 global $db;
 
-class Setting extends boneClass {
+class Settings extends boneClass {
 
   /**
    * Get the value for given setting from the LEPTON configuration
@@ -36,5 +36,17 @@ class Setting extends boneClass {
     }
     return (isset($result['value'])) ? $result['value'] : null;
   } // get()
+
+  public function update($name, $value) {
+    global $db;
+
+    try {
+      $db->update(CMS_TABLE_PREFIX.'settings', array('value' => $value), array('name' => $name));
+    } catch (\Doctrine\DBAL\DBALException $e) {
+      $this->setError($e->getMessage(), __METHOD__, $e->getLine());
+      return false;
+    }
+    return true;
+  } // update()
 
 }

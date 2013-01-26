@@ -15,4 +15,4 @@ use phpManufaktur\CMS\Bridge\Data\LEPTON as LEPTON;
 
 global $db;
 
-class Setting extends LEPTON\Setting { }
+class Settings extends LEPTON\Settings { }
