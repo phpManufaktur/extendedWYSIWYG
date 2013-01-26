@@ -15,8 +15,14 @@ use phpManufaktur\CMS\Bridge\Control\boneClass;
 
 global $db;
 
-class Page extends boneClass {
+class Pages extends boneClass {
 
+  /**
+   * Select the desired page with the $page_id and return the complete record
+   *
+   * @param integer $page_id
+   * @return boolean|multitype:Ambigous <string, mixed>
+   */
   public function select($page_id) {
     global $db;
     global $tools;
@@ -35,6 +41,26 @@ class Page extends boneClass {
         $page[$key] = $tools->unsanitizeText($value);
     }
     return $page;
-  } // get()
+  } // select()
+
+  /**
+   * Sometime WB/LEPTON does not set the root_parent field if the root parent
+   * page is created. The field root_parent will contain '0' but need the
+   * page_id of this page. This update fix this problem.
+   *
+   * @return boolean
+   */
+  public function fixRootParentProblem() {
+    global $db;
+
+    try {
+      $SQL = "UPDATE `".CMS_TABLE_PREFIX."pages` SET `root_parent`=`page_id` WHERE `root_parent`='0'";
+      $result = $db->query($SQL);
+    } catch (\Doctrine\DBAL\DBALException $e) {
+      $this->setError($e->getMessage(), __METHOD__, $e->getLine());
+      return false;
+    }
+    return true;
+  } // fixRootLevelProblem()
 
 } // class mediaDirectory
