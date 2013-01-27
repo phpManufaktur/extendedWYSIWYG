@@ -13,8 +13,6 @@ namespace phpManufaktur\CMS\Bridge\Data\LEPTON;
 
 use phpManufaktur\CMS\Bridge\Control\boneClass;
 
-global $db;
-
 class Users extends boneClass {
 
   /**
@@ -56,6 +54,7 @@ class Users extends boneClass {
    */
   public function selectAll() {
     global $db;
+    global $tools;
 
     try {
       $SQL = "SELECT * FROM `".CMS_TABLE_PREFIX."users`";
@@ -64,7 +63,55 @@ class Users extends boneClass {
       $this->setError($e->getMessage(), __METHOD__, $e->getLine());
       return false;
     }
-    return $result;
+    $users = array();
+    foreach ($result as $user) {
+      $add = array();
+      foreach ($user as $key => $value)
+        $add[$key] = is_string($value) ? $tools->unsanitizeText($value) : $value;
+      $users[] = $add;
+    }
+    return $users;
   } // selectAll()
+
+  /**
+   * Fetch the user display name from the given username
+   *
+   * @param string $name
+   * @return boolean|Ambigous <string, mixed>
+   */
+  public function getUserDisplayName($name) {
+    global $db;
+    global $tools;
+
+    try {
+      $SQL = "SELECT `display_name` FROM `".CMS_TABLE_PREFIX."users` WHERE `username`='$name'";
+      $result = $db->fetchAssoc($SQL);
+    } catch (\Doctrine\DBAL\DBALException $e) {
+      $this->setError($e->getMessage(), __METHOD__, $e->getLine());
+      return false;
+    }
+    return (isset($result['display_name'])) ? $tools->unsanitizeText($result['display_name']) : '- anonymous -';
+  } // getUserDisplayName()
+
+  /**
+   * Fetch the user email address from the given username
+   *
+   * @param string $name
+   * @return boolean|Ambigous <string, mixed>
+   */
+  public function getUserEMail($name) {
+    global $db;
+    global $tools;
+
+    try {
+      $SQL = "SELECT `email` FROM `".CMS_TABLE_PREFIX."users` WHERE `username`='$name'";
+      $result = $db->fetchAll($SQL);
+    } catch (\Doctrine\DBAL\DBALException $e) {
+      $this->setError($e->getMessage(), __METHOD__, $e->getLine());
+      return false;
+    }
+    return (isset($result['email'])) ? $tools->unsanitizeText($result['email']) : 'nobody@anonymous.tld';
+  } // getUserDisplayName()
+
 
 } // class Users
