@@ -17,6 +17,101 @@
         {translate('<p>At least you must specify one department for your editorial team.</p>')}
       </div>
     {/if}
-  Hi!
+    
+    <div id="list_departments">
+      {if $department.list.count > 0}
+        <fieldset>
+          <legend>{translate('Department list')}</legend>
+          {foreach $department.list.items dep}
+            <div class="dep_list_id">{string_format($dep.id, '%03d')}</div>
+            <div class="dep_list_name"><a href="{$dep.link}">{$dep.name}</a></div>
+            <div class="dep_list_status">{translate($dep.status)}</div>
+            <div class="dep_list_description">{$dep.description}</div>
+            <div class="dep_list_clear"></div>
+          {/foreach}
+        </fieldset>
+      {else}
+        {translate('<p>Please determine at least one department for your editorial team.</p><p>In the case you want to edit all pages of your website with the same team, set the root page below to "Unique root for all editors".</p><p>In all other cases select a page as root page for the department. All pages below this one will be accessible for the edtiors belonging to this department.</p><p>Departments can\'t be nested!</p>')}
+      {/if}
+    </div>
+    {if ($department.root_only == 1) && ($sub_sub_action.value == 'adp')}
+    {else}
+    <div id="add_department">
+      <form name="{$form.name}" action="{$form.action}" method="post" >
+        <input type="hidden" name="{$action.name}" value="{$action.value}" />
+        <input type="hidden" name="{$sub_action.name}" value="{$sub_action.value}" />
+        {if isset($sub_sub_action)}
+          <input type="hidden" name="{$sub_sub_action.name}" value="{$sub_sub_action.value}" />
+        {/if}
+        {if $department.edit.id.value > -1}
+          <input type="hidden" name="{$department.edit.id.name}" value="{$department.edit.id.value}" />
+        {/if}
+        <fieldset>
+          <legend>
+            {if $department.edit.id.value < 1}
+              {translate('Add department')}
+            {else}
+              {translate('Edit department')}
+            {/if}
+          </legend>
+          <div class="editor_label">{translate('Select root page')}</div>
+          <div class="editor_value">
+           
+            <select name="{$page.name}">
+              {if ($department.edit.id.value == 0) || ($department.list.count == 0)}
+                <option value="0" selected="selected">{translate('- Unique root page for all editors -')}</option>
+              {elseif $department.edit.id.value < 1}
+                <option value="-1" selected="selected">{translate('- please select -')}</option>
+              {else}
+                <option value="{$department.edit.page.id}" selected="selected">{$department.edit.page.menu_title}</option>
+              {/if}
+              {foreach $page.options option}
+              <option value="{$option.value}>{$option.text}</option>
+              {/foreach}
+            </select>
+          </div>
+          <div class="editor_hint">
+            {translate('')}
+          </div>
+          <div class="editor_clear"></div>
+          <div class="editor_label">{translate('Department name')}</div>
+          <div class="editor_value">
+            <input type="text" name="{$department.edit.name.name}" value="{$department.edit.name.value}" />
+          </div>
+          <div class="editor_hint">
+            {translate('')}
+          </div>
+          <div class="editor_clear"></div>
+          <div class="editor_label">{translate('Department description')}</div>
+          <div class="editor_value">
+            <textarea name="{$department.edit.description.name}">{$department.edit.description.value}</textarea>
+          </div>
+          <div class="editor_hint">
+            {translate('')}
+          </div>
+          <div class="editor_clear"></div>
+          {if ($department.edit.id.value > 0)}
+          <div class="editor_label">{translate('Status')}</div>
+          <div class="editor_value">
+            <select name="{$department.edit.status.name}">
+              <option value="ACTIVE"{if $department.edit.status.value == 'ACTIVE'} selected="selected"{/if}>{translate('ACTIVE')}</option>
+              <option value="LOCKED"{if $department.edit.status.value == 'LOCKED'} selected="selected"{/if}>{translate('LOCKED')}</option>
+              <option value="DELETED"{if $department.edit.status.value == 'DELETED'} selected="selected"{/if}>{translate('DELETED')}</option>
+            </select>
+          </div>
+          <div class="editor_hint">
+            {translate('')}
+          </div>
+          <div class="editor_clear"></div>
+          {/if}
+          <div class="editor_label">&nbsp;</div>
+          <div class="editor_value">
+            <input type="submit" value="{if $department.edit.id.value < 1}{translate('Add department')}{else}{translate('Change department')}{/if}" />
+          </div>
+          <div class="editor_clear"></div>
+        </fieldset>
+      </form>
+    </div>
+    {/if}
   </div>
 </div>

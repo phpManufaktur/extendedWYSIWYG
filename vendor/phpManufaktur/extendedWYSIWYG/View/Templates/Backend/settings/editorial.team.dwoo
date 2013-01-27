@@ -18,21 +18,56 @@
       </div>
     {/if}
     
-    <div id="editor_edit">
+    <div id="editor_list">
       <fieldset>
-        <legend>{translate('Add editor'}}</legend>
-        <div class="editor_label">{translate('Select user')}</div>
-        <div class="editor_value">
-          <select name="{$users.name}">
-            <option value="-1">{translate('- please select -')}</option>
-            {foreach $users.options option}
-            <option value="{$option.value}">{$option.text}</option>
-            {/foreach}
-          </select>
+        <legend>{translate('Editor list')}</legend>
+        {foreach $editor.list.items item}
+        <div class="edit_list_id">{string_format($item.id, '%03d')}</div>
+        <div class="edit_list_name"><a href="{$item.link}">{$item.display_name}</a></div>
+        <div class="edit_list_position">{translate($item.position)}</div>
+        <div class="edit_list_departments">
+          {$i=0}
+          {foreach $item.departments department}
+            {if $i>0}<br />{/if}{$department}{$i=$i+1}
+          {/foreach}
         </div>
-        <div class="editor_hint">&nbsp;</div>
-        <div class="editor_clear"></div>
+        {/foreach}
+        <div class="edit_list_status">{translate($item.status)}</div>
+        <div class="edit_list_clear"></div>
       </fieldset>
     </div>
-  </div>
+    
+    {if $editor.edit.id.value < 1}
+      <div id="add_editor">
+        <fieldset>
+          <legend>{translate('Add editor'}}</legend>
+          <div class="editor_label">{translate('Select user')}</div>
+          <div class="editor_value">
+            <select name="{$users.name}">
+              <option value="-1">{translate('- please select -')}</option>
+              {foreach $users.options option}
+              <option value="{$option.value}">{$option.text}</option>
+              {/foreach}
+            </select>
+          </div>
+          <div class="editor_hint">&nbsp;</div>
+          <div class="editor_clear"></div>
+        </fieldset>
+      </div>
+    {else}   
+      <div id="edit_editor">
+        <fieldset>
+          <legend>{translate('Edit editor'}}</legend>
+          <div class="editor_label">{translate('Departments')}</div>
+          <div class="editor_value">
+            {foreach $department.items item}
+            <input type="checkbox" name="{$departments.name}[]" value="{$item.value}"{if $item.checked == 1} checked="checked" />&nbsp;{$item.text}
+            {/foreach}
+          </div>
+          <div class="editor_hint">&nbsp;</div>
+          <div class="editor_clear"></div>
+        </fieldset>
+      </div>
+    </div>
+  {/if}
 </div>

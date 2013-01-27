@@ -249,6 +249,7 @@
   padding: 0;
   text-align: left;
 }
+.editor_clear,
 .settings_clear {
   clear: both;
   width: 1px;
@@ -256,9 +257,18 @@
   margin: 0;
   padding: 0;
 }
+#editor_list,
+#edit_editor,
+#add_editor,
+#list_departments,
+#add_department,
 #editor_edit {
   margin: 40px 20px 0 20px;
 }
+#add_editor fieldset,
+#edit_editor fieldset,
+#list_departments fieldset,
+#add_department fieldset,
 #editor_edit fieldset {
   margin: 0;
   padding: 10px;
@@ -281,4 +291,46 @@
   width: 440px;
   margin: 0;
   padding: 3px 0 0 0;
+}
+.edit_list_departments,
+.edit_list_id,
+.edit_list_name,
+.edit_list_status,
+.edit_list_position,
+.dep_list_id,
+.dep_list_description,
+.dep_list_name,
+.dep_list_status {
+  float: left;
+  margin: 0 5px 0 0;
+  padding: 0;
+}
+.dep_list_description {
+  width: 400px;
+}
+.edit_list_id,
+.dep_list_id {
+  width: 50px;
+}
+.edit_list_name {
+  width: 150px;
+}
+.dep_list_name {
+  width: 250px;
+}
+.edit_list_status,
+.dep_list_status {
+  width: 100px;
+}
+.edit_list_clear,
+.dep_list_clear {
+  clear: both;
+  width: 1px;
+  height: 5px;
+}
+.edit_list_departments {
+  width: 200px;
+}
+.edit_list_position {
+  width: 100px;
 }
