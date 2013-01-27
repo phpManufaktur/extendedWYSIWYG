@@ -16,23 +16,34 @@ use phpManufaktur\CMS\Bridge\Control\boneClass;
 class boneSettings extends boneClass {
 
   const REQUEST_ACTION = 'act';
-  const REQUEST_SUB_ACTION = 'sub';
-  const REQUEST_USERNAME = 'usr';
-  const REQUEST_PASSWORD = 'pwd';
-  const REQUEST_LOGFILE_LEVEL = 'lfl';
+  const REQUEST_DEPARTMENT = 'dep';
+  const REQUEST_DEPARTMENT_DESCRIPTION = 'dpd';
+  const REQUEST_DEPARTMENT_ID = 'dpi';
+  const REQUEST_EDITOR_ID = 'edi';
   const REQUEST_ERROR_LEVEL = 'elv';
+  const REQUEST_LOGFILE_LEVEL = 'lfl';
+  const REQUEST_PAGE = 'pag';
+  const REQUEST_PASSWORD = 'pwd';
+  const REQUEST_STATUS = 'sta';
+  const REQUEST_SUB_ACTION = 'sub';
+  const REQUEST_SUB_SUB_ACTION = 'ssb';
   const REQUEST_USER = 'usr';
+  const REQUEST_USERNAME = 'usr';
 
+  const ACTION_ADD_DEPARTMENT = 'adp';
+  const ACTION_CHANGE_LEVEL = 'chg';
+  const ACTION_CHECK_DEPARTMENT = 'ckd';
   const ACTION_DEFAULT = 'def';
+  const ACTION_EDIT_DEPARTMENT = 'edp';
+  const ACTION_EDIT_EDITOR = 'eed';
+  const ACTION_EDITORIAL = 'edi';
+  const ACTION_EDITORIAL_TEAM = 'edt';
+  const ACTION_EDITORIAL_DEPARTMENT = 'edd';
   const ACTION_LOGIN = 'lgi';
   const ACTION_LOGIN_CHECK = 'lgic';
   const ACTION_LOGOUT = 'ext';
   const ACTION_SETTINGS = 'set';
   const ACTION_START = 'sta';
-  const ACTION_CHANGE_LEVEL = 'chg';
-  const ACTION_EDITORIAL = 'edi';
-  const ACTION_EDITORIAL_TEAM = 'edt';
-  const ACTION_EDITORIAL_DEPARTMENT = 'edd';
 
   const SESSION_SETTINGS_AUTHENTICATED = 'ssa';
   const SESSION_SETTINGS_USER = 'ssu';
@@ -48,6 +59,16 @@ class boneSettings extends boneClass {
   protected static $TEMPLATE_PATH = null;
   protected static $TEMPLATE_URL = null;
   protected static $SETTINGS_URL = null;
+
+
+  /**
+   * Constructor for class boneSettings
+   */
+  public function __construct() {
+    self::$TEMPLATE_PATH = CMS_ADDON_PATH.'/vendor/phpManufaktur/extendedWYSIWYG/View/Templates/Backend/settings/';
+    self::$TEMPLATE_URL = CMS_ADDON_URL.'/vendor/phpManufaktur/extendedWYSIWYG/View/Templates/Backend/settings';
+    self::$SETTINGS_URL = CMS_ADDON_URL.'/service.php';
+  } // __construct()
 
 
 } // class boneSettings
