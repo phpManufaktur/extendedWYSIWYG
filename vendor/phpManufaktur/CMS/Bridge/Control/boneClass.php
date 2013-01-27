@@ -15,8 +15,8 @@ global $logger;
 
 class boneClass {
 
-  private static $error;
-  private static $message;
+  private static $error = '';
+  private static $message = '';
 
   /**
    * Return the last error
@@ -50,6 +50,14 @@ class boneClass {
   } // isError()
 
   /**
+   * Reset the error status
+   *
+   */
+  public function resetError() {
+    self::$error = '';
+  } // resetError()
+
+  /**
    * Return the a message
    *
    * @return string
@@ -59,7 +67,16 @@ class boneClass {
   } // getMessage()
 
   /**
-   * Set a message and add it to the logger
+   * Reset the messages
+   *
+   */
+  public function resetMessage() {
+    self::$message = '';
+  } // resetMessage()
+
+  /**
+   * Set a message and add it to the logger.
+   * The new message will be apend to the former message
    *
    * @param string $message
    * @param string $method
@@ -67,7 +84,7 @@ class boneClass {
    */
   protected function setMessage($message, $method, $line) {
     global $logger;
-    self::$message = $message;
+    self::$message .= $message;
     $logger->addInfo(sprintf('[%s - %s] %s', $method, $line, strip_tags($message)));
   } // setMessage()
 
