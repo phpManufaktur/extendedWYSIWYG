@@ -30,7 +30,7 @@ $SQL = <<<EOD
       `name` VARCHAR(255) NOT NULL DEFAULT '',
       `position` ENUM('CHIEF_EDITOR','SUB_CHIEF_EDITOR','EDITOR','TRAINEE') NOT NULL DEFAULT 'EDITOR',
       `supervisor` VARCHAR(255) NOT NULL DEFAULT '',
-      `department` INT(11) NOT NULL DEFAULT '-1',
+      `departments` VARCHAR(255) NOT NULL DEFAULT '',
       `rights` BIGINT UNSIGNED NOT NULL DEFAULT '0',
       `last_activity` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
       `status` ENUM('ACTIVE','LOCKED','DELETED') NOT NULL DEFAULT 'ACTIVE',
@@ -61,6 +61,7 @@ EOD;
    */
   public function selectAsEditorAvailableUsers() {
     global $db;
+    global $tools;
 
     $users = CMS_TABLE_PREFIX.'users';
     $editors = CMS_TABLE_PREFIX.'mod_wysiwyg_editor_team';
@@ -73,7 +74,35 @@ EOD;
       $this->setError($e->getMessage(), __METHOD__, $e->getLine());
       return false;
     }
-    return $result;
+    $users = array();
+    foreach ($result as $user) {
+      $add = array();
+      foreach ($user as $key => $value)
+        $add[$key] = is_string($value) ? $tools->unsanitizeText($value) : $value;
+      $users[] = $add;
+    }
+    return $users;
   } // selectAsEditorAvailableUsers()
+
+  public function selectAllEditors() {
+    global $db;
+    global $tools;
+
+    try {
+      $SQL = "SELECT * FROM `".CMS_TABLE_PREFIX."mod_wysiwyg_editor_team` WHERE `status`!='DELETED' ORDER BY `name` ASC";
+      $result = $db->fetchAll($SQL);
+    } catch (\Doctrine\DBAL\DBALException $e) {
+      $this->setError($e->getMessage(), __METHOD__, $e->getLine());
+      return false;
+    }
+    $editors = array();
+    foreach ($result as $editor) {
+      $add = array();
+      foreach ($editor as $key => $value)
+        $add[$key] = is_string($value) ? $tools->unsanitizeText($value) : $value;
+      $editors[] = $add;
+    }
+    return $editors;
+  } // selectAllEditors()
 
 } // class editorTeam
