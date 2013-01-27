@@ -28,6 +28,7 @@ $SQL = <<<EOD
     CREATE TABLE IF NOT EXISTS `$table` (
       `id` INT(11) NOT NULL AUTO_INCREMENT,
       `name` VARCHAR(255) NOT NULL DEFAULT '',
+      `description` TEXT NOT NULL,
       `root_parent` INT(11) NOT NULL DEFAULT '0',
       `status` ENUM('ACTIVE','LOCKED','DELETED') NOT NULL DEFAULT 'ACTIVE',
       `timestamp` TIMESTAMP,
@@ -65,7 +66,7 @@ EOD;
     $department = CMS_TABLE_PREFIX.'mod_wysiwyg_editor_department';
 
     try {
-      $SQL = "SELECT `page_id`,$pages.`root_parent`,`level`,`page_title` FROM `$pages` ".
+      $SQL = "SELECT `page_id`,$pages.`root_parent`,`level`,`page_title`,`menu_title` FROM `$pages` ".
         "LEFT JOIN $department ON ($pages.root_parent=$department.root_parent) ".
         "WHERE $department.root_parent IS NULL AND `level`<'$max_level' ORDER BY `root_parent`, `level`, `page_title` ASC";
       $result = $db->fetchAll($SQL);
@@ -81,17 +82,135 @@ EOD;
    *
    * @return boolean|multitype:
    */
-  public function selectAllDepartments() {
+  public function selectAllDepartments($active_only=false) {
     global $db;
+    global $tools;
 
     try {
-      $SQL = "SELECT * FROM `".CMS_TABLE_PREFIX."mod_wysiwyg_editor_department` WHERE `status`!='DELETED' ORDER BY `name` ASC";
+      if ($active_only) {
+        $SQL = "SELECT * FROM `".CMS_TABLE_PREFIX."mod_wysiwyg_editor_department` WHERE `status`='ACTIVE' ORDER BY `name` ASC";
+      }
+      else {
+        $SQL = "SELECT * FROM `".CMS_TABLE_PREFIX."mod_wysiwyg_editor_department` WHERE `status`!='DELETED' ORDER BY `name` ASC";
+      }
       $result = $db->fetchAll($SQL);
     } catch (\Doctrine\DBAL\DBALException $e) {
       $this->setError($e->getMessage(), __METHOD__, $e->getLine());
       return false;
     }
-    return $result;
+    $departments = array();
+    if (is_array($result)) {
+      foreach ($result as $department) {
+        $departments[] = array(
+            'id' => $department['id'],
+            'name' => $tools->unsanitizeText($department['name']),
+            'description' => $tools->unsanitizeText($department['description']),
+            'root_parent' => $department['root_parent'],
+            'status' => $department['status'],
+            'timestamp' => $department['timestamp']
+            );
+      }
+    }
+    return $departments;
   } // selectAllDepartments()
+
+  /**
+   * Select the desired department id and return the complete record
+   *
+   * @param integer $department_id
+   * @return boolean|multitype:Ambigous <string, mixed>
+   */
+  public function select($department_id) {
+    global $db;
+    global $tools;
+
+    try {
+      $SQL = "SELECT * FROM `".CMS_TABLE_PREFIX."mod_wysiwyg_editor_department` WHERE `id`=:id";
+      $result = $db->fetchAssoc($SQL, array('id' => $department_id));
+    } catch (\Doctrine\DBAL\DBALException $e) {
+      $this->setError($e->getMessage(), __METHOD__, $e->getLine());
+      return false;
+    }
+    $department = array();
+    // loop through the result and unsanitize the returned values
+    if (is_array($result)) {
+      foreach ($result as $key => $value)
+        $department[$key] = $tools->unsanitizeText($value);
+    }
+    return $department;
+  } // select()
+
+  /**
+   * Check if the editorial departments are configured as single root department.
+   * If success return the ID of the root department
+   *
+   * @return boolean|number
+   */
+  public function getDepartmentRootId() {
+    global $db;
+
+    try {
+      $SQL = "SELECT `id` FROM `".CMS_TABLE_PREFIX."mod_wysiwyg_editor_department` WHERE `status`='ACTIVE' AND `root_parent`='0'";
+      $result = $db->fetchAssoc($SQL);
+    } catch (\Doctrine\DBAL\DBALException $e) {
+      $this->setError($e->getMessage(), __METHOD__, $e->getLine());
+      return false;
+    }
+    return (isset($result['id'])) ? $result['id'] : -1;
+  } // getDepartmentId()
+
+  /**
+   * Insert a new department. The $department array must contain the data.
+   *
+   * @param array $department
+   * @param integer $new_id contains the ID of the inserted record
+   * @return boolean
+   */
+  public function insert($department, &$new_id=-1) {
+    global $db;
+    global $tools;
+    global $I18n;
+
+    try {
+      // prepare the data
+      $data = array(
+          'name' => (isset($department['name'])) ? $tools->sanitizeText($department['name']) : '- no name -',
+          'description' => (isset($department['description'])) ? $tools->sanitizeText($department['description']) : '',
+          'root_parent' => (isset($department['root_parent'])) ? (int) $department['root_parent'] : 0,
+          'status' => (isset($department['status'])) ? $department['status'] : 'ACTIVE'
+          );
+      $db->insert(CMS_TABLE_PREFIX.'mod_wysiwyg_editor_department', $data);
+      $new_id = $db->lastInsertId();
+      $this->setMessage($I18n->translate('Inserted a new department with the ID {{ id }}', array('id' => $new_id)), __METHOD__, __LINE__);
+    } catch (\Doctrine\DBAL\DBALException $e) {
+      $this->setError($e->getMessage(), __METHOD__, $e->getLine());
+      return false;
+    }
+    return true;
+  } // insert()
+
+  /**
+   * Update the desired department record
+   *
+   * @param integer $department_id
+   * @param array $data
+   * @return boolean
+   */
+  public function update($department_id, $data) {
+    global $db;
+    global $tools;
+
+    $department = array();
+    foreach ($data as $key => $value)
+      $department[$key] = $tools->sanitizeVariable($value);
+
+    try {
+      $db->update(CMS_TABLE_PREFIX.'mod_wysiwyg_editor_department', $department, array('id' => $department_id));
+    } catch (\Doctrine\DBAL\DBALException $e) {
+      $this->setError($e->getMessage(), __METHOD__, $e->getLine());
+      return false;
+    }
+    return true;
+  } // update()
 
 } // class editorTeam
