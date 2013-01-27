@@ -25,15 +25,6 @@ global $dwoo;
 class viewSettings extends boneSettings {
 
   /**
-   * Constructor for class viewSettings
-   */
-  public function __construct() {
-    self::$TEMPLATE_PATH = __DIR__.'/Templates/Backend/settings/';
-    self::$TEMPLATE_URL = CMS_ADDON_URL.'/vendor/phpManufaktur/extendedWYSIWYG/View/Templates/Backend/settings';
-    self::$SETTINGS_URL = CMS_ADDON_URL.'/service.php';
-  } // __construct()
-
-  /**
    * Get the template, set the data and return the compiled
    *
    * @param string $template the name of the template
@@ -110,31 +101,7 @@ class viewSettings extends boneSettings {
    * @return string login dialog
    */
   public function dialogLogin($action, $data) {
-    $template_data = array(
-        'form' => array(
-            'name' => 'login_dialog',
-            'action' => self::$SETTINGS_URL
-            ),
-        'action' => array(
-            'name' => self::REQUEST_ACTION,
-            'value' => self::ACTION_LOGIN_CHECK
-            ),
-        'message' => array(
-            'active' => (int) (isset($data['message']) && !empty($data['message'])),
-            'content' => (isset($data['message'])) ? $data['message'] : ''
-            ),
-        'login' => array(
-            'username' => array(
-                'name' => self::REQUEST_USERNAME,
-                'value' => $data['username']
-                ),
-            'password' => array(
-                'name' => self::REQUEST_PASSWORD,
-                'value' => ''
-                ),
-            ),
-        );
-    $dialog = $this->getTemplate('login.dwoo', $template_data);
+    $dialog = $this->getTemplate('login.dwoo', $data);
     return $this->show($action, $dialog);
   } // dialogLogin()
 
@@ -142,10 +109,9 @@ class viewSettings extends boneSettings {
    * Show the setting dialog for the general options
    *
    * @param string $action
-   * @param string $data
    * @return string configuration dialog
    */
-  public function dialogSetttings($action, $data) {
+  public function dialogSetttings($action) {
     // set the link to call the dlgConfig()
     $link = sprintf('%s%s%s', self::$SETTINGS_URL,
         (false === strpos(self::$SETTINGS_URL, '?')) ? '?' : '&',
@@ -166,27 +132,8 @@ class viewSettings extends boneSettings {
    * @return string dialog
    */
   public function dialogStart($action, $data) {
-    $template_data = array(
-        'template' => array(
-            'url' => self::$TEMPLATE_URL
-            ),
-        'about' => $data['about'],
-        'logfile' => $data['logfile'],
-        'form' => array(
-            'name' => 'dialog_start',
-            'action' => self::$SETTINGS_URL
-            ),
-        'action' => array(
-            'name' => self::REQUEST_ACTION,
-            'value' => self::ACTION_CHANGE_LEVEL
-            ),
-        'message' => array(
-            'active' => (int) !empty($data['message']),
-            'content' => $data['message']
-            ),
-        'error_level' => $data['error_level']
-        );
-    $dialog = $this->getTemplate('start.dwoo', $template_data);
+    $dialog = $this->getTemplate('start.dwoo', $data);
+    echo $this->getError();
     return $this->show($action, $dialog);
   } // dialogStart()
 
@@ -220,17 +167,12 @@ class viewSettings extends boneSettings {
   /**
    * Dialog for the editorial team
    *
-   * @param string $action
    * @param array $data
    * @return string dialog
    */
   public function dialogEditorialTeam($action, $sub_action, $data) {
-    $template_data = array(
-        'sub_navigation' => $this->getEditorialNavigation($sub_action),
-        'users' => $data['users'],
-
-        );
-    $dialog = $this->getTemplate('editorial.team.dwoo', $template_data);
+    $data['sub_navigation'] = $this->getEditorialNavigation($data['sub_action']['value']);
+    $dialog = $this->getTemplate('editorial.team.dwoo', $data);
     return $this->show($action, $dialog);
   } // dialogEditorialTeam()
 
@@ -241,12 +183,10 @@ class viewSettings extends boneSettings {
    * @param array $data
    * @return string dialog
    */
-  public function dialogEditorialDepartment($action, $sub_action, $data) {
-    $template_data = array(
-        'sub_navigation' => $this->getEditorialNavigation($sub_action)
-    );
-    $dialog = $this->getTemplate('editorial.department.dwoo', $template_data);
-    return $this->show($action, $dialog);
+  public function dialogEditorialDepartment($data) {
+    $data['sub_navigation'] = $this->getEditorialNavigation($data['sub_action']['value']);
+    $dialog = $this->getTemplate('editorial.department.dwoo', $data);
+    return $this->show($data['action']['value'], $dialog);
   } // dialogEditorialDepartment()
 
 } // class viewSettings
