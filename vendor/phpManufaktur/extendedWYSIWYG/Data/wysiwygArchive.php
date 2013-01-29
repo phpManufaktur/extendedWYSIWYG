@@ -34,7 +34,8 @@ $SQL = <<<EOD
       `hash` VARCHAR(32) NOT NULL DEFAULT '',
       `remark` VARCHAR(255) NOT NULL DEFAULT '',
       `author` VARCHAR(255) NOT NULL DEFAULT '',
-      `status` ENUM('ACTIVE','UNPUBLISHED','BACKUP') NOT NULL DEFAULT 'ACTIVE',
+      `editor` VARCHAR(255) NOT NULL DEFAULT '',
+      `status` ENUM('ACTIVE','UNPUBLISHED','BACKUP','DRAFT','APPROVAL','REFUSED','PROOFREAD') NOT NULL DEFAULT 'ACTIVE',
       `timestamp` TIMESTAMP,
       PRIMARY KEY (`archive_id`),
       KEY (`section_id`, `page_id`, `status`)
@@ -164,8 +165,9 @@ EOD;
     global $I18n;
 
     try {
-      // first we set all previous archive entries with the ACTUAL status for this SECTION_ID to BACKUP status
-      $SQL = "UPDATE `".CMS_TABLE_PREFIX."mod_wysiwyg_archive` SET `status`='BACKUP' WHERE `section_id`='$section_id' AND `status`!='UNPUBLISHED'";
+      // set all previous archive entries with ACTUAL status to BACKUP status
+      $SQL = "UPDATE `".CMS_TABLE_PREFIX."mod_wysiwyg_archive` SET `status`='BACKUP' ".
+        "WHERE `section_id`='$section_id' AND (`status`='ACTIVE' OR `status`='')";
       $db->query($SQL);
     } catch (\Doctrine\DBAL\DBALException $e) {
       $this->setError($e->getMessage(), __METHOD__, $e->getLine());
@@ -222,8 +224,10 @@ EOD;
     }
 
     try {
+      // select only archives of status ACTIVE, UNPUBLISHED or BACKUP
       $SQL = "SELECT `timestamp`, `status`, `archive_id` FROM `".CMS_TABLE_PREFIX."mod_wysiwyg_archive` ".
-        "WHERE `section_id`='$section_id' ORDER BY `archive_id` DESC LIMIT $limit";
+        "WHERE `section_id`='$section_id' AND (`status`='ACTIVE' OR `status`='UNPUBLISHED' OR ".
+        "`status`='BACKUP') ORDER BY `archive_id` DESC LIMIT $limit";
       $archives = $db->fetchAll($SQL);
     } catch (\Doctrine\DBAL\DBALException $e) {
       $this->setError($e->getMessage(), __METHOD__, $e->getLine());
@@ -232,6 +236,9 @@ EOD;
     return $archives;
   } // selectArchiveListForDialog()
 
+  public function selectEditorialArchiveListForDialog($section_id, $editor_name, $mode) {
+
+  } // selectEditorialArchiveListForDialog()
 
 
 } // class wysiwygArchive
