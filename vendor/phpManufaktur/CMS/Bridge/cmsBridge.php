@@ -293,7 +293,7 @@ class cmsBridge extends boneClass {
    * @return Ambigous <string, unknown>
    */
   public function getUserLoginName() {
-    return (isset($_SESSION['USER_NAME'])) ? $_SESSION['USER_NAME'] : '';
+    return (isset($_SESSION['USERNAME'])) ? $_SESSION['USERNAME'] : '';
   } // getUserLoginName()
 
   /**
