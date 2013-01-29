@@ -12,7 +12,6 @@
 namespace phpManufaktur\extendedWYSIWYG\Control;
 
 use phpManufaktur\CMS\Bridge\Data\LEPTON\Pages;
-
 use phpManufaktur\extendedWYSIWYG\Data\editorDepartment;
 use phpManufaktur\extendedWYSIWYG\Data\editorTeam;
 use phpManufaktur\CMS\Bridge\Data\LEPTON\Settings;
@@ -93,6 +92,14 @@ class controlSettings extends boneSettings {
         case self::ACTION_EDIT_EDITOR:
           // edit an editor
           $result = $this->actionEditEditor();
+          break;
+        case self::ACTION_ADD_EDITOR:
+          // add a new editor
+          $result = $this->actionAddEditor();
+          break;
+        case self::ACTION_CHECK_EDITOR:
+          // check the settings for an editor
+          $result = $this->actionCheckEditor();
           break;
         default:
           // show the default editorial team dialog
@@ -210,7 +217,8 @@ class controlSettings extends boneSettings {
     $logfile = $log->getLog(true);
 
     $log_levels = array();
-    foreach ($log::$level_array as $name => $value) {
+    $la = $log::$level_array;
+    foreach ($la as $name => $value) {
       $log_levels[] = array(
           'name' => $name,
           'value' => $value
@@ -218,7 +226,8 @@ class controlSettings extends boneSettings {
     }
 
     $error_levels = array();
-    foreach (self::$ERROR_LEVELS as $name => $value) {
+    $el = self::$ERROR_LEVELS;
+    foreach ($el as $name => $value) {
       $error_levels[] = array(
           'name' => $name,
           'value' => $value
@@ -604,14 +613,64 @@ class controlSettings extends boneSettings {
       $this->setError($I18n->translate('Got a invalid ID for the root parent!'), __METHOD__, __LINE__);
       return false;
     }
-    $department_id = (int) $_REQUEST[self::REQUEST_DEPARTMENT_ID];
-    $data = array(
-        'name' => $_REQUEST[self::REQUEST_DEPARTMENT],
-        'description' => $_REQUEST[self::REQUEST_DEPARTMENT_DESCRIPTION],
-        'root_parent' => (int) $_REQUEST[self::REQUEST_PAGE],
-        'status' => $_REQUEST[self::REQUEST_STATUS]
-        );
+
+    // init department
     $editorDepartment = new editorDepartment();
+
+    $department_id = (int) $_REQUEST[self::REQUEST_DEPARTMENT_ID];
+    $status = $_REQUEST[self::REQUEST_STATUS];
+
+    if ($status == 'DELETED') {
+      // delete the department
+      if (!$editorDepartment->delete($department_id)) {
+        $this->setError($editorDepartment->getError(), __METHOD__, __LINE__);
+        return false;
+      }
+      // set a message
+      $this->setMessage($I18n->translate('<p>The department with the ID {{ id }} was deleted.</p>',
+          array('id' => $department_id)), __METHOD__, __LINE__);
+      // now we have to update the editors
+      $editorTeam = new editorTeam();
+      $Users = new LEPTON\Users();
+
+      if (false === ($editors = $editorTeam->selectEditorsOfDepartment($department_id, false))) {
+        $this->setError($editorTeam->getError(), __METHOD__, __LINE__);
+        return false;
+      }
+      // loop through the editors and delete matching departments
+      foreach ($editors as $editor_id) {
+        if (false === ($editor = $editorTeam->selectEditorById($editor_id))) {
+          $this->setError($editorTeam->getError(), __METHOD__, __LINE__);
+          return false;
+        }
+        $departments = explode(',', $editor['departments']);
+        unset($departments[array_search($department_id, $departments)]);
+        $data = array(
+            'departments' => implode(',', $departments)
+            );
+        if (!$editorTeam->update($editor_id, $data)) {
+          $this->setError($editorTeam->getError(), __METHOD__, __LINE__);
+          return false;
+        }
+        // set message
+        $this->setMessage($I18n->translate('<p>Removed department id {{ id }} from the editor {{ name }}.</p>',
+            array('id' => $department_id, 'name' => $Users->getUserDisplayName($editor['name']))), __METHOD__, __LINE__);
+      }
+      return $this->actionEditorialDepartment();
+    }
+
+    // update the department
+    $description = $_REQUEST[self::REQUEST_DEPARTMENT_DESCRIPTION];
+    $name = $_REQUEST[self::REQUEST_DEPARTMENT];
+    $root_parent = (int) $_REQUEST[self::REQUEST_PAGE];
+
+    $data = array(
+        'name' => $name,
+        'description' => $description,
+        'root_parent' => $root_parent,
+        'status' => $status
+        );
+
     if (!$editorDepartment->update($department_id, $data)) {
       $this->setError($editorDepartment->getError(), __METHOD__, __LINE__);
       return false;
@@ -627,6 +686,8 @@ class controlSettings extends boneSettings {
    * @return boolean|string
    */
   protected function actionEditorialTeam($editor_id=-1) {
+    global $I18n;
+
     $editorTeam = new editorTeam();
 
     // get all available CMS users
@@ -639,12 +700,16 @@ class controlSettings extends boneSettings {
       // skip inactive users
       $options_user[] = array(
           'value' => $user['username'],
-          'text' => $user['display_name']
+          'text' => (!empty($user['display_name'])) ? $user['display_name'] : $user['username']
           );
     }
 
     // init the user access
     $Users = new LEPTON\Users();
+    // init the pages access
+    $Pages = new LEPTON\Pages();
+    // init the department access
+    $editorDepartment = new editorDepartment();
 
     // get the list with the editors
     if (false === ($editors = $editorTeam->selectAllEditors())) {
@@ -653,14 +718,29 @@ class controlSettings extends boneSettings {
     }
     $editors_array = array();
     foreach ($editors as $editor) {
+      // get the display name
+      $display_name = $Users->getUserDisplayName($editor['name']);
+      // explode all departments
+      $departments = explode(',', $editor['departments']);
+      $departments_array = array();
+      // get the name for each department
+      foreach ($departments as $department_id) {
+        if (empty($department_id)) continue;
+        if (false === ($department = $editorDepartment->select($department_id))) {
+          $this->setError($editorDepartment->getError(), __METHOD__, __LINE__);
+          return false;
+        }
+        $departments_array[] = $department['name'];
+      } // foreach
+
       $editors_array[$editor['id']] = array(
           'id' => $editor['id'],
           'name' => $editor['name'],
-          'display_name' => $Users->getUserDisplayName($editor['name']),
+          'display_name' => (!empty($display_name)) ? $display_name : $editor['name'],
           'email' => $Users->getUserEMail($editor['name']),
           'position' => $editor['position'],
-          'departments' => explode(',', $editor['departments']),
-          'rights' => $editor['rights'],
+          'departments' => $departments_array,
+          'permissions' => $editor['permissions'],
           'last_activity' => $editor['last_activity'],
           'status' => $editor['status'],
           'timestamp' => $editor['timestamp'],
@@ -672,22 +752,145 @@ class controlSettings extends boneSettings {
                   self::REQUEST_SUB_SUB_ACTION => self::ACTION_EDIT_EDITOR,
                   self::REQUEST_EDITOR_ID => $editor['id']
                   ))),
+          'supervisors' => explode(',', $editor['supervisors'])
+          );
+    } // foreach editors
+
+
+    $editor = array();
+    if ($editor_id > -1) {
+      // edit the editor ;-)
+      $source = $editors_array[$editor_id];
+      // build the positions array
+      $positions_array = array(
+          'CHIEF_EDITOR' => 'CHIEF_EDITOR',
+          'SUB_CHIEF_EDITOR' => 'SUB_CHIEF_EDITOR',
+          'EDITOR' => 'EDITOR',
+          'TRAINEE' => 'TRAINEE'
+      );
+      // remove position which are no longer available!
+      if ($editorTeam->existsPosition('CHIEF_EDITOR') && ($source['position'] != 'CHIEF_EDITOR'))
+        unset($positions_array['CHIEF_EDITOR']);
+      if ($editorTeam->existsPosition('SUB_CHIEF_EDITOR') && ($source['position'] != 'SUB_CHIEF_EDITOR'))
+        unset($positions_array['SUB_CHIEF_EDITOR']);
+
+      // build the department array
+      if (false === ($departments = $editorDepartment->selectAllDepartments(true))) {
+        $this->setError($editorDepartment->getError(), __METHOD__, __LINE__);
+        return false;
+      }
+      $department_array = array();
+      foreach ($departments as $department) {
+        $department_array[] = array(
+            'value' => $department['id'],
+            'text' => $department['name'],
+            'checked' => (int) in_array($department['name'], $source['departments'])
+            );
+      }
+
+      // get the supervisors
+      if (false === ($supervisors = $editorTeam->selectSupervisors())) {
+        $this->setError($editorTeam->getError(), __METHOD__, __LINE__);
+        return false;
+      }
+      $supervisor_array = array();
+      foreach ($supervisors as $supervisor) {
+        if ($supervisor['username'] == $source['name']) continue;
+        $supervisor_array[] = array(
+            'value' => $supervisor['username'],
+            'text' => (!empty($supervisor['display_name'])) ? $supervisor['display_name'] : $supervisor['username'],
+            'checked' => (int) in_array($supervisor['username'], $source['supervisors'])
+            );
+      }
+
+      $position_permissions = array();
+      $pp = editorTeam::$position_permissions;
+      foreach ($pp as $permission => $text) {
+        $position_permissions[] = array(
+            'value' => $permission,
+            'text' => $text,
+            'checked' => (int) $editorTeam->checkPermission($source['permissions'], $permission)
+            );
+      }
+
+      $section_permissions = array();
+      $sp = editorTeam::$section_permissions;
+      foreach ($sp as $permission => $text) {
+        $section_permissions[] = array(
+            'value' => $permission,
+            'text' => $text,
+            'checked' => (int) $editorTeam->checkPermission($source['permissions'], $permission)
+        );
+      }
+
+      $release_permissions = array();
+      $rp = editorTeam::$release_permissions;
+      foreach ($rp as $permission => $text) {
+        $release_permissions[] = array(
+            'value' => $permission,
+            'text' => $text,
+            'checked' => (int) $editorTeam->checkPermission($source['permissions'], $permission)
+        );
+      }
+
+      $editor = array(
+          'id' => array(
+              'name' => self::REQUEST_EDITOR_ID,
+              'value' => $editor_id
+              ),
+          'name' => array(
+              'value' => $source['name'],
+              'name' => self::REQUEST_USERNAME
+              ),
+          'display_name' => $source['display_name'],
+          'position' => array(
+              'name' => self::REQUEST_EDITOR_POSITION,
+              'value' => $source['position'],
+              'options' => $positions_array
+              ),
+          'department' => array(
+              'name' => self::REQUEST_DEPARTMENT,
+              'list' => $department_array
+              ),
+          'status' => array(
+              'name' => self::REQUEST_STATUS,
+              'value' => $source['status']
+              ),
+          'supervisors' => array(
+              'name' => self::REQUEST_SUPERVISORS,
+              'list' => $supervisor_array
+              ),
+          'permissions' => array(
+              'name' => self::REQUEST_PERMISSIONS,
+              'position' => $position_permissions,
+              'section' => $section_permissions,
+              'release' => $release_permissions
+              )
+
           );
     }
 
+    $chief_editor = $editorTeam->selectChiefEditorName();
 
- /*
-    $editorDepartment = new editorDepartment();
-    if (false === ($departments = $editorDepartment->selectAllDepartments(true))) {
-      $this->setError($editorDepartment->getError(), __METHOD__, __LINE__);
-      return false;
-    }
-    $department_array = array();
-    foreach ($departments as $department)
-*/
     $data = array(
+        'form' => array(
+            'name' => 'editorial_team',
+            'action' => self::$SETTINGS_URL
+            ),
+        'action' => array(
+            'name' => self::REQUEST_ACTION,
+            'value' => self::ACTION_EDITORIAL,
+            ),
+        'sub_action' => array(
+            'name' => self::REQUEST_SUB_ACTION,
+            'value' => self::ACTION_EDITORIAL_TEAM,
+            ),
+        'sub_sub_action' => array(
+            'name' => self::REQUEST_SUB_SUB_ACTION,
+            'value' => ($editor_id < 1) ? self::ACTION_ADD_EDITOR : self::ACTION_CHECK_EDITOR
+            ),
         'users' => array(
-            'name' => self::REQUEST_USER,
+            'name' => self::REQUEST_USERNAME,
             'options' => $options_user
             ),
         'action' => array(
@@ -699,16 +902,18 @@ class controlSettings extends boneSettings {
             'value' => self::ACTION_EDITORIAL_TEAM
             ),
         'editor' => array(
+            'chief_editor' => array(
+                'exists' => ($chief_editor != '') ? 1 : 0
+                ),
             'list' => array(
                 'count' => count($editors_array),
                 'items' => $editors_array
                 ),
-            'edit' => array(
-                'id' => array(
-                    'name' => self::REQUEST_EDITOR_ID,
-                    'value' => $editor_id
-                    ),
+            'id' => array(
+                'name' => self::REQUEST_EDITOR_ID,
+                'value' => $editor_id
                 ),
+            'edit' => $editor
             ),
         'message' => array(
             'active' => (int) $this->isMessage(),
@@ -736,5 +941,180 @@ class controlSettings extends boneSettings {
         array('id' => $editor_id)), __METHOD__, __LINE__);
     return $this->actionEditorialTeam($editor_id);
   } // actionEditEditor()
+
+  /**
+   * Action procedure to insert a new editor
+   *
+   * @return boolean|Ambigous <boolean, string>
+   */
+  protected function actionAddEditor() {
+    global $I18n;
+
+    if (!isset($_REQUEST[self::REQUEST_USERNAME]) || empty($_REQUEST[self::REQUEST_USERNAME])) {
+      $this->setError($I18n->translate('Got a invalid ID for the editor!'), __METHOD__, __LINE__);
+      return false;
+    }
+    $username = $_REQUEST[self::REQUEST_USERNAME];
+
+    // ok - now we insert a new editor record with defaults
+    $editorTeam = new editorTeam();
+    if ($editorTeam->selectChiefEditorName() == '') {
+      // it exists no chief editor!
+      $data = array(
+          'name' => $username,
+          'status' => 'ACTIVE',
+          'position' => 'CHIEF_EDITOR',
+          'permissions' => editorTeam::DEFAULT_PERMISSION_CHIEF_EDITOR,
+          'supervisors' => ''
+      );
+    }
+    else {
+      // default settings for a editor
+      $data = array(
+          'name' => $username,
+          'status' => 'LOCKED',
+          'position' => 'EDITOR',
+          'permissions' => editorTeam::DEFAULT_PERMISSION_EDITOR,
+          'supervisors' => $editorTeam->selectChiefEditorName()
+          );
+    }
+    $editor_id = -1;
+    if (!$editorTeam->insert($data, $editor_id)) {
+      $this->setError($editorTeam->getError(), __METHOD__, __LINE__);
+      return false;
+    }
+    $this->setMessage($I18n->translate('<p>Please edit the editor with the ID {{ id }}.</p>',
+        array('id' => $editor_id)), __METHOD__, __LINE__);
+    return $this->actionEditorialTeam($editor_id);
+  } // actionAddEditor()
+
+  /**
+   * Action procedure for the update check of an editor
+   *
+   * @return boolean|Ambigous <boolean, string>|string
+   */
+  protected function actionCheckEditor() {
+    global $I18n;
+
+     if (!isset($_REQUEST[self::REQUEST_STATUS]) || !isset($_REQUEST[self::REQUEST_USERNAME]) ||
+         !isset($_REQUEST[self::REQUEST_EDITOR_POSITION]) || !isset($_REQUEST[self::REQUEST_PERMISSIONS]) ||
+         !is_array($_REQUEST[self::REQUEST_PERMISSIONS]) || !isset($_REQUEST[self::REQUEST_EDITOR_ID])) {
+      // missing one or more fields!
+      $this->setError($I18n->translate('<p>Missing one or more fields!</p>'), __METHOD__, __LINE__);
+      return false;
+    }
+
+    // init the editorTeam
+    $editorTeam = new editorTeam();
+
+    // init the User access
+    $Users = new LEPTON\Users();
+
+    $status = $_REQUEST[self::REQUEST_STATUS];
+    $name = $_REQUEST[self::REQUEST_USERNAME];
+    $position = $_REQUEST[self::REQUEST_EDITOR_POSITION];
+    $permissions = array_sum($_REQUEST[self::REQUEST_PERMISSIONS]);
+    $editor_id = (int) $_REQUEST[self::REQUEST_EDITOR_ID];
+
+    if ($status == 'DELETED') {
+      // delete the editor
+      if (!$editorTeam->deleteByName($name)) {
+        $this->setError($editorTeam->getError(), __METHOD__, __LINE__);
+        return false;
+      }
+      $this->setMessage($I18n->translate('<p>Successfull deleted the editor with the name {{ name }}.</p>',
+          array('name' => $Users->getUserDisplayName($name))), __METHOD__, __LINE__);
+      return $this->actionEditorialTeam();
+    }
+
+    // check the supervisors
+    if (!isset($_REQUEST[self::REQUEST_SUPERVISORS])) {
+      $supervisors = '';
+      // no supervisor assigned!
+      if ($position == 'TRAINEE') {
+        // Trainee without supervisor!
+        $this->setMessage($I18n->translate('<p>Each Trainee must have one or more Supervisors, please check your settings!</p>'),
+            __METHOD__, __LINE__);
+        return $this->actionEditorialTeam($editor_id);
+      }
+      if (!$editorTeam->checkPermission($permissions, editorTeam::PERMISSION_RELEASE_BY_OWN)) {
+        // need release by own or one or more supervisors!
+        $this->setMessage($I18n->translate('<p>The editor must have the permission to release articles by his own or you must assign one or more supervisors to the editor!</p>'),
+            __METHOD__, __LINE__);
+        return $this->actionEditorialTeam($editor_id);
+      }
+    }
+    elseif (!is_array($_REQUEST[self::REQUEST_SUPERVISORS])) {
+      $this->setError($I18n->translate('The supervisors field must be of type array!'), __METHOD__, __LINE__);
+      return false;
+    }
+    else {
+      $supervisors = implode(',', $_REQUEST[self::REQUEST_SUPERVISORS]);
+    }
+
+    // check the departments
+    if (!isset($_REQUEST[self::REQUEST_DEPARTMENT])) {
+      // no department assigned - prompt a message but don't break the process
+      $this->setMessage($I18n->translate('<p>The editor {{ name }} is not assigned to a department, is this correct?</p>',
+          array('name' => $Users->getUserDisplayName($name))), __METHOD__, __LINE__);
+      $departments = '';
+    }
+    elseif (!is_array($_REQUEST[self::REQUEST_DEPARTMENT])) {
+      $this->setError($I18n->translate('The departments field must be of type array!'), __METHOD__, __LINE__);
+      return false;
+    }
+    else {
+      $departments = implode(',', $_REQUEST[self::REQUEST_DEPARTMENT]);
+    }
+
+    // check the position!
+    switch ($position):
+    case 'CHIEF_EDITOR':
+      $perm = editorTeam::PERMISSION_POSITION_CHIEF_EDITOR; break;
+    case 'SUB_CHIEF_EDITOR':
+      $perm = editorTeam::PERMISSION_POSITION_SUB_CHIEF_EDITOR; break;
+    case 'EDITOR':
+      $perm = editorTeam::PERMISSION_POSITION_EDITOR; break;
+    case 'TRAINEE':
+      $perm = editorTeam::PERMISSION_POSITION_TRAINEE; break;
+    default:
+      // position does not exists?!
+      $this->setError($I18n->translate('The {{ position }} is unknown!',
+        array('position' => $position)), __METHOD__, __LINE__);
+      return false;
+    endswitch;
+
+    if (!$editorTeam->checkPermission($permissions, $perm)) {
+      // the position and the permissions differ!
+      if ($editorTeam->checkPermission($permissions, editorTeam::PERMISSION_POSITION_CHIEF_EDITOR))
+        $permissions -= editorTeam::PERMISSION_POSITION_CHIEF_EDITOR;
+      if ($editorTeam->checkPermission($permissions, editorTeam::PERMISSION_POSITION_SUB_CHIEF_EDITOR))
+        $permissions -= editorTeam::PERMISSION_POSITION_SUB_CHIEF_EDITOR;
+      if ($editorTeam->checkPermission($permissions, editorTeam::PERMISSION_POSITION_EDITOR))
+        $permissions -= editorTeam::PERMISSION_POSITION_EDITOR;
+      if ($editorTeam->checkPermission($permissions, editorTeam::PERMISSION_POSITION_TRAINEE))
+        $permissions -= editorTeam::PERMISSION_POSITION_TRAINEE;
+      $permissions += $perm;
+    }
+
+    // gather the data
+    $data = array(
+        'name' => $name,
+        'position' => $position,
+        'supervisors' => $supervisors,
+        'departments' => $departments,
+        'permissions' => $permissions,
+        'status' => $status
+        );
+
+    if (!$editorTeam->update($editor_id, $data)) {
+      $this->setError($editorTeam->getError(), __METHOD__, __LINE__);
+      return false;
+    }
+    // prompt a success message
+    $this->setMessage($I18n->translate('<p>The editor {{ name }} was successfull updated.</p>',
+        array('name' => $Users->getUserDisplayName($name))), __METHOD__, __LINE__);
+    return $this->actionEditorialTeam();
+  } // actionCheckEditor()
 
 } // class controlSettings

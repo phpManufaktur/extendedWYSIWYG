@@ -14,12 +14,16 @@
       <div class="wysiwyg_message">{$message.content}</div>
     {else}
       <div class="wysiwyg_intro">
-        {translate('<p>At least you must specify one department for your editorial team.</p>')}
+        {if $department.list.count > 0}
+          {translate('<p>At least you must specify one department for your editorial team.</p>')}
+        {else}
+          {translate('<p>Please determine at least one department for your editorial team.</p><p>In the case you want to edit all pages of your website with the same team, set the root page below to "Unique root for all editors".</p><p>In all other cases select a page as root page for the department. All pages below this one will be accessible for the edtiors belonging to this department.</p><p>Departments can\'t be nested!</p>')}
+        {/if}
       </div>
     {/if}
     
-    <div id="list_departments">
-      {if $department.list.count > 0}
+    {if $department.list.count > 0}
+      <div id="list_departments">
         <fieldset>
           <legend>{translate('Department list')}</legend>
           {foreach $department.list.items dep}
@@ -30,10 +34,8 @@
             <div class="dep_list_clear"></div>
           {/foreach}
         </fieldset>
-      {else}
-        {translate('<p>Please determine at least one department for your editorial team.</p><p>In the case you want to edit all pages of your website with the same team, set the root page below to "Unique root for all editors".</p><p>In all other cases select a page as root page for the department. All pages below this one will be accessible for the edtiors belonging to this department.</p><p>Departments can\'t be nested!</p>')}
-      {/if}
-    </div>
+      </div>
+    {/if}
     {if ($department.root_only == 1) && ($sub_sub_action.value == 'adp')}
     {else}
     <div id="add_department">
@@ -66,7 +68,7 @@
                 <option value="{$department.edit.page.id}" selected="selected">{$department.edit.page.menu_title}</option>
               {/if}
               {foreach $page.options option}
-              <option value="{$option.value}>{$option.text}</option>
+              <option value="{$option.value}">{$option.text}</option>
               {/foreach}
             </select>
           </div>

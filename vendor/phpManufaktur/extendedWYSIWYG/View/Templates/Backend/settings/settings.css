@@ -282,15 +282,19 @@
 }
 .editor_value {
   float: left;
-  width: 200px;
+  width: 300px;
   margin: 0;
   padding: 0 10px 0 0;
 }
+.editor_submit,
 .editor_hint {
   float: left;
-  width: 440px;
+  width: 340px;
   margin: 0;
   padding: 3px 0 0 0;
+}
+.editor_submit {
+  padding: -3px 0 0 0;
 }
 .edit_list_departments,
 .edit_list_id,

@@ -15,7 +15,7 @@
   color: #363636;
   background-color: transparent;
 }
-
+.access_denied,
 .wysiwyg_error {
   color: #fff;
   background-color: #992826;
@@ -26,6 +26,11 @@
   background-image: url(images/bug_110x110.png);
   background-position: top right;
   background-repeat: no-repeat;
+}
+.access_denied {
+  min-height: 100px;
+  background-color: #5b768a;
+  background-image: url(images/closed_110x110.png);
 }
 .wysiwyg_error a:link,
 .wysiwyg_error a:visited {

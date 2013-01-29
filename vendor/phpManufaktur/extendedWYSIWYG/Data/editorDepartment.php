@@ -33,7 +33,8 @@ $SQL = <<<EOD
       `status` ENUM('ACTIVE','LOCKED','DELETED') NOT NULL DEFAULT 'ACTIVE',
       `timestamp` TIMESTAMP,
       PRIMARY KEY (`id`),
-      KEY (`name`, `root_parent`)
+      KEY (`name`),
+      UNIQUE (`root_parent`)
     )
     COMMENT='The departments of the editorial team'
     ENGINE=InnoDB
@@ -181,7 +182,7 @@ EOD;
           );
       $db->insert(CMS_TABLE_PREFIX.'mod_wysiwyg_editor_department', $data);
       $new_id = $db->lastInsertId();
-      $this->setMessage($I18n->translate('Inserted a new department with the ID {{ id }}', array('id' => $new_id)), __METHOD__, __LINE__);
+      $this->setInfo($I18n->translate('Inserted a new department with the ID {{ id }}', array('id' => $new_id)), __METHOD__, __LINE__);
     } catch (\Doctrine\DBAL\DBALException $e) {
       $this->setError($e->getMessage(), __METHOD__, $e->getLine());
       return false;
@@ -212,5 +213,66 @@ EOD;
     }
     return true;
   } // update()
+
+  /**
+   * Check if the given page id is a valid department root id
+   *
+   * @param integer $page_id
+   * @return boolean
+   */
+  public function isDepartmentRootId($page_id) {
+    global $db;
+
+    try {
+      $SQL = "SELECT `id` FROM `".CMS_TABLE_PREFIX."mod_wysiwyg_editor_department` WHERE `root_parent`='$page_id'";
+      $result = $db->fetchAssoc($SQL);
+    } catch (\Doctrine\DBAL\DBALException $e) {
+      $this->setError($e->getMessage(), __METHOD__, $e->getLine());
+      return false;
+    }
+    return (isset($result['id'])) ? true : false;
+  } // isDepartmentRootId()
+
+  /**
+   * Delete the department with the given ID
+   *
+   * @param integer $department_id
+   * @return boolean
+   */
+  public function delete($department_id) {
+    global $db;
+
+    try {
+      $db->delete(CMS_TABLE_PREFIX.'mod_wysiwyg_editor_department', array('id' => $department_id));
+    } catch (\Doctrine\DBAL\DBALException $e) {
+      $this->setError($e->getMessage(), __METHOD__, $e->getLine());
+      return false;
+    }
+    return true;
+  } // delete()
+
+  /**
+   * Select the department ID for the given page ID. If there exists no department
+   * for this page ID the query returns -1
+   *
+   * @param integer $page_id
+   * @return boolean|number
+   */
+  public function getDepartmentIdForPageId($page_id) {
+    global $db;
+
+    $department = CMS_TABLE_PREFIX.'mod_wysiwyg_editor_department';
+    $pages = CMS_TABLE_PREFIX.'pages';
+
+    try {
+      $SQL = "SELECT `id` FROM $department LEFT JOIN $pages ON $department.root_parent=$pages.root_parent WHERE page_id='$page_id'";
+      $result = $db->fetchAssoc($SQL);
+    } catch (\Doctrine\DBAL\DBALException $e) {
+      $this->setError($e->getMessage(), __METHOD__, $e->getLine());
+      return false;
+    }
+    return (isset($result['id'])) ? (int) $result['id'] : -1;
+  } // getDepartmentIdForPageId()
+
 
 } // class editorTeam

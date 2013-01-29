@@ -82,7 +82,7 @@ class logfile extends boneClass {
     if (file_exists($config_file)) {
       if (false === ($addonConfig = json_decode(file_get_contents($config_file), true))) {
         $this->setError($I18n->translate('Can`t read the file {{ file }}.',
-            array('file' => $config_file)), $method, $line);
+            array('file' => $config_file)), __METHOD__, __LINE__);
         return false;
       }
       $addonConfig['logger']['level'] = (int) $level;

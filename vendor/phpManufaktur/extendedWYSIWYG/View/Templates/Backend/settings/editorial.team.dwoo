@@ -14,10 +14,15 @@
       <div class="wysiwyg_message">{$message.content}</div>
     {else}
       <div class="wysiwyg_intro">
-        {translate('<p>Please check your editorial team</p>')}
+        {if $editor.list.count > 0}
+          {translate('<p>Please check your editorial team</p>')}
+        {else}
+          {translate('<p>It seems you are just starting.</p><p>Please create a <b>department</b> first. If you have at minimum one department next create a <b>chief editor</b> and then begin to create your editor teams.</p>')}
+        {/if}
       </div>
     {/if}
     
+    {if $editor.list.count > 0}
     <div id="editor_list">
       <fieldset>
         <legend>{translate('Editor list')}</legend>
@@ -29,43 +34,120 @@
           {$i=0}
           {foreach $item.departments department}
             {if $i>0}<br />{/if}{$department}{$i=$i+1}
-          {/foreach}
+          {/foreach}&nbsp;
         </div>
-        {/foreach}
         <div class="edit_list_status">{translate($item.status)}</div>
         <div class="edit_list_clear"></div>
+        {/foreach}        
       </fieldset>
     </div>
-    
-    {if $editor.edit.id.value < 1}
+    {/if}
+  
+    {if $editor.id.value < 1}
       <div id="add_editor">
-        <fieldset>
-          <legend>{translate('Add editor'}}</legend>
-          <div class="editor_label">{translate('Select user')}</div>
-          <div class="editor_value">
-            <select name="{$users.name}">
-              <option value="-1">{translate('- please select -')}</option>
-              {foreach $users.options option}
-              <option value="{$option.value}">{$option.text}</option>
-              {/foreach}
-            </select>
-          </div>
-          <div class="editor_hint">&nbsp;</div>
-          <div class="editor_clear"></div>
-        </fieldset>
+        <form name="{$form.name}" action="{$form.action}" method="post">
+          <input type="hidden" name="{$action.name}" value="{$action.value}" />
+          <input type="hidden" name="{$sub_action.name}" value="{$sub_action.value}" />
+          <input type="hidden" name="{$sub_sub_action.name}" value="{$sub_sub_action.value}" />
+          <fieldset>
+            <legend>{translate('Add editor'}}</legend>
+            <div class="editor_label">{translate('Select user')}</div>
+            <div class="editor_value">
+              <select name="{$users.name}">
+                <option value="-1">{translate('- please select -')}</option>
+                {foreach $users.options option}
+                <option value="{$option.value}">{$option.text}</option>
+                {/foreach}
+              </select>
+            </div>
+            <div class="editor_submit">
+              <input type="submit" value="{translate('Add editor')}" />
+            </div>
+            <div class="editor_clear"></div>
+          </fieldset>
+        </form>
       </div>
     {else}   
       <div id="edit_editor">
         <fieldset>
           <legend>{translate('Edit editor'}}</legend>
-          <div class="editor_label">{translate('Departments')}</div>
-          <div class="editor_value">
-            {foreach $department.items item}
-            <input type="checkbox" name="{$departments.name}[]" value="{$item.value}"{if $item.checked == 1} checked="checked" />&nbsp;{$item.text}
-            {/foreach}
-          </div>
-          <div class="editor_hint">&nbsp;</div>
-          <div class="editor_clear"></div>
+          <form name="{$form.name}" action="{$form.action}" method="post">
+            <input type="hidden" name="{$action.name}" value="{$action.value}" />
+            <input type="hidden" name="{$sub_action.name}" value="{$sub_action.value}" />
+            <input type="hidden" name="{$sub_sub_action.name}" value="{$sub_sub_action.value}" />
+            <input type="hidden" name="{$editor.edit.name.name}" value="{$editor.edit.name.value}" />
+            <input type="hidden" name="{$editor.edit.id.name}" value="{$editor.edit.id.value}" />
+            <div class="editor_label">&nbsp;</div>
+            <div class="editor_value">[{string_format($editor.edit.id.value,'%03d')}]&nbsp;<b>{$editor.edit.display_name}</b></div>
+            <div class="edit_list_clear"></div>
+            
+            <div class="editor_label">{translate('Status')}</div>
+            <div class="editor_value">
+              <select name="{$editor.edit.status.name}">
+                <option value="ACTIVE"{if $editor.edit.status.value == 'ACTIVE'} selected="selected"{/if}>{translate('ACTIVE')}</option>
+                <option value="LOCKED"{if $editor.edit.status.value == 'LOCKED'} selected="selected"{/if}>{translate('LOCKED')}</option>
+                <option value="DELETED"{if $editor.edit.status.value == 'DELETED'} selected="selected"{/if}>{translate('DELETED')}</option>
+              </select>
+            </div>
+            <div class="edit_list_clear"></div>
+            
+            <div class="editor_label">{translate('Position')}</div>
+            <div class="editor_value">
+              <select name="{$editor.edit.position.name}">
+                {foreach $editor.edit.position.options option}
+                <option value="{$option}"{if $option == $editor.edit.position.value} selected="selected"{/if}>{translate($option)}</option>
+                {/foreach}
+              </select>
+            </div>
+            <div class="edit_list_clear"></div>
+            
+            <div class="editor_label">{translate('Supervisors')}</div>
+            <div class="editor_value">
+              {$i=0}
+              {foreach $editor.edit.supervisors.list supervisor}
+                {if $i>0}<br />{/if}{$i=$i+1}
+                <input type="checkbox" name="{$editor.edit.supervisors.name}[]" value="{$supervisor.value}"{if $supervisor.checked == 1} checked="checked"{/if} />&nbsp;{translate($supervisor.text)}
+              {/foreach}
+            </div>
+            <div class="edit_list_clear"></div>
+            
+            <div class="editor_label">{translate('Permissions')}</div>
+            <div class="editor_value">
+              {foreach $editor.edit.permissions.position position}
+                {if $position.checked}
+                  <input type="hidden" name="{$editor.edit.permissions.name}[]" value="{$position.value}" />
+                {/if}
+              {/foreach}
+              {$i=0}
+              {foreach $editor.edit.permissions.section permission}
+                {if $i>0}<br />{/if}{$i=$i+1}
+                <input type="checkbox" name="{$editor.edit.permissions.name}[]" value="{$permission.value}"{if $permission.checked == 1} checked="checked"{/if} />&nbsp;{translate($permission.text)}
+              {/foreach}
+              <br />
+              {$i=0}
+              {foreach $editor.edit.permissions.release permission}
+                {if $i>0}<br />{/if}{$i=$i+1}
+                <input type="radio" name="{$editor.edit.permissions.name}[]" value="{$permission.value}"{if $permission.checked == 1} checked="checked"{/if} />&nbsp;{translate($permission.text)}
+              {/foreach}                
+            </div>
+            <div class="edit_list_clear"></div>
+            
+            
+            <div class="editor_label">{translate('Departments')}</div>
+            <div class="editor_value">
+              {$i=0}
+              {foreach $editor.edit.department.list department}
+                {if $i>0}<br />{/if}{$i=$i+1}
+                <input type="checkbox" name="{$editor.edit.department.name}[]" value="{$department.value}"{if $department.checked == 1} checked="checked"{/if} />&nbsp;{$department.text}
+              {/foreach}
+            </div>
+            <div class="edit_list_clear"></div>
+            
+            <div class="editor_label">&nbsp;</div>
+            <div class="editor_value">
+              <input type="submit" value="{translate('Change')}" />
+            </div>            
+          </form>
         </fieldset>
       </div>
     </div>
