@@ -90,7 +90,7 @@ class Users extends boneClass {
       $this->setError($e->getMessage(), __METHOD__, $e->getLine());
       return false;
     }
-    return (isset($result['display_name'])) ? $tools->unsanitizeText($result['display_name']) : '- anonymous -';
+    return (isset($result['display_name'])) ? $tools->unsanitizeText($result['display_name']) : $name;
   } // getUserDisplayName()
 
   /**
@@ -113,5 +113,23 @@ class Users extends boneClass {
     return (isset($result['email'])) ? $tools->unsanitizeText($result['email']) : 'nobody@anonymous.tld';
   } // getUserDisplayName()
 
+  /**
+   * Check if the given user has administrator privileges
+   *
+   * @param string $name
+   * @return boolean
+   */
+  public function isAdministrator($name) {
+    global $db;
+
+    try {
+      $SQL = "SELECT `group_id` FROM `".CMS_TABLE_PREFIX."users` WHERE `username`='$name' AND `group_id`='1'";
+      $result = $db->fetchAssoc($SQL);
+    } catch (\Doctrine\DBAL\DBALException $e) {
+      $this->setError($e->getMessage(), __METHOD__, $e->getLine());
+      return false;
+    }
+    return (isset($result['group_id'])) ? true : false;
+  } // isAdministrator()
 
 } // class Users
