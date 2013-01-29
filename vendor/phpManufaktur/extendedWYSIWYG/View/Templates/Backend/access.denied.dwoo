@@ -1,0 +1,18 @@
+{* 
+ * extendedWYSIWYG
+ *
+ * @author Team phpManufaktur <team@phpmanufaktur.de>
+ * @link https://addons.phpmanufaktur.de/extendedWYSIWYG
+ * @copyright 2012 Ralf Hertsch <ralf.hertsch@phpmanufaktur.de>
+ * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
+ *
+ * Please consult the Dwoo Documentation & WIKI to get further informations 
+ * and hints for the usage of the Dwoo template engine.
+ *
+ * @link http://wiki.dwoo.org/
+ *
+ * Use {dump()} to get a list of all in this template available variables!
+ *}
+<div class="access_denied">
+  {translate('<p>This section is protected by extendedWYSIWYG.</p><p>Due the actual settings you are not allowed to access the content of this section.</p><p>Please contact your webmaster if you are of another opinion.</p>')}
+</div>   
