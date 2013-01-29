@@ -58,6 +58,17 @@ class upgrade extends install {
       return false;
     }
 
+    // add entries to mod_wysiwyg_archive 'status'
+    try {
+      $SQL = "ALTER TABLE `".CMS_TABLE_PREFIX."mod_wysiwyg_archive` MODIFY COLUMN status ENUM('ACTIVE','UNPUBLISHED','BACKUP','DRAFT','APPROVAL','REFUSED','PROOFREAD') NOT NULL DEFAULT 'ACTIVE'";
+      $db->query($SQL);
+      $SQL = "ALTER TABLE `".CMS_TABLE_PREFIX."mod_wysiwyg_archive` ADD `editor` VARCHAR(255) NOT NULL DEFAULT '' AFTER `author`";
+      $db->query($SQL);
+    } catch (\Doctrine\DBAL\DBALException $e) {
+      $this->setError($e->getMessage(), __METHOD__, $e->getLine());
+      return false;
+    }
+
     return true;
   } // release_1101()
 

@@ -21,6 +21,8 @@ $LANG = array(
       => 'Universelle Stammseite für alle Redakteure',
     'A change of a WYSIWYG section will update the last modified field of the page (recommend!)'
       => 'Die Änderung eines WYSIWYG Abschnitt löst die Aktualisierung des "zuletzt geändert" Feldes der Seite aus (empfohlen!)',
+    'ACTIVE'
+      => 'Aktiv',
     'Actual Message'
       => 'Aktuelle Meldung',
     'Add department'
@@ -41,6 +43,8 @@ $LANG = array(
     'Create Archive Files'
       => 'Archivdateien anlegen',
 
+    'DELETED'
+      => 'Gelöscht',
     'Department description'
       => 'Ressort Beschreibung',
     'Department list'
@@ -50,6 +54,8 @@ $LANG = array(
     'Departments'
       => 'Ressorts',
 
+    '<p>Each Trainee must have one or more Supervisors, please check your settings!</p>'
+      => '<p>Ein Volontär muss über mindestens einen Supervisor verfügen, der ihn kontrolliert. Bitte prüfen Sie Ihre Einstellungen!</p>',
     'Edit department'
       => 'Ressort bearbeiten',
     'Editor'
@@ -94,8 +100,12 @@ $LANG = array(
     'If activated extendedWYSIWYG will create a protected directory in the /MEDIA path and create a HTML page of each content that get the status BACKUP. The embedded images will be also saved.'
       => 'Falls aktiviert, wird extendedWYSIWYG ein geschütztes Verzeichnis im /MEDIA Ordner anlegen und HTML Dateien für jeden Inhalt anlegen, der den Status BACKUP erhält. Die eingebundenen Bilder werden ebenfalls gesichert.',
     '<p>If something is not working proper, please switch the error message to <b>E_ALL</b> and the errorlog level to <b>DEBUG</b>.</p><p>Execute the process again, return back to this dialog.</p><p>Check the logfile below and report all informations you can gather from this dialog to the <a href="https://phpmanufaktur.de/support" target="_blank">Addons Support Group</a>.</p>'
-      => '<p>Sollten währen des Betriebs Probleme auftreten, dann schalten Sie bitte die Fehlermeldungen auf <b>E_ALL</b> und das Fehlerprotokoll auf <b>DEBUG</b>.</p><p>Wiederholen Sie den Vorgang, bei dem Probleme auftreten und kehren Sie anschließend zu diesem Dialog zurück.</p><p>Überprüfen Sie das unten angezeigte Fehlerprotokoll und wenden Sie sich mit allen Informationen von dieser Seite sowie einer Fehlerbeschreibung an die <a href="https://phpmanufaktur.de/support" target="_blank">Addons Support Group</a>.</p>',
+      => '<p>Sollten während des Betriebs Probleme auftreten, dann schalten Sie bitte die Fehlermeldungen auf <b>E_ALL</b> und das Fehlerprotokoll auf <b>DEBUG</b>.</p><p>Wiederholen Sie den Vorgang, bei dem Probleme auftreten und kehren Sie anschließend zu diesem Dialog zurück.</p><p>Überprüfen Sie das unten angezeigte Fehlerprotokoll und wenden Sie sich mit allen Informationen von dieser Seite sowie einer Fehlerbeschreibung an die <a href="https://phpmanufaktur.de/support" target="_blank">Addons Support Group</a>.</p>',
+    '<p>It seems you are just starting.</p><p>Please create a <b>department</b> first. If you have at minimum one department next create a <b>chief editor</b> and then begin to create your editor teams.</p>'
+      => '<p>Es sieht so aus, als ob Sie das Redaktionssystem das erste Mal aufrufen.</p><p>Beginnen Sie damit, dass Sie zunächst ein <b>Ressort</b> festlegen.</p><p>Nachdem Sie mindestens ein Ressort erstellt haben ernennen Sie als nächstes einen <b>Chefredakteur</b>. Danach können Sie beginnen, die Redaktionsteams zu bilden.</p>',
 
+    'LOCKED'
+      => 'Gesperrt',
     '<p>Logged out from extendedWYSIWYG.</p>'
       => '<p>Sie wurden von den Einstellungen für extendedWYSIWYG abgemeldet.</p>',
     'Login'
@@ -133,9 +143,31 @@ $LANG = array(
 
     'read more ...'
       => 'Weiterlesen ...',
+    'RELEASE_BY_OWN'
+      => 'Eigenständige Freigabe',
+    'RELEASE_CHIEF_EDITOR_ONLY'
+      => 'Freigabe nur durch Chefredakteur',
+    'RELEASE_ONE_SUPERVISOR'
+      => 'Freigabe gemeinsam mit einem Supervisor',
+    'RELEASE_TWO_SUPERVISOR'
+      => 'Freigabe gemeinsam mit zwei Supervisoren',
+    '<p>Removed department id {{ id }} from the editor {{ name }}.</p>'
+      => '<p>Das Ressort mit der ID {{ id }} wurde aus dem Datensatz des Redakteurs {{ name }} entfernt.</p>',
 
     'Save'
       => 'Speichern',
+    'SECTION_CREATE'
+      => 'Abschnitt erstellen',
+    'SECTION_DELETE'
+      => 'Abschnitt löschen',
+    'SECTION_EDIT'
+      => 'Abschnitt bearbeiten',
+    'SECTION_LOCK'
+      => 'Abschnitt sperren',
+    'SECTION_RELEASE'
+      => 'Abschnitt freigeben',
+    'SECTION_VIEW'
+      => 'Abschnitt lesen',
     'Select root page'
       => 'Stammseite auswählen',
     'Select user'
@@ -146,13 +178,29 @@ $LANG = array(
       => 'Legen Sie fest, ob Sie das Redaktionssystem von extendedWYSIWYG verwenden möchten oder nicht. Bitte lesen Sie unbedingt die Dokumentation bevor Sie das System aktivieren!',
     'SUB_CHIEF_EDITOR'
       => 'stv. Chefredakteur',
+    '<p>Successfull deleted the editor with the name {{ name }}.</p>'
+      => '<p>Der Redakteur mit dem Bezeichner {{ name }} wurde aus dem Redaktionsteam entfernt.</p>',
 
     '<p>The content of the section <b>{{ section_id }}</b> has not changed, so nothing was to save.</p>'
       => '<p>Der Inhalt der Section <b>{{ section_id }}</b> wurde nicht verändert und deshalb auch nicht gespeichert.</p>',
+    '<p>The department with the ID {{ id }} was deleted.</p>'
+      => '<p>Das Ressort mit der ID {{ id }} wurde gelöscht.</p>',
+    '<p>The department {{ name }} was successfull inserted.</p>'
+      => '<p>Das Ressort {{ name }} wurde hinzugefügt.</p>',
+    '<p>The editor {{ name }} is not assigned to a department, is this correct?</p>'
+      => '<p>Der Redakteur {{ name }} is keinem Ressort zugeteilt, ist das korrekt?</p>',
+    '<p>The editor must have the permission to release articles by his own or you must assign one or more supervisors to the editor!</p>'
+      => '<p>Der Redakteur muss entweder über das Recht verfügen Artikel eigenständig freizugeben oder es müssen ihm ein oder mehrere Supervisore für die Freigabe zugeordnet werden.</p><p>Bitte prüfen Sie die Einstellungen für den Redakteur!</p>',
+    '<p>The editor {{ name }} was successfull updated.</p>'
+      => '<p>Der Datensatz für den Redakteur {{ name }} wurde aktualisiert.</p>',
     '<p>The error level is successfull changed to {{ level }}.</p>'
       => '<p>Die Stufe für die Fehlermeldungen wurde auf {{ level }} geändert.</p>',
     '<p>The loglevel is successfull changed to {{ level }}</p>'
       => '<p>Die Protokollierung wurde zur Stufe {{ level }} geändert.</p>',
+    '<p>The page with the ID {{ id }} does no longer exists and was removed from record of {{ name }}.</p>'
+      => '<p>Die Seite mit der PAGE ID {{ id }} existiert nicht mehr und wurde deshalb aus dem Datensatz von {{ name }} entfernt.</p>',
+    '<p>The page with the id {{ id }} no longer belongs to the departments and was removed from the record of {{ name }}</p>'
+      => '<p>Die Seite mit der PAGE ID {{ id }} gehört nicht mehr zu den Ressorts und wurde deshalb aus dem Datensatz von {{ name }} entfernt.</p>',
     'The maximum number of archives that will be shown in the selection list'
       => 'Die maximale Anzahl von Archiven, die in der Auswahlliste angezeigt wird (Voreinstellung: 10)',
     'The maximum page levels shown in the selection list for the department root parent'
@@ -163,6 +211,8 @@ $LANG = array(
       => '<p>Die <b>aktuelle Meldung</b> für die Seite wurde aktualisiert.</p>',
     '<p>The section <b>{{ section_id }}</b> was successfull saved.</p>'
       => '<p>Die Section <b>{{ section_id }}</b> wurde erfolgreich gespeichert.</p>',
+    '<p>This section is protected by extendedWYSIWYG.</p><p>Due the actual settings you are not allowed to access the content of this section.</p><p>Please contact your webmaster if you are of another opinion.</p>'
+      => '<p>Dieser Abschnitt wird durch <b>extendedWYSIWYG</b> geschützt.</p><p>Die aktuellen Einstellungen verbieten Ihnen den Zugriff auf diesen Bereich.</p><p>Wenden Sie sich bitte an Ihren Webmaster, falls Sie eine Zugangsberechtigung erhalten möchten.</p>',
     'TRAINEE'
       => 'Volontär',
 
@@ -178,6 +228,8 @@ $LANG = array(
     'Words'
       => 'Wörter',
 
+    '<p>You are not allowed to delete the section with the ID {{ section_id }}!</p>'
+      => '<p>Sie sind nicht berechtigt, den Abschnitt mit der ID {{ section_id }} zu löschen!</p>',
     '<p>You must login as administrator to get access to the extendedWYSIWYG settings.</p>'
       => '<p>Sie müssen sich mit Administratorrechten anmelden, um Zugriff auf die extendedWYSIWYG Einstellungen zu erhalten.</p>'
 );
