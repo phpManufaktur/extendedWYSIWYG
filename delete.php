@@ -11,8 +11,11 @@
 
 include __DIR__.'/bootstrap.php';
 
-use phpManufaktur\extendedWYSIWYG\Data\wysiwygSection;
+use phpManufaktur\extendedWYSIWYG\Control\deleteSection;
 
-$section = new wysiwygSection();
-if (!$section->delete($section_id))
-  trigger_error($section->getError(), E_USER_ERROR);
+global $admin;
+
+$deleteSection = new deleteSection($page_id, $section_id);
+if (!$deleteSection->exec()) {
+  $admin->print_error($deleteSection->getError());
+}

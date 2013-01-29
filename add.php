@@ -11,8 +11,11 @@
 
 include __DIR__.'/bootstrap.php';
 
-use phpManufaktur\extendedWYSIWYG\Data\wysiwygSection;
+use phpManufaktur\extendedWYSIWYG\Control\addSection;
 
-$section = new wysiwygSection();
-if (!$section->insertBlank($page_id, $section_id))
-  trigger_error($section->getError(), E_USER_ERROR);
+global $admin;
+
+$addSection = new addSection($page_id, $section_id);
+if (!$addSection->exec()) {
+  $admin->print_error($addSection->getError());
+}
