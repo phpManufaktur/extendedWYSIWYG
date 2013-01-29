@@ -20,19 +20,23 @@ class boneSettings extends boneClass {
   const REQUEST_DEPARTMENT_DESCRIPTION = 'dpd';
   const REQUEST_DEPARTMENT_ID = 'dpi';
   const REQUEST_EDITOR_ID = 'edi';
+  const REQUEST_EDITOR_POSITION = 'edp';
   const REQUEST_ERROR_LEVEL = 'elv';
   const REQUEST_LOGFILE_LEVEL = 'lfl';
   const REQUEST_PAGE = 'pag';
   const REQUEST_PASSWORD = 'pwd';
+  const REQUEST_PERMISSIONS = 'per';
   const REQUEST_STATUS = 'sta';
   const REQUEST_SUB_ACTION = 'sub';
   const REQUEST_SUB_SUB_ACTION = 'ssb';
-  const REQUEST_USER = 'usr';
+  const REQUEST_SUPERVISORS = 'suv';
   const REQUEST_USERNAME = 'usr';
 
   const ACTION_ADD_DEPARTMENT = 'adp';
+  const ACTION_ADD_EDITOR = 'aed';
   const ACTION_CHANGE_LEVEL = 'chg';
   const ACTION_CHECK_DEPARTMENT = 'ckd';
+  const ACTION_CHECK_EDITOR = 'ced';
   const ACTION_DEFAULT = 'def';
   const ACTION_EDIT_DEPARTMENT = 'edp';
   const ACTION_EDIT_EDITOR = 'eed';
