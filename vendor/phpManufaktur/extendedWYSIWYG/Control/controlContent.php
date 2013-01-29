@@ -13,6 +13,8 @@
 
 namespace phpManufaktur\extendedWYSIWYG\Control;
 
+use phpManufaktur\CMS\Bridge\Control\boneClass;
+
 use phpManufaktur\extendedWYSIWYG\Data\wysiwygArchive;
 use phpManufaktur\extendedWYSIWYG\Data\wysiwygTeaser;
 use phpManufaktur\extendedWYSIWYG\Data\wysiwygSection;
@@ -34,6 +36,62 @@ for ($i=0; $i < 10; $i++) {
 }
 
 require_once CMS_PATH.'/modules/dwoo/dwoo-1.1.1/dwoo/Dwoo/Exception.php';
+
+
+class boneJQueryControl extends boneClass {
+
+  protected static $PAGE_ID = null;
+  protected static $SECTION_ID = null;
+
+  protected function formatError($error_message) {
+    global $dwoo;
+    global $error_template;
+    global $logger;
+    global $I18n;
+
+    $error_template = CMS_ADDON_PATH.'/vendor/phpManufaktur/extendedWYSIWYG/View/Templates/Backend/error.dwoo';
+
+    try {
+      $data = array(
+          'content' => $error_message
+          );
+      $result = $dwoo->get($error_template, $data);
+    } catch (\Dwoo_Exception $e) {
+      $error = $I18n->translate('[ {{ file }} ] Error executing the template <b>{{ template }}</b>: {{ error }}',
+          array('template' => basename($error_template), 'error' => $e->getMessage(), 'file' => basename(__FILE__)));
+      $logger->addError(strip_tags($error));
+      // important: exit with the ORIGIN error message, not with the template error!
+      $data = array(
+          'status' => 'ERROR',
+          'message' => $error
+      );
+      exit(json_encode($data));
+    }
+    return $result;
+  } // formatError()
+
+  public function errorExit($error, $method, $line) {
+    $this->setError($error, $method, $line);
+    $data = array(
+        'status' => 'ERROR',
+        'message' => $this->formatError($error)
+    );
+    exit(json_encode($data));
+  } // errorExit()
+
+} // class boneJQueryControl
+
+
+
+
+
+
+
+
+
+
+
+
 
 global $I18n;
 global $logger;
@@ -87,6 +145,7 @@ if (!isset($_GET['section_id']) ||
     !isset($_GET['teaser_id']) ||
     !isset($_GET['archive_id'])
     ) {
+  /*
   $error = $I18n->translate('[ {{ file }} ] Missing essential parameters!', array('file' => basename(__FILE__)));
   $logger->addError(strip_tags($error));
   $error = formatError($error);
@@ -95,6 +154,9 @@ if (!isset($_GET['section_id']) ||
       'message' => $error
       );
   exit(json_encode($data));
+  */
+  $obj = new boneJQueryControl();
+  $obj->errorExit($I18n->translate('[ {{ file }} ] Missing essential parameters!', array('file' => basename(__FILE__))), '', '');
 }
 
 // collect the messages of the script
@@ -214,8 +276,8 @@ if (false === ($archive = $wysiwygArchive->select($archive_id))) {
   );
   exit(json_encode($data));
 }
-$old_hash = $archive['hash'];
-$old_status = $archive['status'];
+$old_hash = (isset($archive['hash'])) ? $archive['hash'] : '';
+$old_status = (isset($archive['status'])) ? $archive['status'] : '';
 
 $new_hash = md5($section_content);
 $new_status = ($section_publish) ? 'ACTIVE' : 'UNPUBLISHED';
