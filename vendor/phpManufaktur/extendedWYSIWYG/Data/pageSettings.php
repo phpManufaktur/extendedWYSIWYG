@@ -68,9 +68,10 @@ class pageSettings extends boneClass {
     $process_fields = array();
     // walk through the table fields and grant that they are existing
     foreach ($columns as $column) {
-      if (key_exists($column->getName(), $fields))
+      $name = $column->getName();
+      if (key_exists($name, $fields))
         // add the field and sanitize the value
-        $process_fields[$column->getName()] = $tools->sanitizeText($fields[$column->getName()]);
+        $process_fields[$name] = $tools->sanitizeText($fields[$name]);
     }
     if (count($process_fields) < 1) {
       // no fields to update!
