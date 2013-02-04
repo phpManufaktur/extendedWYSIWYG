@@ -41,6 +41,8 @@ $LANG = array(
     'Be careful: you are allowed to publish this section without any approval!'
       => 'Seien Sie verantwortungsvoll: Sie können diesen Abschnitt ohne eine Prüfung durch Supervisoren direkt freigeben!',
 
+    '<p>Can\'t get the department ID for page ID {{ page_id }}.</p>'
+      => '<p>Konnte die Ressort ID für die Seite mit der ID {{ page_id }} nicht ermitteln!</p>',
     'Change'
       => 'Ändern',
     'Change department'
@@ -54,6 +56,10 @@ $LANG = array(
 
     'DELETED'
       => 'Gelöscht',
+    'Deleted the page with the ID {{ id }} because it contains no further sections!'
+      => 'Die Seite mit der ID {{ id }} wurde gelöscht, da sie keine weiteren Abschnitte enthält und leer ist.',
+    'Deleted the section with the ID {{ id }} from the sections table!'
+      => 'Der Abschnitt mit der ID {{ id }} wurde aus der WYSIWYG Tabelle gelöscht.',
     'Department description'
       => 'Ressort Beschreibung',
     'Department list'
@@ -67,6 +73,8 @@ $LANG = array(
       => '<p>Ein Volontär muss über mindestens einen Supervisor verfügen, der ihn kontrolliert. Bitte prüfen Sie Ihre Einstellungen!</p>',
     'Edit department'
       => 'Ressort bearbeiten',
+    'Edit editor'
+      => 'Redakteur bearbeiten',
     'Editor'
       => 'Redakteur',
     'EDITOR'
@@ -129,6 +137,10 @@ $LANG = array(
       => 'Max. Seitenebenen',
     'Message'
       => 'Mitteilung',
+    '[ {{ file }} ] Missing essential parameters!'
+      => '[ {{ file }} ] Es fehlen wesentliche Programmparameter!',
+    'Message from {{ editor }}'
+      => 'Mitteilung von {{ editor }}',
 
     '<p>Nothing changed.</p>'
       => '<p>Keine Änderungen.</p>',
@@ -139,10 +151,16 @@ $LANG = array(
       => 'Schlüsselwörter',
     'Page Settings'
       => 'Seiteneinstellungen',
+    '<p>Page settings for the page with ID {{ page_id }} successfull updated.</p>'
+      => '<p>Die Einstellungen für die Seite mit der ID {{ page_id }} wurden erfolgreich geändert.</p>',
     'Page Title'
       => 'Seitentitel',
     'Password'
       => 'Passwort',
+    'Permission'
+      => 'Berechtigung',
+    'Permissions'
+      => 'Berechtigungen',
     '<p>Please determine at least one department for your editorial team.</p><p>In the case you want to edit all pages of your website with the same team, set the root page below to "Unique root for all editors".</p><p>In all other cases select a page as root page for the department. All pages below this one will be accessible for the edtiors belonging to this department.</p><p>Departments can\'t be nested!</p>'
       => '<p>Legen Sie mindestens ein Ressort für Ihr Redaktionsteam fest.</p></p>Für den Fall, dass Sie alle Seiten Ihrer Website mit dem gleichen Team bearbeiten und organisieren möchten, setzen Sie die Stammseite auf "Universelle Stammseite für alle Redakteure".</p><p>In allen anderen Fällen wählen Sie eine beliebige Seite als Stammseite für das Ressort aus.</p><p>Ressorts können nicht ineinander verschachtelt werden!</p>',
     '<p>Please edit the department with the ID {{ id }}.</p>'
@@ -199,6 +217,12 @@ $LANG = array(
       => 'Abschnitt freigeben',
     'SECTION_VIEW'
       => 'Abschnitt lesen',
+    'Section approved'
+      => 'Abschnitt geprüft',
+    'Section published'
+      => 'Abschnitt veröffentlicht',
+    'Section rejected'
+      => 'Abschnitt zurückgewiesen',
     'Select root page'
       => 'Stammseite auswählen',
     'Select user'
@@ -215,6 +239,8 @@ $LANG = array(
       => '<p>Der Redakteur mit dem Bezeichner {{ name }} wurde aus dem Redaktionsteam entfernt.</p>',
     '<p>Successfull loaded the archive with the ID {{ archive_id }}.</p>'
       => '<p>Die Archiv Datei mit der ID {{ archive_id }} wurde in den Editor geladen.</p>',
+    'Supervisors'
+      => 'Supervisoren',
 
     '<p>The content of the section <b>{{ section_id }}</b> has not changed, so nothing was to save.</p>'
       => '<p>Der Inhalt des Abschnitts <b>{{ section_id }}</b> wurde nicht verändert und deshalb auch nicht gespeichert.</p>',
@@ -240,18 +266,22 @@ $LANG = array(
       => '<p>Die Protokollierung wurde zur Stufe {{ level }} geändert.</p>',
     '<p>The page with the ID {{ id }} does no longer exists and was removed from record of {{ name }}.</p>'
       => '<p>Die Seite mit der PAGE ID {{ id }} existiert nicht mehr und wurde deshalb aus dem Datensatz von {{ name }} entfernt.</p>',
+    '<p>The page with the ID {{ id }} for the root parent of the department {{ name }} does no longer exists!</p><p>The department will be locked, please assign a new root parent!</p>'
+      => '<p>Die Stammseite mit der ID {{ id }} für das Ressorts {{ name }} existiert nicht mehr!</p><p>Das Ressort wurde gesperrt, bitte ordnen Sie dem Ressort eine neue Stammseite zu!</p>',
     '<p>The page with the id {{ id }} no longer belongs to the departments and was removed from the record of {{ name }}</p>'
       => '<p>Die Seite mit der PAGE ID {{ id }} gehört nicht mehr zu den Ressorts und wurde deshalb aus dem Datensatz von {{ name }} entfernt.</p>',
     'The maximum number of archives that will be shown in the selection list'
       => 'Die maximale Anzahl von Archiven, die in der Auswahlliste angezeigt wird (Voreinstellung: 10)',
     'The maximum page levels shown in the selection list for the department root parent'
       => 'Die maximale Anzahl von Seitenebenen, die in der Auswahlliste für die Ressorts angezeigt werden (Vorgabe 1)',
+    '<p>The section id {{ section_id }} is marked for approval by your supervisors {{ supervisors }}.</p><p>Look ahead for further informations!</p>'
+      => '<p>Der Abschnitt mit der ID {{ section_id }} ist für die Prüfung zur Freigabe durch die Supervisoren {{ supervisors }} gekennzeichnet und deshalb vorläufig gesperrt.</p><p>Warten sie auf weitere Informationen!</p>',
     '<p>The section with the ID {{ section_id }} was successfull published!</p>'
       => '<p>Der Abschnitt mit der ID {{ section_id }} wurde veröffentlicht!</p>',
-    '<p>The teaser for the page ID {{ page_id }} was successfull saved.</p>'
-      => '<p>Der Anreisser für die Seite mit der ID {{ page_id ]] wurde gesichert.</p>',
     '<p>Page settings for the page with ID {{ page_id }} successfull updated.</p>'
       => '<p>Die Seiteneinstellungen für die Seite mit der ID {{ page_id }} wurden aktualisiert.</p>',
+    '<p>The teaser for the page ID {{ page_id }} was successfull saved.</p>'
+      => '<p>Der Anreisser für die Seite mit der ID {{ page_id ]] wurde gesichert.</p>',
     '<p>The page teaser was successfully updated.</p>'
       => '<p>Die <b>aktuelle Meldung</b> für die Seite wurde aktualisiert.</p>',
     '<p>The section <b>{{ section_id }}</b> was successfull saved.</p>'
@@ -273,10 +303,14 @@ $LANG = array(
     'Words'
       => 'Wörter',
 
+    '<p>You are not allowed to add/create a new section!</p>'
+      => '<p>Sie sind nicht berechtigt einen neuen Abschnitt zu erstellen oder hinzuzufügen!</p>',
     '<p>You are not allowed to delete the section with the ID {{ section_id }}!</p>'
       => '<p>Sie sind nicht berechtigt, den Abschnitt mit der ID {{ section_id }} zu löschen!</p>',
     '<p>You must login as administrator to get access to the extendedWYSIWYG settings.</p>'
       => '<p>Sie müssen sich mit Administratorrechten anmelden, um Zugriff auf die extendedWYSIWYG Einstellungen zu erhalten.</p>',
     'Your message'
-      => 'Ihre Mitteilung'
+      => 'Ihre Mitteilung',
+    '<p>Your message was send to the members of the department!</p>'
+      => '<p>Ihre Mitteilung wurde an die Mitglieder des Ressorts versendet!</p>'
 );
