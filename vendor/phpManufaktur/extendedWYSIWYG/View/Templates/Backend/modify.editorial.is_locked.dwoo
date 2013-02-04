@@ -1,0 +1,10 @@
+{* 
+ * the editor must wait and is not allowed to change the content 
+ *}
+<div class="wysiwyg_editor">
+  <div id="wysiwyg_locked">{$section.text}</div>
+</div>
+{if $editorial.email.pending.count > 0}
+  {include('modify.editorial.email.pending.dwoo')}
+{/if}
+        

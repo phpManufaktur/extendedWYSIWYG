@@ -51,9 +51,16 @@ else {
   }
   define('CMS_LOGGER_LEVEL', $logger_level);
 
+  // check the logfile size
+  $max_size = 2*1024*1024; // 2 MB
+  $log_file = __DIR__.'/logfile/extendedWYSIWYG.log';
+  if (file_exists($log_file) && (filesize($log_file) > $max_size)) {
+    @unlink(__DIR__.'/logfile/extendedWYSIWYG.bak');
+    @rename($log_file, __DIR__.'/logfile/extendedWYSIWYG.bak');
+  }
   // initialize the logger
   $logger = new Logger('extendedWYSIWYG');
-  $logger->pushHandler(new StreamHandler(__DIR__.'/logfile/extendedWYSIWYG.log', CMS_LOGGER_LEVEL));
+  $logger->pushHandler(new StreamHandler($log_file, CMS_LOGGER_LEVEL));
   $logger->addInfo('Monolog initialized');
 
   // the cmsBrige must prepared before it could initialized

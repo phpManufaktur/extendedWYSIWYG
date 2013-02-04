@@ -18,6 +18,7 @@
   <input type="hidden" name="{$section.name}" value="{$section.id}" />
   <input type="hidden" name="archive_id" value="{$archive['id']}" /> 
   <input type="hidden" name="teaser_id" value="{$options.use_as_blog.fields.teaser.id}" />
+  <input type="hidden" id="{$editorial.editor.name}" name="{$editorial.editor.name}" value="{$editorial.editor.value}" />
   <div class="wysiwyg_system">
     <div class="wysiwyg_options">
       {if $options.page_settings.active == 1}
@@ -29,100 +30,82 @@
       <input id="{$options.hide_section.checkbox.name}" type="checkbox" name="{$options.hide_section.checkbox.name}" value="{$options.hide_section.checkbox.value}"{if $options.hide_section.checkbox.checked == 1} checked="checked"{/if} /> {translate('Hide Section')}
     </div>
     {if $section.is_first == 1}
-    [<a id="about" href="{$link.settings.url}" target="_blank">extendedWYSIWYG</a>] [<a href="{$config.link}">{translate('Settings')}</a>]
+    [<a id="about" href="{$link.settings.url}" target="_blank">{translate('Settings')}</a>]
     {/if}
   </div>
-  <div id="wysiwyg_info">&nbsp;</div>
+  <div id="wysiwyg_info_{$section.id}">
+    {if $message.is_message == 1}
+      <div class="wysiwyg_message">{$message.text}</div>
+    {/if}
+  </div>
   <div id="wysiwyg_container_{$section.id}">
     {if $options.page_settings.active == 1}
-      <div id="wysiwyg_page_settings">
-        <div class="wysiwyg_page_settings_content">
-          <!-- SETTINGS -->
-          <div class="wysiwyg_page_settings_item">
-            <div class="wysiwyg_page_settings_label">&nbsp;</div>
-            <div class="wysiwyg_page_settings_value"><strong>{translate('Page Settings')}</strong></div>
-          </div>        
-          <div class="wysiwyg_page_settings_item">
-            <div class="wysiwyg_page_settings_label">{translate('Page Title')}</div>
-            <div class="wysiwyg_page_settings_value">
-              <input id="{$options.page_settings.fields.title.name}" type="text" name="{$options.page_settings.fields.title.name}" value="{$options.page_settings.fields.title.value}" />
-            </div>
-          </div>
-          <div class="wysiwyg_page_settings_item">
-            <div class="wysiwyg_page_settings_label">{translate('Page Description')}</div>
-            <div class="wysiwyg_page_settings_value">
-              <textarea id="{$options.page_settings.fields.description.name}" name="{$options.page_settings.fields.description.name}">{$options.page_settings.fields.description.value}</textarea>
-            </div>
-          </div>
-          <div class="wysiwyg_page_settings_item">
-            <div class="wysiwyg_page_settings_label">{translate('Page Keywords')}</div>
-            <div class="wysiwyg_page_settings_value">
-              <input id="{$options.page_settings.fields.keywords.name}" type="text" name="{$options.page_settings.fields.keywords.name}" value="{$options.page_settings.fields.keywords.value}" />
-            </div>
-          </div>
-        </div>
-        <div class="wysiwyg_page_settings_help">
-          <!-- HELP -->
-        </div>
-        <div class="clear"></div>
-      </div>
+      {include('modify.page_settings.dwoo')}
     {/if}
     {if $options.use_as_blog.active == 1}
-      <div id="wysiwyg_use_as_blog">
-        <div class="wysiwyg_blog_content">
-          <div class="wysiwyg_blog_item">
-            <div class="wysiwyg_blog_label">{translate('Teaser')}</div>
-            <div class="wysiwyg_blog_value">
-              {show_wysiwyg_editor($options.use_as_blog.fields.teaser.name, $options.use_as_blog.fields.teaser.name, $options.use_as_blog.fields.teaser.value, '100%', '80px','Simple')}
-            </div>
-          </div>
-          <div class="wysiwyg_blog_item">
-            <div class="wysiwyg_blog_label">&nbsp;</div>
-            <div class="wysiwyg_blog_value">
-              <div class="wysiwyg_blog_publish">
-                <input id="teaser_publish" type="checkbox" name="teaser_publish" value="1"{if $options.use_as_blog.fields.teaser.publish == 1} checked="checked"{/if} /><label for="publish">{translate('publish')}</label>
-              </div>
-              <div class="wysiwyg_blog_archiv_id">
-                <select id="{$options.use_as_blog.fields.archive.name}" name="{$options.use_as_blog.fields.archive.name}" > {* onchange="javascript:execOnChange('{$options.use_as_blog.fields.archive.link}','{$options.use_as_blog.fields.archive.name}','{$options.use_as_blog.fields.archive.anchor}');"> *}
-                  {foreach $options.use_as_blog.fields.archive.items item}
-                  <option value="{$item.value}"{if $item.value == $options.use_as_blog.fields.teaser.id} selected="selected"{/if}>{$item.text}</option>
-                  {/foreach}
-                </select>
-              </div>
-            </div>
-          </div>
-          <div class="clear"></div>
-        </div>
-        <div class="wysiwyg_blog_help">
-          <!-- HELP -->
-        </div>
-        <div class="clear"></div>
-      </div>
+      {include('modify.use_as_blog.dwoo')}
     {/if}
-    <div class="wysiwyg_editor">
-      {show_wysiwyg_editor($section.editor_id, $section.editor_id, $section.text, '100%', '250px', 'Smart')}
-    </div>
-    <div class="wysiwyg_control">
-      <div class="wysiwyg_control_publish">
-        <input id="{$publish.name}" type="checkbox" name="{$publish.name}" value="{$publish.value}"{if $publish.status == 1} checked="checked"{/if} /><label for="publish">{translate('publish')}</label>
-      </div>
-      <div class="wysiwyg_control_archiv_id">
-        <select id="{$archive.name}" name="{$archive.name}" > {* onchange="javascript:execOnChange('{$archive.link}','{$archive.name}','{$archive.anchor}');" *}
-          {foreach $archive.items item}
-          <option value="{$item.value}"{if $item.value == $archive.id} selected="selected"{/if}>{$item.text}</option>
-          {/foreach}
-        </select>
-      </div>
-      <div class="wysiwyg_control_author">{$author}</div>
-      
-      <div class="wysiwyg_control_counter">
-        {$count.chars} {translate('Chars')} - {$count.words} {translate('Words')}
-      </div>
-      
-    </div>
-    <div class="wysiwyg_editor_buttons">
-      <input id="save_{$section.id}" type="button" value="{translate('Save')}" /> {* onclick="javascript:saveSection('{$link.save.url}','{$section.id}','{$page.id}');" *}
-      <input type="button" value="{translate('Abort')}" onclick="javascript:window.location='index.php';" />
-    </div>
+    
+    {if $editorial.is_locked == 1}
+      {include('modify.editorial.is_locked.dwoo')}      
+    {else}
+      {if $editorial.editor.action.value == 'APPROVE'}
+        {include('modify.editorial.approve.dwoo')}
+      {else}
+        <div class="wysiwyg_editor">
+          {show_wysiwyg_editor($section.editor_id, $section.editor_id, $section.text, '100%', '250px', 'Smart')}
+        </div>
+        <input type="hidden" name="{$editorial.editor.action.name}" value="{$editorial.editor.action.value}" />
+        <div style="display: none;">
+          {* the editor response must be defined as radiobutton so we use display:none to hide it !!! *}
+          <input type="radio" name="{$editorial.editor.response.name}" value="{$editorial.editor.response.value}" checked="checked"/>
+        </div>
+        <div class="wysiwyg_control">
+          {if $editorial.is_active == 0}
+            <div class="wysiwyg_control_publish">
+              <input id="{$publish.name}" type="checkbox" name="{$publish.name}" value="{$publish.value}"{if $publish.status == 1} checked="checked"{/if} />
+              <label for="{$publish.name}">{translate('Publish section')}</label>
+            </div>
+          {elseif $editorial.editor.permissions.release_by_own == 1}
+            <div class="wysiwyg_control_publish editorial">
+              <input id="{$editorial.email.send.name}" name="{$editorial.email.send.name}" type="checkbox" value="{$editorial.email.send.value}" />
+              <label for="{$editorial.email.send.name}" title="{translate('Send a email to the other editors of this department')}">{translate('Message')}</label>
+              <input id="{$editorial.approval.name}" name="{$editorial.approval.name}" type="checkbox" value="{$editorial.approval.value}" />
+              <label for="{$editorial.approval.name}" title="{translate('Be careful: you are allowed to publish this section without any approval!')}">{translate('Release by own')}</label>
+            </div>
+          {else}
+            <div class="wysiwyg_control_publish editorial">
+              <input id="{$editorial.email.send.name}" name="{$editorial.email.send.name}" type="checkbox" value="{$editorial.email.send.value}" />
+              <label for="{$editorial.email.send.name}" title="{translate('Send a email to the other editors of this department')}">{translate('Message')}</label>
+              <input id="{$editorial.approval.name}" name="{$editorial.approval.name}" type="checkbox" value="{$editorial.approval.value}" />
+              <label for="{$editorial.approval.name}" title="{translate('Request the approval for release of this section by your supervisors')}">{translate('Approve publishing')}</label>
+            </div>
+          {/if}
+          <div class="wysiwyg_control_archiv_id">
+            <select id="{$archive.name}" name="{$archive.name}" > 
+              {foreach $archive.items item}
+              <option value="{$item.value}"{if $item.value == $archive.id} selected="selected"{/if}>{$item.text}</option>
+              {/foreach}
+            </select>
+          </div>
+          <div class="wysiwyg_control_author">{$author}</div>
+
+          <div class="wysiwyg_control_counter">
+            {$count.chars} {translate('Chars')} - {$count.words} {translate('Words')}
+          </div>
+          <div class="wysiwyg_control_clear"></div>
+        </div>
+        {if $editorial.email.pending.count > 0}
+          {include('modify.editorial.email.pending.dwoo')}
+        {/if}
+        <div id="email_container_{$section.id}">
+          <!-- placeholder for the email dialog -->
+        </div>
+        <div class="wysiwyg_editor_buttons">
+          <input id="save_{$section.id}" type="button" value="{translate('Save')}" /> 
+          <input type="button" value="{translate('Abort')}" onclick="javascript:window.location='index.php';" />
+        </div>
+      {/if}
+    {/if}
   </div><!-- /wysiwyg_container -->
 </form>

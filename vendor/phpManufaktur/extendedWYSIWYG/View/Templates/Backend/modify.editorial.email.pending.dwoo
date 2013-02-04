@@ -1,0 +1,16 @@
+<div class="wyswiyg_emails_pending">
+{foreach $editorial.email.pending.items email}
+  <div class="wysiwyg_email_item">
+    <div class="wysiwyg_email_label">&nbsp;</div>
+    <div class="wysiwyg_email_value">
+      {translate('From')}:&nbsp;{$email.display_name} - {$email.timestamp}
+    </div>
+    <div class="wysiwyg_email_clear"></div>
+    <div class="wysiwyg_email_label">{translate('Message')}</div>
+    <div class="wysiwyg_email_value">
+      <div class="wysiwyg_email_content">{$email.content}</div>
+    </div>
+    <div class="wysiwyg_email_clear"></div>
+  </div>
+{/foreach}
+</div>

@@ -1,0 +1,31 @@
+<div id="wysiwyg_page_settings">
+  <div class="wysiwyg_page_settings_content">
+    <!-- SETTINGS -->
+    <div class="wysiwyg_page_settings_item">
+      <div class="wysiwyg_page_settings_label">&nbsp;</div>
+      <div class="wysiwyg_page_settings_value"><strong>{translate('Page Settings')}</strong></div>
+    </div>        
+    <div class="wysiwyg_page_settings_item">
+      <div class="wysiwyg_page_settings_label">{translate('Page Title')}</div>
+      <div class="wysiwyg_page_settings_value">
+        <input id="{$options.page_settings.fields.title.name}" type="text" name="{$options.page_settings.fields.title.name}" value="{$options.page_settings.fields.title.value}" />
+      </div>
+    </div>
+    <div class="wysiwyg_page_settings_item">
+      <div class="wysiwyg_page_settings_label">{translate('Page Description')}</div>
+      <div class="wysiwyg_page_settings_value">
+        <textarea id="{$options.page_settings.fields.description.name}" name="{$options.page_settings.fields.description.name}">{$options.page_settings.fields.description.value}</textarea>
+      </div>
+    </div>
+    <div class="wysiwyg_page_settings_item">
+      <div class="wysiwyg_page_settings_label">{translate('Page Keywords')}</div>
+      <div class="wysiwyg_page_settings_value">
+        <input id="{$options.page_settings.fields.keywords.name}" type="text" name="{$options.page_settings.fields.keywords.name}" value="{$options.page_settings.fields.keywords.value}" />
+      </div>
+    </div>
+  </div>
+  <div class="wysiwyg_page_settings_help">
+    <!-- HELP -->
+  </div>
+  <div class="clear"></div>
+</div>

@@ -11,6 +11,8 @@
 
 namespace phpManufaktur\extendedWYSIWYG\Control;
 
+use phpManufaktur\extendedWYSIWYG\Data\wysiwygMessages;
+
 use phpManufaktur\extendedWYSIWYG\Data\editorDepartment;
 use phpManufaktur\extendedWYSIWYG\Data\editorTeam;
 use phpManufaktur\extendedWYSIWYG\Data\wysiwygConfiguration;
@@ -39,6 +41,8 @@ class modifySection extends boneModifySection { //boneClass {
       return $View->AccessDenied();
     }
 
+    self::$ARCHIVE_ID = null;
+    self::$TEASER_ID = null;
     if (isset($_REQUEST[self::REQUEST_ARCHIVE_ID.self::$SECTION_ID])) {
       // set the ARCHIVE ID
       self::$ARCHIVE_ID = (int) $_REQUEST[self::REQUEST_ARCHIVE_ID.self::$SECTION_ID];
@@ -76,6 +80,11 @@ class modifySection extends boneModifySection { //boneClass {
   protected function actionModify() {
     global $tools;
     global $cms;
+    global $I18n;
+
+    // init configuration
+    $config = new wysiwygConfiguration();
+    $useEditorialSystem = $config->getValue('cfgUseEditorialDepartment');
 
     // get the position of the section
     $section = new wysiwygSection();
@@ -107,6 +116,7 @@ class modifySection extends boneModifySection { //boneClass {
         return false;
       }
     }
+
     if (count($archive_record) > 0) {
       // get the content from the Archive record
       $section_content = $archive_record['content'];
@@ -131,10 +141,77 @@ class modifySection extends boneModifySection { //boneClass {
       $publish = 1;
     }
 
-    // get the list of the last archives for the selection
-    if (false === ($archives = $archive->selectArchiveListForDialog(self::$SECTION_ID))) {
-      $this->setError($archive->getError(), __METHOD__, __LINE__);
-      return false;
+    // the editor ACTION describe, what is expected from the editor as next action
+    $editor_action = 'NONE';
+    $editor_response = 'NONE';
+
+    $release_by_own = 0;
+    $section_is_pending = 0;
+    $is_locked = 0;
+    $is_supervisor = 0;
+    $pending_mails = array();
+    if ($useEditorialSystem) {
+      // use the editorial system !
+      $editor_name = $cms->getUserLoginName();
+      if (false === ($archives = $archive->selectEditorialArchiveListForDialog(self::$SECTION_ID, $editor_name, ''))) {
+        $this->setError($archive->getError(), __METHOD__, __LINE__);
+        return false;
+      }
+      $editorTeam = new editorTeam();
+      if (false === ($editor = $editorTeam->selectEditorByName($editor_name))) {
+        $this->setError($editorTeam->getError(), __METHOD__, __LINE__);
+        return false;
+      }
+      // right to release by own?
+      $release_by_own = (int) $editorTeam->checkPermission($editor['permissions'], editorTeam::PERMISSION_RELEASE_BY_OWN);
+      // is pending?
+      $pending_archive = array();
+      $section_is_pending = (int) $archive->isPending(self::$SECTION_ID, $pending_archive);
+      if ($section_is_pending) {
+        switch ($pending_archive['publish']):
+        case 'APPROVAL':
+        default:
+          if ($pending_archive['editor'] == $cms->getUserLoginName()) {
+            // this editor is waiting for approval and is not allowed to change the content
+            $is_locked = 1;
+            $editor_action = 'WAIT'; // must wait for approval
+            $this->setMessage($I18n->translate('<p>This section is locked because it is waiting for approval by your supervisors.</p>'),
+                __METHOD__, __LINE__);
+          }
+          else {
+            $supervisors = explode(',', $pending_archive['supervisors']);
+            if (in_array($cms->getUserLoginName(), $supervisors)) {
+              $is_supervisor = 1;
+              $editor_action = 'APPROVE';
+              $this->setMessage($I18n->translate('<p>Please approve this section for publishing!</p>'), __METHOD__, __LINE__);
+              array_unshift($archives, $pending_archive);
+              $section_content = $pending_archive['content'];
+              $author = $pending_archive['author'];
+              $publish = 0;
+              self::$ARCHIVE_ID = $pending_archive['archive_id'];
+            }
+          }
+          break;
+        endswitch;
+      }
+      // get the additional email message
+      $wysiwygMessage = new wysiwygMessages();
+      if (false === ($pending_mails = $wysiwygMessage->selectPendingsForEditorBySection($cms->getUserLoginName(), self::$SECTION_ID))) {
+        $this->setError($wysiwygMessage->getError(), __METHOD__, __LINE__);
+        return false;
+      }
+      // the pendings to to seen...
+      if (!$wysiwygMessage->updatePendingsToSeenForEditorBySection($cms->getUserLoginName(), self::$SECTION_ID)) {
+        $this->setError($wysiwygMessage->getError(), __METHOD__, __LINE__);
+        return false;
+      }
+    }
+    else {
+      // STANDARD - get the list of the last archives for the selection
+      if (false === ($archives = $archive->selectArchiveListForDialog(self::$SECTION_ID))) {
+        $this->setError($archive->getError(), __METHOD__, __LINE__);
+        return false;
+      }
     }
     // bild the <select> array
     $archive_array = array();
@@ -186,6 +263,47 @@ class modifySection extends boneModifySection { //boneClass {
     }
 
     $data = array(
+        'editorial' => array(
+            'is_locked' => $is_locked,
+            'editor' => array(
+                'name' => self::REQUEST_EDITOR_NAME.'_'.self::$SECTION_ID,
+                'value' => $cms->getUserLoginName(),
+                'permissions' => array(
+                    'release_by_own' => $release_by_own,
+                    'section_is_pending' => $section_is_pending,
+                    'is_supervisor' => $is_supervisor
+                    ),
+                'action' => array(
+                    'name' => self::REQUEST_EDITOR_ACTION.'_'.self::$SECTION_ID,
+                    'value' => $editor_action
+                    ),
+                'response' => array(
+                    'name' => self::REQUEST_EDITOR_RESPONSE.'_'.self::$SECTION_ID,
+                    'value' => $editor_response
+                     )
+                ),
+            'is_active' => (int) $useEditorialSystem,
+            'approval' => array(
+                'name' => self::REQUEST_APPROVAL.'_'.self::$SECTION_ID,
+                'value' => 1
+                ),
+            'email' => array(
+                'name' => self::REQUEST_EMAIL_TEXT.'_'.self::$SECTION_ID,
+                'text' => '',
+                'pending' => array(
+                    'count' => count($pending_mails),
+                    'items' => $pending_mails
+                    ),
+                'send' => array(
+                    'name' => self::REQUEST_EMAIL_SEND.'_'.self::$SECTION_ID,
+                    'value' => 1
+                    )
+                )
+            ),
+        'message' => array(
+            'is_message' => (int) $this->isMessage(),
+            'text' => $this->getMessage()
+            ),
         'page' => array(
             'name' => 'page_id',
             'id' => self::$PAGE_ID
@@ -210,7 +328,7 @@ class modifySection extends boneModifySection { //boneClass {
         ),
         'archive' => array(
             'id' => self::$ARCHIVE_ID,
-            'name' => 'archiv_id'.self::$SECTION_ID,
+            'name' => 'archive_id_'.self::$SECTION_ID,
             'items' => $archive_array,
             'link' => sprintf('%s?%s%s&archive_id%d=',
                 self::$MODIFY_PAGE_URL,
@@ -268,7 +386,7 @@ class modifySection extends boneModifySection { //boneClass {
                     ),
                     'archive' => array(
                         'active' => empty($teaser_archive) ? 0 : 1,
-                        'name' => self::REQUEST_TEASER_ID,
+                        'name' => self::REQUEST_TEASER_ID.'_'.self::$SECTION_ID,
                         'items' => $teaser_archive,
                         'link' => sprintf('%s?%s%s&%s=',
                             self::$MODIFY_PAGE_URL,
@@ -292,6 +410,7 @@ class modifySection extends boneModifySection { //boneClass {
             )
         )
     );
+    $this->resetMessage();
     $View = new View\viewModifySection(self::$PAGE_ID, self::$SECTION_ID);
     return $View->dialogModify($data);
   } // actionModify()

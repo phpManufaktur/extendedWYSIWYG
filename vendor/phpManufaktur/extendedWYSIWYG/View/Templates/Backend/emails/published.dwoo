@@ -1,0 +1,22 @@
+{* 
+ * extendedWYSIWYG
+ *
+ * @author Team phpManufaktur <team@phpmanufaktur.de>
+ * @link https://addons.phpmanufaktur.de/extendedWYSIWYG
+ * @copyright 2012 Ralf Hertsch <ralf.hertsch@phpmanufaktur.de>
+ * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
+ *
+ * Please consult the Dwoo Documentation & WIKI to get further informations 
+ * and hints for the usage of the Dwoo template engine.
+ *
+ * @link http://wiki.dwoo.org/
+ *
+ * Use {dump()} to get a list of all in this template available variables!
+ *}
+<p>Die Seite: {$page_title}<br />
+Abschnitt: {$section_id}<br />
+Redakteur: {$editor}</p>
+<p>Link: {$page_url}</p>
+<p>wurde nach Prüfung durch die Supervisoren freigegeben und veröffentlicht.</p>
+<p>Zusätzliche Mitteilung:<br />
+{$message}</p>

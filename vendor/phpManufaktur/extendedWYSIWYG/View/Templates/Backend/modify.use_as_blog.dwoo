@@ -1,0 +1,30 @@
+<div id="wysiwyg_use_as_blog">
+  <div class="wysiwyg_blog_content">
+    <div class="wysiwyg_blog_item">
+      <div class="wysiwyg_blog_label">{translate('Teaser')}</div>
+      <div class="wysiwyg_blog_value">
+        {show_wysiwyg_editor($options.use_as_blog.fields.teaser.name, $options.use_as_blog.fields.teaser.name, $options.use_as_blog.fields.teaser.value, '100%', '80px','Simple')}
+      </div>
+    </div>
+    <div class="wysiwyg_blog_item">
+      <div class="wysiwyg_blog_label">&nbsp;</div>
+      <div class="wysiwyg_blog_value">
+        <div class="wysiwyg_blog_publish">
+          <input id="teaser_publish" type="checkbox" name="teaser_publish" value="1"{if $options.use_as_blog.fields.teaser.publish == 1} checked="checked"{/if} /><label for="publish">{translate('publish')}</label>
+        </div>
+        <div class="wysiwyg_blog_archiv_id">
+          <select id="{$options.use_as_blog.fields.archive.name}" name="{$options.use_as_blog.fields.archive.name}" > {* onchange="javascript:execOnChange('{$options.use_as_blog.fields.archive.link}','{$options.use_as_blog.fields.archive.name}','{$options.use_as_blog.fields.archive.anchor}');"> *}
+            {foreach $options.use_as_blog.fields.archive.items item}
+            <option value="{$item.value}"{if $item.value == $options.use_as_blog.fields.teaser.id} selected="selected"{/if}>{$item.text}</option>
+            {/foreach}
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="clear"></div>
+  </div>
+  <div class="wysiwyg_blog_help">
+    <!-- HELP -->
+  </div>
+  <div class="clear"></div>
+</div>

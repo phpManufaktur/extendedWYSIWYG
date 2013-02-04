@@ -48,7 +48,7 @@ class pageSettings extends boneClass {
    * @param array $fields structured array with fieldnames and values
    * @return boolean|string
    */
-  public function setSettings($page_id, $fields=array()) {
+  public function updateSettings($page_id, $fields=array()) {
     global $db;
     global $tools;
     global $I18n;

@@ -105,13 +105,33 @@ class Users extends boneClass {
 
     try {
       $SQL = "SELECT `email` FROM `".CMS_TABLE_PREFIX."users` WHERE `username`='$name'";
-      $result = $db->fetchAll($SQL);
+      $result = $db->fetchAssoc($SQL);
     } catch (\Doctrine\DBAL\DBALException $e) {
       $this->setError($e->getMessage(), __METHOD__, $e->getLine());
       return false;
     }
     return (isset($result['email'])) ? $tools->unsanitizeText($result['email']) : 'nobody@anonymous.tld';
-  } // getUserDisplayName()
+  } // getUserEMail()
+
+  /**
+   * Fetch the user name form the give email address
+   *
+   * @param string $email
+   * @return boolean|Ambigous <string, mixed>
+   */
+  public function getUserName($email) {
+    global $db;
+    global $tools;
+
+    try {
+      $SQL = "SELECT `username` FROM `".CMS_TABLE_PREFIX."users` WHERE `email`='$email'";
+      $result = $db->fetchAssoc($SQL);
+    } catch (\Doctrine\DBAL\DBALException $e) {
+      $this->setError($e->getMessage(), __METHOD__, $e->getLine());
+      return false;
+    }
+    return (isset($result['username'])) ? $tools->unsanitizeText($result['username']) : '- nobody -';
+  } // getUserEMail()
 
   /**
    * Check if the given user has administrator privileges

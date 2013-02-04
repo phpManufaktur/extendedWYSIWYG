@@ -1,0 +1,9 @@
+{if $permissions.release_by_own == 0}
+<div class="write_email">
+  <div class="write_email_label">{translate('Additional information for approval')}</div>
+  <div class="write_email_content">
+    <textarea id="{$email.name}" name="{$email.name}">{$email.text}</textarea>
+  </div>
+  <div class="write_email_clear"></div>
+</div>
+{/if}

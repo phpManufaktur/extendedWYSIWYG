@@ -19,6 +19,8 @@ $LANG = array(
       => '- bitte auswählen -',
     '- Unique root page for all editors -'
       => 'Universelle Stammseite für alle Redakteure',
+    '[ {{ file }} ] Missing essential parameters!'
+      => '[ {{ file }} ] Wesentliche Parameter wurden nicht übermittelt! Bitte nehmen Sie Kontakt mit dem Support auf.',
     'A change of a WYSIWYG section will update the last modified field of the page (recommend!)'
       => 'Die Änderung eines WYSIWYG Abschnitt löst die Aktualisierung des "zuletzt geändert" Feldes der Seite aus (empfohlen!)',
     'ACTIVE'
@@ -29,8 +31,15 @@ $LANG = array(
       => 'Ressort hinzufügen',
     'Add editor'
       => 'Redakteur hinzufügen',
+    'Additional information for approval'
+      => 'Zusätzliche Informationen für die Supervisoren',
+    'Approve publishing'
+      => 'Freigabe',
     '<p>At least you must specify one department for your editorial team.</p>'
       => 'Sie müssen mindestens ein Ressort festlegen, dem Sie die dann die Redakteure zuordnen können.',
+
+    'Be careful: you are allowed to publish this section without any approval!'
+      => 'Seien Sie verantwortungsvoll: Sie können diesen Abschnitt ohne eine Prüfung durch Supervisoren direkt freigeben!',
 
     'Change'
       => 'Ändern',
@@ -89,6 +98,9 @@ $LANG = array(
     'Errorlog, level'
       => 'Fehlerprotokoll, Stufe',
 
+    'From'
+      => 'Von',
+
     'General'
       => 'Allgemein',
     'Got a invalid ID for the editor!'
@@ -115,6 +127,11 @@ $LANG = array(
       => 'max. Archive in der Auswahl',
     'max. page levels'
       => 'Max. Seitenebenen',
+    'Message'
+      => 'Mitteilung',
+
+    '<p>Nothing changed.</p>'
+      => '<p>Keine Änderungen.</p>',
 
     'Page Description'
       => 'Beschreibung',
@@ -138,11 +155,19 @@ $LANG = array(
       => '<p>Bitte wählen Sie eine Stammseite auns und geben Sie dem neuen Ressort einen Namen!</p>',
     '<p>Please type in your username and password!</p>'
       => '<p>Bitte geben Sie Ihren Benutzernamen und Ihr Passwort an!</p>',
+    'proofread'
+      => 'Korrektur erforderlich',
     'publish'
       => 'veröffentlichen',
+    'Publish section'
+      => 'Abschnitt veröffentlichen',
 
     'read more ...'
       => 'Weiterlesen ...',
+    'refused'
+      => 'zurückgewiesen',
+    'Release by own'
+      => 'Publizieren',
     'RELEASE_BY_OWN'
       => 'Eigenständige Freigabe',
     'RELEASE_CHIEF_EDITOR_ONLY'
@@ -153,9 +178,15 @@ $LANG = array(
       => 'Freigabe gemeinsam mit zwei Supervisoren',
     '<p>Removed department id {{ id }} from the editor {{ name }}.</p>'
       => '<p>Das Ressort mit der ID {{ id }} wurde aus dem Datensatz des Redakteurs {{ name }} entfernt.</p>',
+    'Request the approval for release of this section by your supervisors'
+      => 'Beantragen Sie die Freigabe dieses Abschnitts durch die für Sie zuständigen Supervisoren',
+    'Requiring approval for publishing content'
+      => 'Freigabe für die Veröffentlichung benötigt',
 
     'Save'
       => 'Speichern',
+    '<p>Saved the section as archive file {{ archive_file }}.</p>'
+      => '<p>Der Abschnitt wurde als Archiv-Datei {{ archive_file }} gesichert.</p>',
     'SECTION_CREATE'
       => 'Abschnitt erstellen',
     'SECTION_DELETE'
@@ -172,6 +203,8 @@ $LANG = array(
       => 'Stammseite auswählen',
     'Select user'
       => 'CMS Benutzer auswählen',
+    'Send a email to the other editors of this department'
+      => 'Schicken Sie eine E-Mail an die Redakteure dieses Ressorts',
     'Show Page Settings'
       => 'Seiteneinstellungen anzeigen',
     'Specify if you want to use the Editorial department system of extendedWYSIWYG or not. Please read the documentation before you activate the Editorial department!'
@@ -180,19 +213,27 @@ $LANG = array(
       => 'stv. Chefredakteur',
     '<p>Successfull deleted the editor with the name {{ name }}.</p>'
       => '<p>Der Redakteur mit dem Bezeichner {{ name }} wurde aus dem Redaktionsteam entfernt.</p>',
+    '<p>Successfull loaded the archive with the ID {{ archive_id }}.</p>'
+      => '<p>Die Archiv Datei mit der ID {{ archive_id }} wurde in den Editor geladen.</p>',
 
     '<p>The content of the section <b>{{ section_id }}</b> has not changed, so nothing was to save.</p>'
-      => '<p>Der Inhalt der Section <b>{{ section_id }}</b> wurde nicht verändert und deshalb auch nicht gespeichert.</p>',
+      => '<p>Der Inhalt des Abschnitts <b>{{ section_id }}</b> wurde nicht verändert und deshalb auch nicht gespeichert.</p>',
+    '<p>The content for the SECTION ID {{ section_id }} was successfull saved.</p>'
+      => '<p>Der Inhalt des Abschnitt mit der ID {{ section_id }} wurde gesichert.</p>',
     '<p>The department with the ID {{ id }} was deleted.</p>'
       => '<p>Das Ressort mit der ID {{ id }} wurde gelöscht.</p>',
     '<p>The department {{ name }} was successfull inserted.</p>'
       => '<p>Das Ressort {{ name }} wurde hinzugefügt.</p>',
+    '<p>The editor <b>{{ editor }}</b> ask you to approve this section for publishing.</p>'
+      => '<p>Der Redakteur <b>{{ editor }}</b> bittet Sie um Prüfung dieses Abschnittes für eine Veröffentlichung.</p>',
     '<p>The editor {{ name }} is not assigned to a department, is this correct?</p>'
       => '<p>Der Redakteur {{ name }} is keinem Ressort zugeteilt, ist das korrekt?</p>',
     '<p>The editor must have the permission to release articles by his own or you must assign one or more supervisors to the editor!</p>'
       => '<p>Der Redakteur muss entweder über das Recht verfügen Artikel eigenständig freizugeben oder es müssen ihm ein oder mehrere Supervisore für die Freigabe zugeordnet werden.</p><p>Bitte prüfen Sie die Einstellungen für den Redakteur!</p>',
     '<p>The editor {{ name }} was successfull updated.</p>'
       => '<p>Der Datensatz für den Redakteur {{ name }} wurde aktualisiert.</p>',
+    '<p>The email program needs a configured <b>smtp</b> access.</p><p>Please check the settings of your CMS!</p>'
+      => '<p>Das E-Mail Programm benötigt einen konfigurierten <b>SMTP</b> Zugriff.</p><p>Bitte prüfen Sie die Einstellungen Ihres CMS!</p>',
     '<p>The error level is successfull changed to {{ level }}.</p>'
       => '<p>Die Stufe für die Fehlermeldungen wurde auf {{ level }} geändert.</p>',
     '<p>The loglevel is successfull changed to {{ level }}</p>'
@@ -205,8 +246,12 @@ $LANG = array(
       => 'Die maximale Anzahl von Archiven, die in der Auswahlliste angezeigt wird (Voreinstellung: 10)',
     'The maximum page levels shown in the selection list for the department root parent'
       => 'Die maximale Anzahl von Seitenebenen, die in der Auswahlliste für die Ressorts angezeigt werden (Vorgabe 1)',
-    '<p>The page settings has been updated.</p>'
-      => '<p>Die Seiteneinstellungen wurden aktualisiert.</p>',
+    '<p>The section with the ID {{ section_id }} was successfull published!</p>'
+      => '<p>Der Abschnitt mit der ID {{ section_id }} wurde veröffentlicht!</p>',
+    '<p>The teaser for the page ID {{ page_id }} was successfull saved.</p>'
+      => '<p>Der Anreisser für die Seite mit der ID {{ page_id ]] wurde gesichert.</p>',
+    '<p>Page settings for the page with ID {{ page_id }} successfull updated.</p>'
+      => '<p>Die Seiteneinstellungen für die Seite mit der ID {{ page_id }} wurden aktualisiert.</p>',
     '<p>The page teaser was successfully updated.</p>'
       => '<p>Die <b>aktuelle Meldung</b> für die Seite wurde aktualisiert.</p>',
     '<p>The section <b>{{ section_id }}</b> was successfull saved.</p>'
@@ -231,5 +276,7 @@ $LANG = array(
     '<p>You are not allowed to delete the section with the ID {{ section_id }}!</p>'
       => '<p>Sie sind nicht berechtigt, den Abschnitt mit der ID {{ section_id }} zu löschen!</p>',
     '<p>You must login as administrator to get access to the extendedWYSIWYG settings.</p>'
-      => '<p>Sie müssen sich mit Administratorrechten anmelden, um Zugriff auf die extendedWYSIWYG Einstellungen zu erhalten.</p>'
+      => '<p>Sie müssen sich mit Administratorrechten anmelden, um Zugriff auf die extendedWYSIWYG Einstellungen zu erhalten.</p>',
+    'Your message'
+      => 'Ihre Mitteilung'
 );

@@ -63,6 +63,18 @@ class viewModifySection extends boneModifySection {
     return $this->show('');
   }
 
+  public function promptError($error) {
+    return $this->getTemplate('error.dwoo', array('content' => $error));
+  } // dialogError()
+
+  public function dialogApprovalEMail($data) {
+    return $this->getTemplate('modify.email.approval.dwoo', $data);
+  } // dialogApprovalEMail()
+
+  public function dialogEMail($data) {
+    return $this->getTemplate('modify.email.dwoo', $data);
+  } // dialogEMail()
+
   public function dialogModify($data) {
     $dialog = $this->getTemplate('modify.dwoo', $data);
     return $this->show($dialog);

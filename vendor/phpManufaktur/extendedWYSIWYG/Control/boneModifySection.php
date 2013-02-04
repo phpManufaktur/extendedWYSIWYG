@@ -21,6 +21,13 @@ class boneModifySection extends boneClass {
   const REQUEST_ARCHIVE_ID = 'archive_id';
   const REQUEST_TEASER_CONTENT = 'teaser_text';
   const REQUEST_TEASER_ID = 'teaser_id';
+  const REQUEST_EDITORIAL_SYSTEM = 'editorial_system';
+  const REQUEST_EDITOR_NAME = 'editor_name';
+  const REQUEST_APPROVAL = 'approval';
+  const REQUEST_EMAIL_TEXT = 'email_text';
+  const REQUEST_EMAIL_SEND = 'email_send';
+  const REQUEST_EDITOR_ACTION = 'editor_action';
+  const REQUEST_EDITOR_RESPONSE = 'editor_response';
 
   const ACTION_MODIFY = 'mod';
 

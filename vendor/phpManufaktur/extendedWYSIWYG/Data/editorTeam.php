@@ -131,6 +131,53 @@ EOD;
   } // selectAsEditorAvailableUsers()
 
   /**
+   * Select the email of the given editor ID
+   *
+   * @param integer $editor_id
+   * @return boolean|string
+   */
+  public function selectEMailByEditorId($editor_id) {
+    global $db;
+
+    $users = CMS_TABLE_PREFIX.'users';
+    $editors = CMS_TABLE_PREFIX.'mod_wysiwyg_editor_team';
+
+    try {
+      $SQL = "SELECT `email` FROM $users LEFT JOIN $editors ".
+          "ON ($users.username=$editors.name) WHERE $editors.id='$editor_id' AND $users.active='1'";
+      $result = $db->fetchAssoc($SQL);
+    } catch (\Doctrine\DBAL\DBALException $e) {
+      $this->setError($e->getMessage(), __METHOD__, $e->getLine());
+      return false;
+    }
+    return (isset($result['email'])) ? $result['email'] : '';
+  } // selectEMailByEditorId()
+
+
+  /**
+   * Select the email of the given editor name
+   *
+   * @param string $editor_name
+   * @return boolean|string
+   */
+  public function selectEMailByEditorName($editor_name) {
+    global $db;
+
+    $users = CMS_TABLE_PREFIX.'users';
+    $editors = CMS_TABLE_PREFIX.'mod_wysiwyg_editor_team';
+
+    try {
+      $SQL = "SELECT `email` FROM $users LEFT JOIN $editors ".
+          "ON ($users.username=$editors.name) WHERE $editors.name='$editor_name' AND $users.active='1'";
+      $result = $db->fetchAssoc($SQL);
+    } catch (\Doctrine\DBAL\DBALException $e) {
+      $this->setError($e->getMessage(), __METHOD__, $e->getLine());
+      return false;
+    }
+    return (isset($result['email'])) ? $result['email'] : '';
+  } // selectEMailByEditoName()
+
+  /**
    * Select all Editors and return them in a array
    *
    * @return boolean|multitype:multitype:Ambigous <string, mixed, unknown>

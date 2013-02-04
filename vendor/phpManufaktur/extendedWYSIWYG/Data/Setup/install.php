@@ -11,6 +11,8 @@
 
 namespace phpManufaktur\extendedWYSIWYG\Data\Setup;
 
+use phpManufaktur\extendedWYSIWYG\Data\wysiwygMessages;
+
 use phpManufaktur\extendedWYSIWYG\Data\editorDepartment;
 
 use phpManufaktur\extendedWYSIWYG\Data\editorTeam;
@@ -84,6 +86,13 @@ class install extends boneClass {
     $editorDepartment = new editorDepartment();
     if (!$editorDepartment->create()) {
       $this->setError($editorDepartment->getError(), __METHOD__, __LINE__);
+      return false;
+    }
+
+    // create table mod_wysiwyg_messages
+    $wysiwygMessages = new wysiwygMessages();
+    if (!$wysiwygMessages->create()) {
+      $this->setError($wysiwygMessages->getError(), __METHOD__, __LINE__);
       return false;
     }
 

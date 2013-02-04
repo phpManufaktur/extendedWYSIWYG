@@ -72,24 +72,34 @@
 .wysiwyg_blog_publish,
 .wysiwyg_control_publish {
   float: left;
-  width: 164px;
+  width: 200px;
   margin: 0;
   padding: 0 0 5px 0;
 }
+
 .wysiwyg_blog_publish input,
 .wysiwyg_blog_publish label,
 .wysiwyg_control_publish input,
 .wysiwyg_control_publish label {
   float:left;
 }
+
+.wysiwyg_control_publish label {
+  padding: 3px 5px 0 5px;
+}
+
 .wysiwyg_blog_archiv_id,
 .wysiwyg_control_archiv_id {
   float: left;
   width: 250px;
 }
+.wysiwyg_control_archiv_id select {
+  width: 250px;
+}
 .wysiwyg_control_author {
   float: left;
   width: 200px;
+  padding: 5px 0 0 5px;
 }
 .wysiwyg_control_counter {
   float: right;
@@ -97,6 +107,14 @@
   text-align: right;
   color: #333;
   background-color: transparent;
+}
+.wysiwyg_email_clear,
+.wysiwyg_approval_clear,
+.write_email_clear,
+.wysiwyg_control_clear {
+  clear: both;
+  width: 1px;
+  height: 1px;
 }
 .wysiwyg_system {
   width: 100%;
@@ -172,11 +190,13 @@
 }
 #wysiwyg_page_settings {
   clear: both;
+  width: 100%;
   margin: 0;
   padding: 0 0 5px 0;
 }
 #wysiwyg_page_settings textarea,
 #wysiwyg_page_settings input {
+  width: 100%;
   border: 1px inset #d3d3d3;
   color: #333;
   background-color: #fff;
@@ -187,6 +207,7 @@
 .wysiwyg_blog_item,
 .wysiwyg_page_settings_item {
   clear: both;
+  width: 100%;
 }
 .wysiwyg_blog_label,
 .wysiwyg_page_settings_label {
@@ -224,7 +245,7 @@
 .wysiwyg_intro {
   color: #fff;
   background-color: #5b768a;
-  margin: 15px 120px 10px 0;
+  margin: 15px 0 10px 0;
   padding: 10px;
   font-size: 10px;
   min-height: 45px;
@@ -232,5 +253,63 @@
 .wysiwyg_message {
   color: #363636;
   background-color: #d6c48d;
+}
+.write_email {
+  clear: both;
+  width: 98%;
+  margin: 20px 0;
+}
+.wysiwyg_email_label,
+.wysiwyg_approval_label,
+.wysiwyg_approval_vote,
+.write_email_label {
+  float:left;
+  width: 200px;
+}
+.wysiwyg_email_value,
+.wysiwyg_email_content,
+.write_email_content {
+  float: left;
+  width: 650px;
+}
+.wysiwyg_email_content {
+  height: 60px;
+  margin: 0;
+  padding: 10px;
+  overflow-y: auto;
+  border: 1px #969696 solid;
+  font-style: italic;
+  color: #363636;
+  background-color: #fff;
+}
+.write_email_content textarea {
+  outline: none;
+  overflow: auto;
+  width: 100%;
+  height: 50px;
+}
+.wysiwyg_approval_message {
+  float: left;
+  width: 650px;
+  height: 80px;
+  overflow-y: auto;
+  border: 1px #969696 solid;
+  padding: 10px;
+}
+#wysiwyg_locked {
+  height: 250px;
+  overflow-y: auto;
+  color: #969696;
+  background-color: #fff;
+  border: 1px #969696 solid;
+  padding: 10px;
+  margin: 0 0 20px 0;
+  background-image: url(images/locked_508x180.png);
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+.wysiwyg_email_item {
+  margin: 10px 0;
+  padding: 0;
 }
 

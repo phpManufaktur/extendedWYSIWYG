@@ -1,0 +1,31 @@
+{*
+ * The editor is supervisor and should approve the content
+ *}
+<div class="wysiwyg_editor">
+  <div id="wysiwyg_locked">{$section.text}</div>
+</div> 
+{if $editorial.email.pending.count > 0}
+  {include('modify.editorial.email.pending.dwoo')}
+{/if}        
+<div class="wysiwyg_control">
+  {translate('<p>The editor <b>{{ editor }}</b> ask you to approve this section for publishing.</p>', array(editor=$author))}
+  <input type="hidden" id="{$publish.name}" name="{$publish.name}" value="{$publish.value}" />
+  <input type="hidden" id="{$archive.name}" name="{$archive.name}" value="{$archive.id}" />
+  <input type="hidden" name="{$editorial.editor.action.name}" value="{$editorial.editor.action.value}" />
+  <div class="wysiwyg_approval">
+    <div class="wysiwyg_approval_clear"></div>
+    <div class="wysiwyg_approval_vote">
+      <input type="radio" name="{$editorial.editor.response.name}" value="PUBLISHED" checked="checked"/>&nbsp;{translate('publish')}<br />
+      <input type="radio" name="{$editorial.editor.response.name}" value="PROOFREAD" />&nbsp;{translate('proofread')}<br />
+      <input type="radio" name="{$editorial.editor.response.name}" value="REFUSED" />&nbsp;{translate('refused')}<br />
+    </div>
+    <div class="write_email_content">
+      <textarea id="{$editorial.email.name}" name="{$editorial.email.name}">{$editorial.email.text}</textarea>
+    </div>
+    <div class="wysiwyg_approval_clear"></div>
+  </div>
+</div>
+<div class="wysiwyg_editor_buttons">
+  <input id="save_{$section.id}" type="button" value="{translate('Submit')}" /> 
+  <input type="button" value="{translate('Abort')}" onclick="javascript:window.location='index.php';" />
+</div>

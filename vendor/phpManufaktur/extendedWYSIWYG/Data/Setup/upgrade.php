@@ -14,6 +14,28 @@ namespace phpManufaktur\extendedWYSIWYG\Data\Setup;
 class upgrade extends install {
 
   /**
+   * Check if the give column exists in the table
+   *
+   * @param string $table
+   * @param string $column_name
+   * @return boolean
+   */
+  protected function columnExists($table, $column_name) {
+    global $db;
+
+    try {
+      $query = $db->query("DESCRIBE `$table`");
+    } catch (\Doctrine\DBAL\DBALException $e) {
+      $this->setError($e->getMessage(), __METHOD__, $e->getLine());
+      return false;
+    }
+    while (false !== ($row = $query->fetch())) {
+      if ($row['Field'] == $column_name) return true;
+    }
+    return false;
+  }
+
+  /**
    * Process the upgrade especially for Release 11.01
    *
    * @return boolean
@@ -60,10 +82,34 @@ class upgrade extends install {
 
     // add entries to mod_wysiwyg_archive 'status'
     try {
-      $SQL = "ALTER TABLE `".CMS_TABLE_PREFIX."mod_wysiwyg_archive` MODIFY COLUMN status ENUM('ACTIVE','UNPUBLISHED','BACKUP','DRAFT','APPROVAL','REFUSED','PROOFREAD') NOT NULL DEFAULT 'ACTIVE'";
+      $SQL = "ALTER TABLE `".CMS_TABLE_PREFIX."mod_wysiwyg_archive` MODIFY COLUMN status ENUM('ACTIVE','UNPUBLISHED','BACKUP','DRAFT','PENDING') NOT NULL DEFAULT 'ACTIVE'";
       $db->query($SQL);
-      $SQL = "ALTER TABLE `".CMS_TABLE_PREFIX."mod_wysiwyg_archive` ADD `editor` VARCHAR(255) NOT NULL DEFAULT '' AFTER `author`";
-      $db->query($SQL);
+
+      if (!$this->columnExists(CMS_TABLE_PREFIX.'mod_wysiwyg_archive', 'publish')) {
+        $SQL = "ALTER TABLE `".CMS_TABLE_PREFIX."mod_wysiwyg_archive` ADD `publish` ENUM('PRIVATE','APPROVAL','PROOFREAD','REFUSED','PUBLISHED') NOT NULL DEFAULT 'PRIVATE' AFTER `status`";
+        $db->query($SQL);
+      }
+      if (!$this->columnExists(CMS_TABLE_PREFIX.'mod_wysiwyg_archive', 'editor')) {
+        $SQL = "ALTER TABLE `".CMS_TABLE_PREFIX."mod_wysiwyg_archive` ADD `editor` VARCHAR(255) NOT NULL DEFAULT '' AFTER `author`";
+        $db->query($SQL);
+      }
+      if (!$this->columnExists(CMS_TABLE_PREFIX.'mod_wysiwyg_archive', 'supervisors')) {
+        $SQL = "ALTER TABLE `".CMS_TABLE_PREFIX."mod_wysiwyg_archive` ADD `supervisors` VARCHAR(255) NOT NULL DEFAULT '' AFTER `editor`";
+        $db->query($SQL);
+      }
+      if (!$this->columnExists(CMS_TABLE_PREFIX.'mod_wysiwyg_archive', 'approved')) {
+        $SQL = "ALTER TABLE `".CMS_TABLE_PREFIX."mod_wysiwyg_archive` ADD `approved` VARCHAR(255) NOT NULL DEFAULT '' AFTER `supervisors`";
+        $db->query($SQL);
+      }
+      if (!$this->columnExists(CMS_TABLE_PREFIX.'mod_wysiwyg_archive', 'refused')) {
+        $SQL = "ALTER TABLE `".CMS_TABLE_PREFIX."mod_wysiwyg_archive` ADD `refused` VARCHAR(255) NOT NULL DEFAULT '' AFTER `approved`";
+        $db->query($SQL);
+      }
+      if (!$this->columnExists(CMS_TABLE_PREFIX.'mod_wysiwyg_archive', 'deadline')) {
+        $SQL = "ALTER TABLE `".CMS_TABLE_PREFIX."mod_wysiwyg_archive` ADD `deadline` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00' AFTER `publish`";
+        $db->query($SQL);
+      }
+
     } catch (\Doctrine\DBAL\DBALException $e) {
       $this->setError($e->getMessage(), __METHOD__, $e->getLine());
       return false;

@@ -158,6 +158,7 @@ class controlAccess extends boneClass {
           array('page_id' => self::$PAGE_ID, 'department_id' => self::$DEPARTMENT_ID)));
       return false;
     }
+
     // Success!
     $controlEditor->activity($I18n->translate('Access to page {{ page_id }} granted for the editor.',
         array('page_id' => self::$PAGE_ID)));
