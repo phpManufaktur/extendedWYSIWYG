@@ -144,9 +144,10 @@ class install extends boneClass {
     $backup = CMS_PATH .'/modules/output_filter/original-extended-wysiwyg-filter-routines.php';
 
     $addline = "\n\n\t\t// exec extendedWYSIWYG filter";
-    $addline .= "\n\t\tif(file_exists(WB_PATH .'/modules/wysiwyg/vendor/phpManufaktur/CMS/Bridge/Control/outputFilter.php')) { ";
+    $addline .= "\n\t\tif (file_exists(WB_PATH .'/modules/wysiwyg/vendor/phpManufaktur/CMS/Bridge/Control/outputFilter.php')) { ";
     $addline .= "\n\t\t\trequire_once (WB_PATH .'/modules/wysiwyg/vendor/phpManufaktur/CMS/Bridge/Control/outputFilter.php'); ";
-    $addline .= "\n\t\t\t".'$content = cmsBridgeFilter($content); ';
+    $addline .= "\n\t\t\t".'$cmsOutputFilter = new \phpManufaktur\CMS\Bridge\Control\outputFilter(); ';
+    $addline .= "\n\t\t\t".'$content = $cmsOutputFilter->exec($content); ';
     $addline .= "\n\t\t}\n\n ";
 
     if (file_exists($filter_path)) {
