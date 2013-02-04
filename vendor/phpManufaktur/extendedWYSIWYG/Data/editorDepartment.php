@@ -68,7 +68,7 @@ EOD;
 
     try {
       $SQL = "SELECT `page_id`,$pages.`root_parent`,`level`,`page_title`,`menu_title` FROM `$pages` ".
-        "LEFT JOIN $department ON ($pages.root_parent=$department.root_parent) ".
+        "LEFT JOIN $department ON (CONVERT($pages.root_parent USING utf8)=CONVERT($department.root_parent USING utf8)) ".
         "WHERE $department.root_parent IS NULL AND `level`<'$max_level' ORDER BY `root_parent`, `level`, `page_title` ASC";
       $result = $db->fetchAll($SQL);
     } catch (\Doctrine\DBAL\DBALException $e) {
@@ -265,7 +265,8 @@ EOD;
     $pages = CMS_TABLE_PREFIX.'pages';
 
     try {
-      $SQL = "SELECT `id` FROM $department LEFT JOIN $pages ON $department.root_parent=$pages.root_parent WHERE page_id='$page_id'";
+      $SQL = "SELECT `id` FROM $department LEFT JOIN $pages ON ".
+        "(CONVERT($department.root_parent USING utf8)=CONVERT($pages.root_parent USING utf8)) WHERE page_id='$page_id'";
       $result = $db->fetchAssoc($SQL);
     } catch (\Doctrine\DBAL\DBALException $e) {
       $this->setError($e->getMessage(), __METHOD__, $e->getLine());

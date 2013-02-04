@@ -122,7 +122,7 @@ EOD;
     $usr = CMS_TABLE_PREFIX."users";
 
     try {
-      $SQL = "SELECT * FROM `$msg` LEFT JOIN `$usr` ON ($msg.from_editor = $usr.username) ".
+      $SQL = "SELECT * FROM `$msg` LEFT JOIN `$usr` ON (CONVERT($msg.from_editor USING utf8) = CONVERT($usr.username USING utf8)) ".
         "WHERE `to_editor`='$editor_name' AND `status`='PENDING' AND `section_id`='$section_id' ORDER BY `id` DESC";
       $result = $db->fetchAll($SQL);
     } catch (\Doctrine\DBAL\DBALException $e) {

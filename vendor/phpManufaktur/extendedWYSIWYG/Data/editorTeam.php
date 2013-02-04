@@ -114,7 +114,7 @@ EOD;
 
     try {
       $SQL = "SELECT `user_id`, `username`, `display_name`, `email`  FROM $users LEFT JOIN $editors ".
-        "ON ($users.username=$editors.name) WHERE $editors.name IS NULL AND $users.active='1'";
+        "ON (CONVERT($users.username USING utf8)=CONVERT($editors.name USING utf8)) WHERE $editors.name IS NULL AND $users.active='1'";
       $result = $db->fetchAll($SQL);
     } catch (\Doctrine\DBAL\DBALException $e) {
       $this->setError($e->getMessage(), __METHOD__, $e->getLine());
@@ -144,7 +144,8 @@ EOD;
 
     try {
       $SQL = "SELECT `email` FROM $users LEFT JOIN $editors ".
-          "ON ($users.username=$editors.name) WHERE $editors.id='$editor_id' AND $users.active='1'";
+          "ON (CONVERT($users.username USING utf8)=CONVERT($editors.name USING utf8)) ".
+          "WHERE $editors.id='$editor_id' AND $users.active='1'";
       $result = $db->fetchAssoc($SQL);
     } catch (\Doctrine\DBAL\DBALException $e) {
       $this->setError($e->getMessage(), __METHOD__, $e->getLine());
@@ -168,7 +169,7 @@ EOD;
 
     try {
       $SQL = "SELECT `email` FROM $users LEFT JOIN $editors ".
-          "ON ($users.username=$editors.name) WHERE $editors.name='$editor_name' AND $users.active='1'";
+          "ON (CONVERT($users.username USING utf8)=CONVERT($editors.name USING utf8)) WHERE $editors.name='$editor_name' AND $users.active='1'";
       $result = $db->fetchAssoc($SQL);
     } catch (\Doctrine\DBAL\DBALException $e) {
       $this->setError($e->getMessage(), __METHOD__, $e->getLine());
@@ -263,7 +264,8 @@ EOD;
     $team = CMS_TABLE_PREFIX.'mod_wysiwyg_editor_team';
 
     try {
-      $SQL = "SELECT `id`, `user_id`, `username`, `display_name`  FROM `$users`, `$team` WHERE username=name AND `status`='ACTIVE' AND `position`!='TRAINEE'";
+      $SQL = "SELECT `id`, `user_id`, `username`, `display_name`  FROM `$users`, `$team` ".
+        "WHERE CONVERT(username USING utf8)=CONVERT(name USING utf8) AND `status`='ACTIVE' AND `position`!='TRAINEE'";
       $result = $db->fetchAll($SQL);
     } catch (\Doctrine\DBAL\DBALException $e) {
       $this->setError($e->getMessage(), __METHOD__, $e->getLine());
