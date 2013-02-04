@@ -15,12 +15,18 @@ use phpManufaktur\kitCommand\kitCommand;
 
 class outputFilter {
 
+  /**
+   * Execute the output filter of the cmsBridge
+   *
+   * @param string $content
+   * @return Ambigous <string, string>
+   */
   public function exec($content) {
     $load_css = '';
     $load_js = array();
     $kitCommand = new kitCommand();
     $content = $kitCommand->Exec($content, $load_css, $load_js);
-
     return $content;
-  }
+  } // exec()
+
 } // class outputFilter
