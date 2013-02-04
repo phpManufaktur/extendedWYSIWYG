@@ -82,6 +82,14 @@ class detectCMS extends boneClass {
       $loop_defines[] = 'ADMIN_PATH';
     }
 
+    // missing DB Port? Set default value
+    if (!isset($defines['DB_PORT']))
+      $defines['DB_PORT'] = '3306';
+
+    // missing WB_PATH = WB 2.8.3 ?
+    if (!isset($defines['WB_PATH']))
+      $defines['WB_PATH'] = $root_path;
+
     foreach ($loop_defines as $define) {
       if (!isset($defines[$define])) {
         $this->setError("Missing the definition for $define, must abort", __METHOD__, __LINE__);
