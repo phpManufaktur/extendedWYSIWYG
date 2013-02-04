@@ -33,6 +33,11 @@ $check = array(
         'directory' => 'manufaktur_config',
         'version' => '0.17',
         'problem' => 'manufakturConfig => <b><a href="https://addons.phpmanufaktur.de/download.php?file=manufakturConfig" target="_blank">Download actual version</a></b>'
+        ),
+    'CKEditor' => array(
+        'directory' => 'ckeditor',
+        'version' => '0.6.0',
+        'problem' => 'CKEditor => <b><a href="http://www.lepton-cms.org/deutsch/addons/freie-addons.php" target="_blank">Download actual version</a></b>'
         )
 );
 
