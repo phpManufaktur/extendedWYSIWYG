@@ -28,7 +28,7 @@ class Users extends boneClass {
     global $db;
 
     try {
-      $SQL = "SELECT `password`, `groups_id` FROM `".CMS_TABLE_PREFIX."users` WHERE `username`='$username' AND `active`='1' AND `statusflags`>'1'";
+      $SQL = "SELECT `password`, `groups_id` FROM `".CMS_TABLE_PREFIX."users` WHERE `username`='$username' AND `active`='1'";
       $result = $db->fetchAssoc($SQL);
     } catch (\Doctrine\DBAL\DBALException $e) {
       $this->setError($e->getMessage(), __METHOD__, $e->getLine());
