@@ -53,7 +53,7 @@
         {include('modify.editorial.approve.dwoo')}
       {else}
         <div class="wysiwyg_editor">
-          {show_wysiwyg_editor($section.editor_id, $section.editor_id, $section.text, '100%', '250px', 'Smart')}
+          {wysiwyg_editor($section.editor_id, $section.text, '100%', '250px', 'Smart')}
         </div>
         <input type="hidden" name="{$editorial.editor.action.name}" value="{$editorial.editor.action.value}" />
         <div style="display: none;">

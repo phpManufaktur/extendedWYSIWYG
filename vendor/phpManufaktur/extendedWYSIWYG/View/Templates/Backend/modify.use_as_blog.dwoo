@@ -3,7 +3,7 @@
     <div class="wysiwyg_blog_item">
       <div class="wysiwyg_blog_label">{translate('Teaser')}</div>
       <div class="wysiwyg_blog_value">
-        {show_wysiwyg_editor($options.use_as_blog.fields.teaser.name, $options.use_as_blog.fields.teaser.name, $options.use_as_blog.fields.teaser.value, '100%', '80px','Simple')}
+        {wysiwyg_editor($options.use_as_blog.fields.teaser.name, $options.use_as_blog.fields.teaser.value, '100%', '80px','Simple')}
       </div>
     </div>
     <div class="wysiwyg_blog_item">

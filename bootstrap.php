@@ -146,6 +146,10 @@ else {
       mkdir($compiled_path, 0755, true);
     $dwoo = new Dwoo($compiled_path, $cache_path);
   }
+  // load extensions for the Dwoo template engine
+  $loader = $dwoo->getLoader();
+  // Dwoo plugins for the cmsBridge, i.e. wysiwygEditor()
+  $loader->addDirectory(CMS_ADDON_PATH.'/vendor/phpManufaktur/CMS/Bridge/View/Templates/Plugins/');
 
   // initialize Toolbox
   $tools = new Toolbox();
