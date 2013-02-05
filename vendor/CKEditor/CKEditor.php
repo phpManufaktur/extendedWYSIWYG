@@ -9,14 +9,14 @@
  * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
  */
 
-$path = __DIR__;
-// at maximum step 8 levels back!
-for ($i=0; $i < 10; $i++) {
-  $path = substr($path, 0, strrpos($path, '/'));
-  // at this point we really want no error messages!
-  if (@file_exists($path.'/bootstrap.php')) {
-    include $path.'/bootstrap.php';
-    break;
-  }
-}
-exit('Sorry, no access!');
+namespace CKEditor;
+
+require_once __DIR__.'/CKEditor_3/ckeditor.php';
+
+class cmsCKEditor extends CKEditor  {
+
+  public function getEditor($name, $content, $width='100%', $height='250px') {
+
+  } // getEditor()
+
+} // class CKEditor
