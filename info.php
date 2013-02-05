@@ -12,7 +12,7 @@
 $module_directory = 'wysiwyg';
 $module_name = 'extendedWYSIWYG';
 $module_function = 'page';
-$module_version = '11.01';
+$module_version = '11.02';
 $module_platform = '2.8';
 $module_author = 'phpManufaktur, Berlin (Germany)';
 $module_license = 'MIT License (MIT)';
