@@ -4,9 +4,14 @@
 MIT License (MIT) http://www.opensource.org/licenses/MIT
 https://addons.phpmanufaktur.de/extendedWYSIWYG
 
-Release 11.01 - NOT PUBLISHED
+Release 11.02 BETA - 2013-02-05
+
+* added CKEditor 3.6.6 to /vendor for internal usage by extendedWYSIWYG
+
+Release 11.01 BETA - 2013-02-04
 
 * complete rework and redesign of extendedWYSIWYG
+* start BETA test for extendedWYSIWYG 11.x
 
 Release 10.17 - NOT PUBLISHED
 
