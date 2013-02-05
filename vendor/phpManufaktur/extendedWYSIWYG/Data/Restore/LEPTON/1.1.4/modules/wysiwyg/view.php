@@ -9,7 +9,7 @@
  * @author          Ryan Djurovich
  * @author          LEPTON Project
  * @copyright       2004-2010 WebsiteBaker Project
- * @copyright       2010-2011 LEPTON Project 
+ * @copyright       2010-2011 LEPTON Project
  * @link            http://www.LEPTON-cms.org
  * @license         http://www.gnu.org/licenses/gpl.html
  * @license_terms   please see info.php of this module
@@ -18,8 +18,8 @@
  */
 
 // include class.secure.php to protect this file and the whole CMS!
-if (defined('WB_PATH')) {	
-	include(WB_PATH.'/framework/class.secure.php'); 
+if (defined('WB_PATH')) {
+	include(WB_PATH.'/framework/class.secure.php');
 } else {
 	$oneback = "../";
 	$root = $oneback;
@@ -28,20 +28,26 @@ if (defined('WB_PATH')) {
 		$root .= $oneback;
 		$level += 1;
 	}
-	if (file_exists($root.'/framework/class.secure.php')) { 
-		include($root.'/framework/class.secure.php'); 
+	if (file_exists($root.'/framework/class.secure.php')) {
+		include($root.'/framework/class.secure.php');
 	} else {
 		trigger_error(sprintf("[ <b>%s</b> ] Can't include class.secure.php!", $_SERVER['SCRIPT_NAME']), E_USER_ERROR);
 	}
 }
 // end include class.secure.php
 
- 
+
 
 // Get content
 $get_content = $database->query("SELECT `content` FROM `".TABLE_PREFIX."mod_wysiwyg` WHERE `section_id` = '".$section_id."'");
 $fetch_content = $get_content->fetchRow( MYSQL_ASSOC );
 $content = $fetch_content['content'];
+/**
+ * FIX: restore extendedWYSIWYG data handling
+ */
+$content = stripcslashes($content);
+$content = str_replace(array("&lt;","&gt;","&quot;","&#039;"), array("<",">","\"","'"), $content);
+$content = str_replace('~~ wysiwyg replace[CMS_MEDIA_URL] ~~', WB_URL.MEDIA_DIRECTORY, $content);
 
 echo $content;
 
