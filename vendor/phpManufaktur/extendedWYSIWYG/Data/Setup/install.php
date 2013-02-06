@@ -134,11 +134,9 @@ class install extends boneClass {
    * Patch the WebsiteBaker output filter
    *
    * @param string $filter_path
-   * @param boolean $wb_283
    * @return boolean
    */
-  protected function websiteBakerDoPatch($filter_path, $wb_283=false) {
-    $search = $wb_283 ? "define('OUTPUT_FILTER_DOT_REPLACEMENT'" : 'function filter_frontend_output($content)';
+  protected function websiteBakerDoPatch($filter_path) {
     $returnvalue = false;
     $tempfile = CMS_PATH .'/modules/output_filter/new_filter.php';
     $backup = CMS_PATH .'/modules/output_filter/original-extended-wysiwyg-filter-routines.php';
@@ -155,7 +153,9 @@ class install extends boneClass {
       $handle = fopen ($tempfile, 'w');
       foreach ($lines as $line) {
         fwrite ($handle, $line);
-        if (strpos($line, $search) > 0) {
+        // check for both indicators of WB 2.8.1 up to wb 2.8.3
+        if ((strpos($line, "define('OUTPUT_FILTER_DOT_REPLACEMENT'") > 0) ||
+            (strpos($line, 'function filter_frontend_output($content)') > 0)) {
           $returnvalue = true;
           fwrite($handle, $addline);
         }
@@ -195,17 +195,15 @@ class install extends boneClass {
     else {
       if (version_compare(CMS_VERSION, '2.8.3', '>=')) {
         // WebsiteBaker 2.8.3
-        $wb_283 = true;
         $filter_path = CMS_PATH.'/modules/output_filter/index.php';
       }
       else {
         // all other WebsiteBaker versions
-        $wb_283 = false;
         $filter_path = CMS_PATH .'/modules/output_filter/filter-routines.php';
       }
       if (file_exists($filter_path)) {
         if (!$this->websiteBakerIsPatched($filter_path)) {
-          if (!$this->websiteBakerDoPatch($filter_path, $wb_283)) {
+          if (!$this->websiteBakerDoPatch($filter_path)) {
             $this->setError('Failed to patch the WebsiteBaker output filter, please contact the support!', __METHOD__, __LINE__);
             return false;
           }
