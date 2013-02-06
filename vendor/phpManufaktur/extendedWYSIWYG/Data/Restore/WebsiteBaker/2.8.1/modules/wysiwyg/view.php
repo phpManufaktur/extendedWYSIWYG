@@ -28,6 +28,13 @@ $get_content = $database->query("SELECT content FROM ".TABLE_PREFIX."mod_wysiwyg
 $fetch_content = $get_content->fetchRow();
 $content = ($fetch_content['content']);
 
+/**
+ * FIX: restore extendedWYSIWYG data handling
+ */
+$content = stripcslashes($content);
+$content = str_replace(array("&lt;","&gt;","&quot;","&#039;"), array("<",">","\"","'"), $content);
+$content = str_replace('~~ wysiwyg replace[CMS_MEDIA_URL] ~~', WB_URL.MEDIA_DIRECTORY, $content);
+
 $wb->preprocess($content);
 
 echo $content;

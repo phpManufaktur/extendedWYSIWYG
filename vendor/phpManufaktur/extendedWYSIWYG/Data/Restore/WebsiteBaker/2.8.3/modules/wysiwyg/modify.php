@@ -27,7 +27,16 @@ $sMediaUrl = WB_URL.MEDIA_DIRECTORY;
 // Get page content
 $sql = 'SELECT `content` FROM `'.TABLE_PREFIX.'mod_wysiwyg` WHERE `section_id`='.(int)$section_id;
 if ( ($content = $database->get_one($sql)) ) {
-	$content = htmlspecialchars(str_replace('{SYSVAR:MEDIA_REL}', $sMediaUrl, $content));
+	//$content = htmlspecialchars(str_replace('{SYSVAR:MEDIA_REL}', $sMediaUrl, $content));
+
+	/**
+	 * FIX: restore extendedWYSIWYG data handling
+	 */
+	$content = stripcslashes($content);
+	$content = str_replace(array("&lt;","&gt;","&quot;","&#039;"), array("<",">","\"","'"), $content);
+	$content = str_replace('~~ wysiwyg replace[CMS_MEDIA_URL] ~~', WB_URL.MEDIA_DIRECTORY, $content);
+	$content = str_replace('{SYSVAR:MEDIA_REL}', $sMediaUrl, $content);
+
 }else {
 	$content = '';
 }
@@ -57,7 +66,7 @@ if(!isset($wysiwyg_editor_loaded)) {
 	<input type="hidden" name="page_id" value="<?php echo $page_id; ?>" />
 	<input type="hidden" name="section_id" value="<?php echo $section_id; ?>" />
 <?php
-echo $admin->getFTAN()."\n"; 
+echo $admin->getFTAN()."\n";
 show_wysiwyg_editor('content'.$section_id,'content'.$section_id,$content,'100%','350');
 ?>
 	<table summary="" cellpadding="0" cellspacing="0" border="0" width="100%" style="padding-bottom: 10px;">

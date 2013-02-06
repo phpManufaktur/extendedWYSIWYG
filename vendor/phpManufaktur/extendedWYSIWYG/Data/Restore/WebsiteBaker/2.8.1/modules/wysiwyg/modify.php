@@ -22,7 +22,14 @@ if(!defined('WB_PATH')) exit('Direct access to this file is not allowed');
 $query = "SELECT content FROM ".TABLE_PREFIX."mod_wysiwyg WHERE section_id = '$section_id'";
 $get_content = $database->query($query);
 $content = $get_content->fetchRow();
-$content = (htmlspecialchars($content['content']));
+//$content = (htmlspecialchars($content['content']));
+
+/**
+ * FIX: restore extendedWYSIWYG data handling
+ */
+$content = stripcslashes($content);
+$content = str_replace(array("&lt;","&gt;","&quot;","&#039;"), array("<",">","\"","'"), $content);
+$content = str_replace('~~ wysiwyg replace[CMS_MEDIA_URL] ~~', WB_URL.MEDIA_DIRECTORY, $content);
 
 if(!isset($wysiwyg_editor_loaded)) {
 	$wysiwyg_editor_loaded=true;

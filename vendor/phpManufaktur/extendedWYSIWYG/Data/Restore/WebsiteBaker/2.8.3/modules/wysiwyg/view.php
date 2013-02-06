@@ -22,10 +22,18 @@ if(!defined('WB_PATH')) {
 }
 /* -------------------------------------------------------- */
 $sMediaUrl = WB_URL.MEDIA_DIRECTORY;
-// Get content 
+// Get content
 $content = '';
 $sql = 'SELECT `content` FROM `'.TABLE_PREFIX.'mod_wysiwyg` WHERE `section_id`='.(int)$section_id;
 if( ($content = $database->get_one($sql)) ) {
+
+  /**
+   * FIX: restore extendedWYSIWYG data handling
+   */
+  $content = stripcslashes($content);
+  $content = str_replace(array("&lt;","&gt;","&quot;","&#039;"), array("<",">","\"","'"), $content);
+  $content = str_replace('~~ wysiwyg replace[CMS_MEDIA_URL] ~~', WB_URL.MEDIA_DIRECTORY, $content);
+
 	$content = str_replace('{SYSVAR:MEDIA_REL}', $sMediaUrl, $content );
 }
 echo $content;
