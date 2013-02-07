@@ -161,6 +161,8 @@ $LANG = array(
       => 'Berechtigung',
     'Permissions'
       => 'Berechtigungen',
+    '<p>Please approve this section for publishing!</p>'
+      => 'Bitte überprüfen Sie diesen Abschnitt und entscheiden Sie, ob er auf der Website veröffentlicht werden kann.',
     '<p>Please determine at least one department for your editorial team.</p><p>In the case you want to edit all pages of your website with the same team, set the root page below to "Unique root for all editors".</p><p>In all other cases select a page as root page for the department. All pages below this one will be accessible for the edtiors belonging to this department.</p><p>Departments can\'t be nested!</p>'
       => '<p>Legen Sie mindestens ein Ressort für Ihr Redaktionsteam fest.</p></p>Für den Fall, dass Sie alle Seiten Ihrer Website mit dem gleichen Team bearbeiten und organisieren möchten, setzen Sie die Stammseite auf "Universelle Stammseite für alle Redakteure".</p><p>In allen anderen Fällen wählen Sie eine beliebige Seite als Stammseite für das Ressort aus.</p><p>Ressorts können nicht ineinander verschachtelt werden!</p>',
     '<p>Please edit the department with the ID {{ id }}.</p>'
@@ -235,6 +237,8 @@ $LANG = array(
       => 'Legen Sie fest, ob Sie das Redaktionssystem von extendedWYSIWYG verwenden möchten oder nicht. Bitte lesen Sie unbedingt die Dokumentation bevor Sie das System aktivieren!',
     'SUB_CHIEF_EDITOR'
       => 'stv. Chefredakteur',
+    'Submit'
+      => 'Übermitteln',
     '<p>Successfull deleted the editor with the name {{ name }}.</p>'
       => '<p>Der Redakteur mit dem Bezeichner {{ name }} wurde aus dem Redaktionsteam entfernt.</p>',
     '<p>Successfull loaded the archive with the ID {{ archive_id }}.</p>'
@@ -262,6 +266,8 @@ $LANG = array(
       => '<p>Das E-Mail Programm benötigt einen konfigurierten <b>SMTP</b> Zugriff.</p><p>Bitte prüfen Sie die Einstellungen Ihres CMS!</p>',
     '<p>The error level is successfull changed to {{ level }}.</p>'
       => '<p>Die Stufe für die Fehlermeldungen wurde auf {{ level }} geändert.</p>',
+    '<p>The LOGFILE does not exists!</p>'
+      => 'Es existiert keine LOG Datei.',
     '<p>The loglevel is successfull changed to {{ level }}</p>'
       => '<p>Die Protokollierung wurde zur Stufe {{ level }} geändert.</p>',
     '<p>The page with the ID {{ id }} does no longer exists and was removed from record of {{ name }}.</p>'
