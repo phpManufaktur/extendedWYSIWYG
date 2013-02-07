@@ -2,10 +2,10 @@ CKEDITOR.plugins.setLang( 'pagelink', 'de',
 {
     pagelink :
     {
-        btn :               'Internen Seitenlink einfügen/ändern',
-        title :             'LEPTON Link - Internen Link einfügen',
-        name :              'LEPTON Link einfügen',
-        page :              'LETON Seite',
+        btn :               'Internen CMS Seitenlink einfügen/ändern',
+        title :             'CMS Link - Internen Link einfügen',
+        name :              'CMS Link einfügen',
+        page :              'CMS Seite',
         cssclass :          'CSS-Klasse',
         usepagetitle :      'Benutze Seitentitel',
         advrel :            '<rel> Auswahl',
