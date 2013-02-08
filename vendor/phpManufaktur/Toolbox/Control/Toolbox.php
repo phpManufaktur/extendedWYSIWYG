@@ -118,6 +118,7 @@ class Toolbox extends boneClass {
               array('directory', $path)), __METHOD__, __LINE__);
           return false;
         }
+        $this->setInfo($I18n->translate('Created directory {{ directory }}.'), __METHOD__, __LINE__);
       }
       else {
         $this->setError($I18n->translate('The directory {{ directory }} does not exists!',
@@ -184,5 +185,74 @@ class Toolbox extends boneClass {
     $bytes = intval(round($bytes, 2));
     return $bytes;
   } // filesize2bytes()
+
+  /**
+   * fixes a path by removing //, /../ and other things
+   *
+   * @param  string  $path - path to fix
+   * @return string
+   * @author Bianka Martinovic <blackbird@webbird.de>
+   */
+  public function sanitizePath($path) {
+    // remove / at end of string; this will make sanitizePath fail otherwise!
+    $path = preg_replace('~/{1,}$~', '', $path);
+
+    // make all slashes forward
+    $path = str_replace('\\', '/', $path);
+
+    // bla/./bloo ==> bla/bloo
+    $path = preg_replace('~/\./~', '/', $path);
+
+    // resolve /../
+    // loop through all the parts, popping whenever there's a .., pushing otherwise.
+    $parts  = array();
+    foreach (explode('/', preg_replace('~/+~', '/', $path)) as $part) {
+      if ($part === ".." || $part == '')
+        array_pop($parts);
+      elseif ($part!="")
+        $parts[] = $part;
+    }
+    $new_path = implode("/", $parts);
+    // windows
+    if (!preg_match('/^[a-z]\:/i', $new_path))
+      $new_path = '/' . $new_path;
+
+    return $new_path;
+  } // sanitizePath()
+
+  /**
+   * Iterate directory tree very efficient
+   * Function postet from donovan.pp@gmail.com at
+   * http://www.php.net/manual/de/function.scandir.php
+   *
+   * @param sting $dir
+   * @return array - directoryTree
+   */
+  public static function directoryTree($dir) {
+    if (substr($dir,-1) == "/")
+      $dir = substr($dir,0,-1);
+    $path = array();
+    $stack = array();
+    $stack[] = $dir;
+    while ($stack) {
+      $thisdir = array_pop($stack);
+      if (false !== ($dircont = scandir($thisdir))) {
+      		$i=0;
+      		while (isset($dircont[$i])) {
+      		  if ($dircont[$i] !== '.' && $dircont[$i] !== '..') {
+      		    $current_file = "{$thisdir}/{$dircont[$i]}";
+      		    if (is_file($current_file)) {
+      		      $path[] = "{$thisdir}/{$dircont[$i]}";
+      		    }
+      		    elseif (is_dir($current_file)) {
+      		      $stack[] = $current_file;
+      		    }
+      		  }
+      		  $i++;
+      		}
+      }
+    }
+    return $path;
+  } // directoryTree()
 
 } // class Toolbox
