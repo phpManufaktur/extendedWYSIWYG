@@ -15,7 +15,7 @@ use CKEditor\CKEditor3\CKEditor;
 
 class Editor extends CKEditor {
 
-  public function exec($name, $content, $width='100%', $height='250px') {
+  public function exec($name, $content, $width='100%', $height='250px', $toolbar='default') {
     // set the basepath for the editor
     $this->basePath = CMS_ADDON_URL.'/vendor/CKEditor/CKEditor3/';
     // return the editor as HTML
@@ -36,7 +36,7 @@ class Editor extends CKEditor {
     $this->config['filebrowserFlashUploadUrl'] = $uploadPath.'Flash';
 
     $this->config['language'] = strtolower(CMS_LANGUAGE);
-    $this->config['toolbar'] = "Smart";
+    $this->config['toolbar'] = ($toolbar == 'default') ? 'Smart' : $toolbar;
 
     return $this->editor($name, $content);
   } //
