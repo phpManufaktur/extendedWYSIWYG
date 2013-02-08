@@ -331,9 +331,10 @@ EOD;
     }
 
     $editor = array();
-    foreach ($result as $key => $value)
-      $editor[$key] = is_string($value) ? $tools->unsanitizeText($value) : $value;
-
+    if (is_array($result)) {
+      foreach ($result as $key => $value)
+        $editor[$key] = is_string($value) ? $tools->unsanitizeText($value) : $value;
+    }
     return $editor;
   } // selectEditorByName()
 
