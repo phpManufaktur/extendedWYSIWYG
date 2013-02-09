@@ -18,5 +18,4 @@ for ($i=0; $i < 10; $i++) {
   }
   $path = substr($path, 0, strrpos($path, '/'));
 }
-header($_SERVER['SERVER_PROTOCOL']." 403 Forbidden");
-exit('<p><b>ACCESS DENIED!</b></p>');
+exit('Sorry, no access!');

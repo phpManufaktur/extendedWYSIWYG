@@ -13,6 +13,18 @@ namespace phpManufaktur\CMS\Bridge\Control;
 
 use phpManufaktur\kitCommand\kitCommand;
 
+$path = __DIR__;
+for ($i=0; $i < 10; $i++) {
+  // try to find and load the bootstrap.php
+  if (@file_exists($path.'/bootstrap.php')) {
+    if (!defined('EXTERNAL_ACCESS'))
+      define('EXTERNAL_ACCESS', false);
+    include $path.'/bootstrap.php';
+    break;
+  }
+  $path = substr($path, 0, strrpos($path, '/'));
+}
+
 class outputFilter {
 
   /**
