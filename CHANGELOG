@@ -4,6 +4,17 @@
 MIT License (MIT) http://www.opensource.org/licenses/MIT
 https://addons.phpmanufaktur.de/extendedWYSIWYG
 
+Release 11.03 BETA - 2013-02-09
+
+* added the root parent fix for WB/LEPTON to the add.php
+* changed output filter patch for WB 2.8.2
+* improved data restore for WB 2.8.1, 2.8.2 and 2.8.3
+* updated language files for the CKEditor 3
+* improved version check at precheck.php
+* added parameter for the toolbar at the CKE3 class
+* added class unZip to handle PclZip and ZipArchive
+* added optional bootstrap loader at the output filter
+
 Release 11.02 BETA - 2013-02-05
 
 * added CKEditor 3.6.6 to /vendor for internal usage by extendedWYSIWYG
