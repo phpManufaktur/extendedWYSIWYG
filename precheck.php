@@ -20,7 +20,7 @@ $checked = true;
 $PRECHECK['CUSTOM_CHECKS']['PHP Version'] = array(
     'REQUIRED' => '5.3.2',
     'ACTUAL' => PHP_VERSION,
-    'STATUS' => versionCompare(PHP_VERSION, '5.3.2', '>=')
+    'STATUS' => version_compare(PHP_VERSION, '5.3.2', '>=')
 );
 
 // modified precheck array

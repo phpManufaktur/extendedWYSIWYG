@@ -56,7 +56,7 @@ class unZip {
    *
    * @param string $unzip_path
    */
-  public function setUnZipPath($unzip_path) {
+  public static function setUnZipPath($unzip_path) {
     self::$unzip_path = $unzip_path;
   } // setUnZipPath()
 
@@ -65,7 +65,7 @@ class unZip {
    *
    * @return string path
    */
-  public function getUnZipPath() {
+  public static function getUnZipPath() {
     return self::$unzip_path;
   } // getUnZipPath()
 
@@ -74,7 +74,7 @@ class unZip {
    *
    * @return array
    */
-  public function getFileList() {
+  public static function getFileList() {
     return self::$file_list;
   } // getFileList()
 
@@ -135,7 +135,7 @@ class unZip {
         require_once __DIR__.'/pclzip/pclzip.lib.php';
         // set the temporary directory for pclzip
         if (!defined('PCLZIP_TEMPORARY_DIR'))
-          define('PCLZIP_TEMPORARY_DIR', self::$unzip_path);
+          define('PCLZIP_TEMPORARY_DIR', self::getUnZipPath);
         // create PclZip instance
         $this->pclzip = new \PclZip($zip_file);
         $list = $this->pclzip->extract(self::$unzip_path);

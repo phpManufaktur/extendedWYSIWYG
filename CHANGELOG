@@ -4,6 +4,10 @@
 MIT License (MIT) http://www.opensource.org/licenses/MIT
 https://addons.phpmanufaktur.de/extendedWYSIWYG
 
+Release 11.05 BETA - UNPUBLISHED
+
+* fixed a problem with the approval system
+
 Release 11.03 BETA - 2013-02-09
 
 * added the root parent fix for WB/LEPTON to the add.php

@@ -144,6 +144,9 @@ $LANG = array(
 
     '<p>Nothing changed.</p>'
       => '<p>Keine Änderungen.</p>',
+		
+		'Ooops, missing a valid release method! Please contact the support!'
+			=> 'Oh, da ist etwas schiefgelaufen: keine geeignete Freigabemethode verfügbar, bitte kontaktieren Sie den Support!',
 
     'Page Description'
       => 'Beschreibung',
@@ -233,6 +236,8 @@ $LANG = array(
       => 'Schicken Sie eine E-Mail an die Redakteure dieses Ressorts',
     'Show Page Settings'
       => 'Seiteneinstellungen anzeigen',
+		'Sorry, you are not allowed to release this article!'
+			=> 'Entschuldigung, aber Sie sind leider nicht befugt diesen Artikel freizugeben!',
     'Specify if you want to use the Editorial department system of extendedWYSIWYG or not. Please read the documentation before you activate the Editorial department!'
       => 'Legen Sie fest, ob Sie das Redaktionssystem von extendedWYSIWYG verwenden möchten oder nicht. Bitte lesen Sie unbedingt die Dokumentation bevor Sie das System aktivieren!',
     'SUB_CHIEF_EDITOR'
