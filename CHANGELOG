@@ -4,7 +4,14 @@
 MIT License (MIT) http://www.opensource.org/licenses/MIT
 https://addons.phpmanufaktur.de/extendedWYSIWYG
 
-Release 11.05 BETA - UNPUBLISHED
+Release 11.06 BETA - 2013-02-17
+
+* fixed the permissions and access rights for the admins - they must be out of 
+  the editorial system at anytime
+* temporary locked the teaser system: must be integrated too into the editorial
+  system, will be re-implemented in one of the next releases 
+
+Release 11.05 BETA - 2013-02-16
 
 * fixed a problem with the approval system
 

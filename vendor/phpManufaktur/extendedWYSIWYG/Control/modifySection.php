@@ -25,6 +25,7 @@ use phpManufaktur\extendedWYSIWYG\Data\pageSettings;
 use phpManufaktur\extendedWYSIWYG\Data\wysiwygArchive;
 use phpManufaktur\extendedWYSIWYG\Data\wysiwygTeaser;
 use phpManufaktur\CMS\Bridge\Data\LEPTON as LEPTON;
+use phpManufaktur\CMS\Bridge\Data\LEPTON\Users;
 
 class modifySection extends boneModifySection { //boneClass {
 
@@ -84,8 +85,15 @@ class modifySection extends boneModifySection { //boneClass {
 
     // init configuration
     $config = new wysiwygConfiguration();
-    $useEditorialSystem = $config->getValue('cfgUseEditorialDepartment');
-
+    $Users = new Users();
+    
+    if ($Users->isAdministrator($cms->getUserLoginName())) {
+    	// Administrator are not integrated into the editorial system!
+    	$useEditorialSystem = false;
+    }
+    else 
+    	$useEditorialSystem = $config->getValue('cfgUseEditorialDepartment');
+    
     // get the position of the section
     $section = new wysiwygSection();
     self::$SECTION_POSITION = $section->getSectionPositionInPage(self::$SECTION_ID);

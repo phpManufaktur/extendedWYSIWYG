@@ -116,6 +116,7 @@ class controlContent extends bonejQueryControl {
    */
   protected function checkRequests() {
     global $I18n;
+    global $cms;
 
     if (!isset($_GET['section_id']) ||
         !isset($_GET['section_content']) ||
@@ -156,7 +157,7 @@ class controlContent extends bonejQueryControl {
     self::$TEASER_PUBLISH = (bool) $_GET['teaser_publish'];
     self::$TEASER_ID = (int) $_GET['teaser_id'];
 
-    self::$EDITOR_NAME = $_GET['editor_name'];
+    self::$EDITOR_NAME = !empty($_GET['editor_name']) ? trim($_GET['editor_name']) : $cms->getUserLoginName();
     self::$EMAIL_TEXT = rawurldecode($_GET['email_text']);
     self::$EDITOR_ACTION = $_GET['editor_action'];
     self::$EDITOR_RESPONSE = $_GET['editor_response'];
@@ -1031,12 +1032,21 @@ class controlContent extends bonejQueryControl {
    */
   public function exec() {
     global $I18n;
+    global $cms;
 
     $this->checkRequests();
+    
+    $Users = new Users();
+    if ($Users->isAdministrator(self::$EDITOR_NAME)) {
+    	// admins are out of the editorial system!
+    	self::$EDITORIAL_SYSTEM_IS_ACTIVE = false;
+    }
+    
     $this->checkPageSettings();
     $this->checkTeaser();
+    
     if (self::$EDITORIAL_SYSTEM_IS_ACTIVE) {
-      if (self::$EDITOR_ACTION != 'NONE') {
+    	if (self::$EDITOR_ACTION != 'NONE') {
         $this->checkEditorAction();
       }
       else {
