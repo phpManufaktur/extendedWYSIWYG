@@ -4,12 +4,16 @@
 MIT License (MIT) http://www.opensource.org/licenses/MIT
 https://addons.phpmanufaktur.de/extendedWYSIWYG
 
+Release 11.07 BETA - 2013-04-08
+
+* fixed a problem with submitting large contents (Error Code 414)
+
 Release 11.06 BETA - 2013-02-17
 
-* fixed the permissions and access rights for the admins - they must be out of 
+* fixed the permissions and access rights for the admins - they must be out of
   the editorial system at anytime
 * temporary locked the teaser system: must be integrated too into the editorial
-  system, will be re-implemented in one of the next releases 
+  system, will be re-implemented in one of the next releases
 
 Release 11.05 BETA - 2013-02-16
 

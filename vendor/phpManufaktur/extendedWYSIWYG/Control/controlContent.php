@@ -118,50 +118,50 @@ class controlContent extends bonejQueryControl {
     global $I18n;
     global $cms;
 
-    if (!isset($_GET['section_id']) ||
-        !isset($_GET['section_content']) ||
-        !isset($_GET['page_id']) ||
-        !isset($_GET['section_publish']) ||
-        !isset($_GET['check_page_settings']) ||
-        !isset($_GET['page_title']) ||
-        !isset($_GET['page_description']) ||
-        !isset($_GET['page_keywords']) ||
-        !isset($_GET['check_teaser']) ||
-        !isset($_GET['teaser_content']) ||
-        !isset($_GET['teaser_publish']) ||
-        !isset($_GET['teaser_id']) ||
-        !isset($_GET['archive_id']) ||
-        !isset($_GET['editor_name']) ||
-        !isset($_GET['email_text']) ||
-        !isset($_GET['editor_action']) ||
-        !isset($_GET['editor_response']) ||
-        !isset($_GET['email_send'])
+    if (!isset($_REQUEST['section_id']) ||
+        !isset($_REQUEST['section_content']) ||
+        !isset($_REQUEST['page_id']) ||
+        !isset($_REQUEST['section_publish']) ||
+        !isset($_REQUEST['check_page_settings']) ||
+        !isset($_REQUEST['page_title']) ||
+        !isset($_REQUEST['page_description']) ||
+        !isset($_REQUEST['page_keywords']) ||
+        !isset($_REQUEST['check_teaser']) ||
+        !isset($_REQUEST['teaser_content']) ||
+        !isset($_REQUEST['teaser_publish']) ||
+        !isset($_REQUEST['teaser_id']) ||
+        !isset($_REQUEST['archive_id']) ||
+        !isset($_REQUEST['editor_name']) ||
+        !isset($_REQUEST['email_text']) ||
+        !isset($_REQUEST['editor_action']) ||
+        !isset($_REQUEST['editor_response']) ||
+        !isset($_REQUEST['email_send'])
     ) {
       $this->errorExit($I18n->translate('[ {{ file }} ] Missing essential parameters!',
           array('file' => basename(__FILE__))), __METHOD__, __LINE__);
       return false;
     }
-    self::$PAGE_ID = (int) $_GET['page_id'];
-    self::$SECTION_ID = (int) $_GET['section_id'];
-    self::$SECTION_CONTENT = rawurldecode($_GET['section_content']);
-    self::$SECTION_PUBLISH = (bool) $_GET['section_publish'];
-    self::$ARCHIVE_ID = (int) $_GET['archive_id'];
+    self::$PAGE_ID = (int) $_REQUEST['page_id'];
+    self::$SECTION_ID = (int) $_REQUEST['section_id'];
+    self::$SECTION_CONTENT = rawurldecode($_REQUEST['section_content']);
+    self::$SECTION_PUBLISH = (bool) $_REQUEST['section_publish'];
+    self::$ARCHIVE_ID = (int) $_REQUEST['archive_id'];
 
-    self::$CHECK_PAGE_SETTINGS = (bool) $_GET['check_page_settings'];
-    self::$PAGE_TITLE = rawurldecode($_GET['page_title']);
-    self::$PAGE_DESCRIPTION = rawurldecode($_GET['page_description']);
-    self::$PAGE_KEYWORDS = rawurldecode($_GET['page_keywords']);
+    self::$CHECK_PAGE_SETTINGS = (bool) $_REQUEST['check_page_settings'];
+    self::$PAGE_TITLE = rawurldecode($_REQUEST['page_title']);
+    self::$PAGE_DESCRIPTION = rawurldecode($_REQUEST['page_description']);
+    self::$PAGE_KEYWORDS = rawurldecode($_REQUEST['page_keywords']);
 
-    self::$CHECK_TEASER = $_GET['check_teaser'];
-    self::$TEASER_CONTENT = rawurldecode($_GET['teaser_content']);
-    self::$TEASER_PUBLISH = (bool) $_GET['teaser_publish'];
-    self::$TEASER_ID = (int) $_GET['teaser_id'];
+    self::$CHECK_TEASER = $_REQUEST['check_teaser'];
+    self::$TEASER_CONTENT = rawurldecode($_REQUEST['teaser_content']);
+    self::$TEASER_PUBLISH = (bool) $_REQUEST['teaser_publish'];
+    self::$TEASER_ID = (int) $_REQUEST['teaser_id'];
 
-    self::$EDITOR_NAME = !empty($_GET['editor_name']) ? trim($_GET['editor_name']) : $cms->getUserLoginName();
-    self::$EMAIL_TEXT = rawurldecode($_GET['email_text']);
-    self::$EDITOR_ACTION = $_GET['editor_action'];
-    self::$EDITOR_RESPONSE = $_GET['editor_response'];
-    self::$EMAIL_SEND = $_GET['email_send'];
+    self::$EDITOR_NAME = !empty($_REQUEST['editor_name']) ? trim($_REQUEST['editor_name']) : $cms->getUserLoginName();
+    self::$EMAIL_TEXT = rawurldecode($_REQUEST['email_text']);
+    self::$EDITOR_ACTION = $_REQUEST['editor_action'];
+    self::$EDITOR_RESPONSE = $_REQUEST['editor_response'];
+    self::$EMAIL_SEND = $_REQUEST['email_send'];
 
     return true;
   } // checkRequests()
@@ -473,7 +473,7 @@ class controlContent extends bonejQueryControl {
       }
 
       $supervisors = explode(',', $editor['supervisors']);
-      
+
       if ($editorTeam->checkPermission($editor['permissions'], editorTeam::PERMISSION_RELEASE_CHIEF_EDITOR_ONLY)) {
       	// send emails only to the CHIEF and his SUB!
       	$check_array = $supervisors;
@@ -482,7 +482,7 @@ class controlContent extends bonejQueryControl {
       			unset($supervisors[array_search($supervisor, $supervisors)]);
       	}
       }
-      
+
       $wysiwygArchive = new wysiwygArchive();
       $data = array(
           'page_id' => self::$PAGE_ID,
@@ -525,7 +525,7 @@ class controlContent extends bonejQueryControl {
       // init the messages
       $wysiwygMessages = new wysiwygMessages();
 
-      
+
       foreach ($supervisors as $supervisor_name) {
         // save the message
         $data = array(
@@ -683,12 +683,12 @@ class controlContent extends bonejQueryControl {
       return false;
     }
     $supervisors = explode(',', $archive['supervisors']);
-    
+
     /*
     // delete the approving editor from the supervisors list
     unset($supervisors[array_search(self::$EDITOR_NAME, $supervisors)]);
 		*/
-    
+
     // explicit check of the approval
     $editor = $archive['editor'];
     $editorTeam = new editorTeam();
@@ -717,7 +717,7 @@ class controlContent extends bonejQueryControl {
     	$approved = (!empty($archive['approved'])) ? explode(',', $archive['approved']) : array();
     	if (count($approved) > 0) {
     		// article is already approved by another supervisor and can be released!
-    		$supervisors = array();    		
+    		$supervisors = array();
     	}
     	else {
     		// delete the approving editor from the supervisors list
@@ -728,7 +728,7 @@ class controlContent extends bonejQueryControl {
     	$this->errorExit($I18n->translate('Ooops, missing a valid release method! Please contact the support!'), __METHOD__, __LINE__);
     	return false;
     }
-    
+
     if (count($supervisors) == 0) {
       // ok - the section can be published!
       $approved = (!empty($archive['approved'])) ? explode(',', $archive['approved']) : array();
@@ -1035,16 +1035,16 @@ class controlContent extends bonejQueryControl {
     global $cms;
 
     $this->checkRequests();
-    
+
     $Users = new Users();
     if ($Users->isAdministrator(self::$EDITOR_NAME)) {
     	// admins are out of the editorial system!
     	self::$EDITORIAL_SYSTEM_IS_ACTIVE = false;
     }
-    
+
     $this->checkPageSettings();
     $this->checkTeaser();
-    
+
     if (self::$EDITORIAL_SYSTEM_IS_ACTIVE) {
     	if (self::$EDITOR_ACTION != 'NONE') {
         $this->checkEditorAction();
