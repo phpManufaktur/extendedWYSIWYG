@@ -4,6 +4,10 @@
 MIT License (MIT) http://www.opensource.org/licenses/MIT
 https://addons.phpmanufaktur.de/extendedWYSIWYG
 
+Release 11.08 BETA - 2013-11-23
+
+* locked BlackCat CMS because it is not compatible with extendedWYSIWYG for the moment
+
 Release 11.07 BETA - 2013-04-08
 
 * fixed a problem with submitting large contents (Error Code 414)
