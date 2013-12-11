@@ -32,15 +32,55 @@ class detectCMS extends boneClass {
   protected static $configuration = array();
 
   /**
+   * fixes a path by removing //, /../ and other things
+   *
+   * @access public
+   * @param string $path to fix
+   * @return string
+   *
+   */
+  public static function sanitizePath ($path)
+  {
+      // remove / at end of string; this will make sanitizePath fail otherwise!
+      $path = preg_replace('~/{1,}$~', '', $path);
+
+      // make all slashes forward
+      $path = str_replace('\\', '/', $path);
+
+      // bla/./bloo ==> bla/bloo
+      $path = preg_replace('~/\./~', '/', $path);
+
+      // resolve /../
+      // loop through all the parts, popping whenever there's a .., pushing otherwise.
+      $parts = array();
+      foreach (explode('/', preg_replace('~/+~', '/', $path)) as $part) {
+          if ($part === ".." || $part == '') {
+              array_pop($parts);
+          } elseif ($part != "") {
+              $parts[] = $part;
+          }
+      }
+
+      $new_path = implode("/", $parts);
+
+      // windows
+      if (! preg_match('/^[a-z]\:/i', $new_path)) {
+          $new_path = '/' . $new_path;
+      }
+
+      return $new_path;
+  } // sanitizePath()
+
+  /**
    * Search for the configuration file of the CMS (which is the ROOT)
    *
    * @param string $config_file_path
    * @return boolean
    */
   protected function searchConfigurationFile(&$root_path='') {
-    $root = __DIR__;
+    $root = $this->sanitizePath(__DIR__);
     // at maximum step 8 levels back!
-    for ($i=0; $i < 8; $i++) {
+    for ($i=0; $i < 10; $i++) {
       $root = substr($root, 0, strrpos($root, '/'));
       // at this point we really want no error messages!
       if (@file_exists($root.'/config.php')) {

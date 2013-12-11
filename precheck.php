@@ -89,7 +89,7 @@ else {
       $lepton_version = $database->get_one("SELECT `value` FROM `".TABLE_PREFIX."settings` WHERE `name`='lepton_version'");
       if (!empty($lepton_version)) {
         // WebsiteBaker
-        if (!in_array($lepton_version, array('1.1.4', '1.2.0', '1.2.1'))) {
+        if (!in_array($lepton_version, array('1.1.4', '1.2.0', '1.2.1', '1.2.2', '1.2.3'))) {
           $checked = false;
           $key = "The LEPTON CMS version $wb_version is not approved for extendedWYSIYG!";
           $status = false;

@@ -31,11 +31,14 @@ if (is_object($cms) && ($cms->getStatus() == cmsBridge::STATUS_INITIALIZED)) {
 else {
   // initialize the cmsBridge
 
+  // initialize Toolbox
+  $tools = new Toolbox();
+
   if (!defined('CMS_ADDON_PATH'))
-    define('CMS_ADDON_PATH', __DIR__);
+    define('CMS_ADDON_PATH', $tools->sanitizePath(__DIR__));
 
   if (!defined('CMS_ADDON_CONFIG_PATH'))
-    define('CMS_ADDON_CONFIG_PATH', __DIR__.'/config');
+    define('CMS_ADDON_CONFIG_PATH', $tools->sanitizePath(__DIR__.'/config'));
 
   // check if a configuration file for the addon exists
   if (file_exists(CMS_ADDON_CONFIG_PATH.'/addonConfig.json')) {
@@ -53,10 +56,10 @@ else {
 
   // check the logfile size
   $max_size = 2*1024*1024; // 2 MB
-  $log_file = __DIR__.'/logfile/extendedWYSIWYG.log';
+  $log_file = $tools->sanitizePath(__DIR__.'/logfile/extendedWYSIWYG.log');
   if (file_exists($log_file) && (filesize($log_file) > $max_size)) {
-    @unlink(__DIR__.'/logfile/extendedWYSIWYG.bak');
-    @rename($log_file, __DIR__.'/logfile/extendedWYSIWYG.bak');
+    @unlink($tools->sanitizePath(__DIR__.'/logfile/extendedWYSIWYG.bak'));
+    @rename($log_file, $tools->sanitizePath(__DIR__.'/logfile/extendedWYSIWYG.bak'));
   }
   // initialize the logger
   $logger = new Logger('extendedWYSIWYG');
@@ -151,8 +154,7 @@ else {
   // Dwoo plugins for the cmsBridge, i.e. wysiwygEditor()
   $loader->addDirectory(CMS_ADDON_PATH.'/vendor/phpManufaktur/CMS/Bridge/View/Templates/Plugins/');
 
-  // initialize Toolbox
-  $tools = new Toolbox();
+
 
   if (EXTERNAL_ACCESS) {
     // redirect to the Settings tool
