@@ -27,18 +27,8 @@ use phpManufaktur\extendedWYSIWYG\Data\wysiwygExtension;
 use phpManufaktur\extendedWYSIWYG\Data\archiveFile;
 use phpManufaktur\extendedWYSIWYG\Data\wysiwygConfiguration;
 
-$path = __DIR__;
-for ($i=0; $i < 10; $i++) {
-  // try to find and load the bootstrap.php
-  if (@file_exists($path.'/bootstrap.php')) {
-    // enable access outside of the CMS!
-    define('EXTERNAL_ACCESS', false);
-    include $path.'/bootstrap.php';
-    break;
-  }
-  $path = substr($path, 0, strrpos($path, '/'));
-}
-
+define('EXTERNAL_ACCESS', false);
+include realpath(__DIR__.'/../../../../bootstrap.php');
 require_once CMS_PATH.'/modules/dwoo/dwoo-1.1.1/dwoo/Dwoo/Exception.php';
 
 /**
@@ -475,12 +465,12 @@ class controlContent extends bonejQueryControl {
       $supervisors = explode(',', $editor['supervisors']);
 
       if ($editorTeam->checkPermission($editor['permissions'], editorTeam::PERMISSION_RELEASE_CHIEF_EDITOR_ONLY)) {
-      	// send emails only to the CHIEF and his SUB!
-      	$check_array = $supervisors;
-      	foreach ($check_array as $supervisor) {
-      		if (!$editorTeam->isChiefEditor($supervisor))
-      			unset($supervisors[array_search($supervisor, $supervisors)]);
-      	}
+          // send emails only to the CHIEF and his SUB!
+          $check_array = $supervisors;
+          foreach ($check_array as $supervisor) {
+              if (!$editorTeam->isChiefEditor($supervisor))
+                  unset($supervisors[array_search($supervisor, $supervisors)]);
+          }
       }
 
       $wysiwygArchive = new wysiwygArchive();
@@ -687,46 +677,46 @@ class controlContent extends bonejQueryControl {
     /*
     // delete the approving editor from the supervisors list
     unset($supervisors[array_search(self::$EDITOR_NAME, $supervisors)]);
-		*/
+        */
 
     // explicit check of the approval
     $editor = $archive['editor'];
     $editorTeam = new editorTeam();
     if (false === ($editorData = $editorTeam->selectEditorByName($archive['editor']))) {
-    	$this->errorExit($editorTeam->getError(), __METHOD__, __LINE__);
-    	return false;
+        $this->errorExit($editorTeam->getError(), __METHOD__, __LINE__);
+        return false;
     }
     if ($editorTeam->checkPermission($editorData['permissions'], editorTeam::PERMISSION_RELEASE_ONE_SUPERVISOR)) {
-    	// Release by ONE Supervisor
-    	// unset all other approving editors because the article is already approved!
-    	$supervisors = array();
+        // Release by ONE Supervisor
+        // unset all other approving editors because the article is already approved!
+        $supervisors = array();
     }
     elseif ($editorTeam->checkPermission($editorData['permissions'], editorTeam::PERMISSION_RELEASE_CHIEF_EDITOR_ONLY)) {
-    	// Release by CHIEF editor only
-    	if ($editorTeam->isChiefEditor(self::$EDITOR_NAME)) {
-    		// unset all supervisors because the article can be released!
-    		$supervisors = array();
-    	}
-    	else {
-    		$this->errorExit($I18n->translate('Sorry, you are not allowed to release this article!'), __METHOD__, __LINE__);
-    		return false;
-    	}
+        // Release by CHIEF editor only
+        if ($editorTeam->isChiefEditor(self::$EDITOR_NAME)) {
+            // unset all supervisors because the article can be released!
+            $supervisors = array();
+        }
+        else {
+            $this->errorExit($I18n->translate('Sorry, you are not allowed to release this article!'), __METHOD__, __LINE__);
+            return false;
+        }
     }
     elseif ($editorTeam->checkPermission($editorData['permissions'], editorTeam::PERMISSION_RELEASE_TWO_SUPERVISOR)) {
-    	// Release by TWO supervisors
-    	$approved = (!empty($archive['approved'])) ? explode(',', $archive['approved']) : array();
-    	if (count($approved) > 0) {
-    		// article is already approved by another supervisor and can be released!
-    		$supervisors = array();
-    	}
-    	else {
-    		// delete the approving editor from the supervisors list
-    		unset($supervisors[array_search(self::$EDITOR_NAME, $supervisors)]);
-    	}
+        // Release by TWO supervisors
+        $approved = (!empty($archive['approved'])) ? explode(',', $archive['approved']) : array();
+        if (count($approved) > 0) {
+            // article is already approved by another supervisor and can be released!
+            $supervisors = array();
+        }
+        else {
+            // delete the approving editor from the supervisors list
+            unset($supervisors[array_search(self::$EDITOR_NAME, $supervisors)]);
+        }
     }
     else {
-    	$this->errorExit($I18n->translate('Ooops, missing a valid release method! Please contact the support!'), __METHOD__, __LINE__);
-    	return false;
+        $this->errorExit($I18n->translate('Ooops, missing a valid release method! Please contact the support!'), __METHOD__, __LINE__);
+        return false;
     }
 
     if (count($supervisors) == 0) {
@@ -1038,15 +1028,15 @@ class controlContent extends bonejQueryControl {
 
     $Users = new Users();
     if ($Users->isAdministrator(self::$EDITOR_NAME)) {
-    	// admins are out of the editorial system!
-    	self::$EDITORIAL_SYSTEM_IS_ACTIVE = false;
+        // admins are out of the editorial system!
+        self::$EDITORIAL_SYSTEM_IS_ACTIVE = false;
     }
 
     $this->checkPageSettings();
     $this->checkTeaser();
 
     if (self::$EDITORIAL_SYSTEM_IS_ACTIVE) {
-    	if (self::$EDITOR_ACTION != 'NONE') {
+        if (self::$EDITOR_ACTION != 'NONE') {
         $this->checkEditorAction();
       }
       else {

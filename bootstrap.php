@@ -31,6 +31,9 @@ if (is_object($cms) && ($cms->getStatus() == cmsBridge::STATUS_INITIALIZED)) {
 else {
   // initialize the cmsBridge
 
+  // set the default timezone
+  date_default_timezone_set('Europe/Berlin');
+
   // initialize Toolbox
   $tools = new Toolbox();
 

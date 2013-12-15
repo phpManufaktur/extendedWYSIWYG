@@ -9,14 +9,6 @@
  * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
  */
 
-$path = __DIR__;
-for ($i=0; $i < 10; $i++) {
-  // try to find and load the bootstrap.php
-  if (@file_exists($path.'/bootstrap.php')) {
-    include $path.'/bootstrap.php';
-    break;
-  }
-  $path = substr($path, 0, strrpos($path, '/'));
-}
+include realpath(__DIR__.'/../bootstrap.php');
 header($_SERVER['SERVER_PROTOCOL']." 403 Forbidden");
 exit('<p><b>ACCESS DENIED!</b></p>');

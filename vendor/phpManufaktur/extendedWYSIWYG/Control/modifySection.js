@@ -8,7 +8,7 @@
  *
  */
 
-if (typeof 'jQuery' != 'undefined') {
+if (typeof 'jQuery' !== 'undefined') {
 
   $(document).ready(function() {
 
@@ -37,6 +37,7 @@ if (typeof 'jQuery' != 'undefined') {
       if (sections.indexOf('[') >= 0) {
         // if the result contains a [ an error was occured!
         // stop the timer
+        alert('stop:'+sections);
         timer.stop();
         // stop the script
         return false;
@@ -146,12 +147,12 @@ if (typeof 'jQuery' != 'undefined') {
           // loop through the CKEDITOR instances
           for (var i in CKEDITOR.instances) {
             // get the content from the CKE for this section
-            if (CKEDITOR.instances[i].name == instance_name) {
+            if (CKEDITOR.instances[i].name === instance_name) {
               section_content = encodeURI(CKEDITOR.instances[i].getData());
             }
             if (check_teaser == 1) {
               // get the teaser content from the CKE
-              if (CKEDITOR.instances[i].name == 'teaser_text') {
+              if (CKEDITOR.instances[i].name === 'teaser_text') {
                 teaser_content = encodeURI(CKEDITOR.instances[i].getData());
                 // get the teaser content and settings
                 teaser_publish = $('#teaser_publish').attr('checked') ? 1 : 0;
@@ -160,7 +161,7 @@ if (typeof 'jQuery' != 'undefined') {
             }
           }
 
-          if (check_page_settings == 1) {
+          if (check_page_settings === 1) {
             // get the page settings
             page_title = encodeURI(document.getElementById('page_title').value);
             page_description = encodeURI(document.getElementById('page_description').value);
@@ -305,8 +306,9 @@ if (typeof 'jQuery' != 'undefined') {
         });
 
         // we use the page settings only at the first section!
-        if (i == 0) {
+        if (i === 0) {
           // preset the visibility depending on the options checkboxes
+          
           if ($('#page_settings_'+section_ids[i]).attr('checked')) {
             $("#wysiwyg_page_settings").css('display','block');
           }

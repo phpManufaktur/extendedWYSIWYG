@@ -18,17 +18,9 @@ use phpManufaktur\extendedWYSIWYG\Data\editorTeam;
 use phpManufaktur\CMS\Bridge\Control\boneClass;
 use phpManufaktur\extendedWYSIWYG\View;
 
-$path = __DIR__;
-for ($i=0; $i < 10; $i++) {
-  // try to find and load the bootstrap.php
-  if (@file_exists($path.'/bootstrap.php')) {
-    // enable access outside of the CMS!
-    define('EXTERNAL_ACCESS', false);
-    include $path.'/bootstrap.php';
-    break;
-  }
-  $path = substr($path, 0, strrpos($path, '/'));
-}
+
+define('EXTERNAL_ACCESS', false);
+include realpath(__DIR__.'/../../../../bootstrap.php');
 
 /**
  * Section content control - called by jQuery modifySection.js

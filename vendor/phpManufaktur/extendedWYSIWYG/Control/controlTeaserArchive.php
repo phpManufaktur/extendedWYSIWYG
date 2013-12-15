@@ -16,18 +16,9 @@ namespace phpManufaktur\extendedWYSIWYG\Control;
 use phpManufaktur\extendedWYSIWYG\Data\wysiwygTeaser;
 use phpManufaktur\extendedWYSIWYG\Data\pageSettings;
 
-$path = __DIR__;
-for ($i=0; $i < 10; $i++) {
-  // try to find and load the bootstrap.php
-  if (@file_exists($path.'/bootstrap.php')) {
-    // enable access outside of the CMS!
-    define('EXTERNAL_ACCESS', false);
-    include $path.'/bootstrap.php';
-    break;
-  }
-  $path = substr($path, 0, strrpos($path, '/'));
-}
 
+define('EXTERNAL_ACCESS', false);
+include realpath(__DIR__.'/../../../../bootstrap.php');
 require_once CMS_PATH.'/modules/dwoo/dwoo-1.1.1/dwoo/Dwoo/Exception.php';
 
 global $I18n;
